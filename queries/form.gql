@@ -1,0 +1,25 @@
+# queries/form.gql
+mutation CreateForm($createFormInput: CreateFormInput!) {
+  createForm(createFormInput: $createFormInput) {
+    id
+    name
+    fields {
+      type
+      label
+      value
+      variableName
+      placeholder
+      hint
+      height
+      required
+      chapter
+      question
+      questionNumber
+      consistencyCondition
+      inconsistencyMessage
+      errorType
+      description
+      requirementLevel
+    }
+  }
+}
