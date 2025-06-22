@@ -35,17 +35,29 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      GQL_HOST: "http://127.0.0.1:4000/graphql",
+      GQL_HOST: process.env.GQL_HOST || "http://127.0.0.1:4000/graphql",
     },
   },
-  graphql: {
+  "graphql-client": {
+    watch: true,
+    autoImport: true,
+    functionPrefix: "Gql",
+    documentPaths: ["./queries"],
+    preferGETQueries: false,
+    codegen: {
+      silent: false, // Mostrar logs de codegen
+      skipTypename: true,
+      useTypeImports: true,
+      dedupeFragments: true,
+      onlyOperationTypes: true,
+      avoidOptionals: true, // Como en el ejemplo
+      disableOnBuild: false,
+      maybeValue: "T | null",
+      scalars: {},
+    },
     clients: {
       default: {
-        endpoint: "http://127.0.0.1:4000/graphql",
-        headers: {
-          "Content-Type": "application/json",
-          "x-apollo-operation-name": "CreateForm", // Evita CSRF
-        },
+        host: process.env.GQL_HOST || "http://127.0.0.1:4000/graphql",
       },
     },
   },
