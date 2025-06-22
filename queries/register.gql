@@ -1,8 +1,7 @@
-mutation Register($createUserInput: CreateUserInput!) {
+mutation CreateUser($createUserInput: CreateUserInput!) {
   createUser(createUserInput: $createUserInput) {
     token
     user {
-      id
       name
       email
       role

@@ -1,6 +1,6 @@
 mutation UpdateUser($updateUserInput: UpdateUserInput!) {
   updateUser(updateUserInput: $updateUserInput) {
-    id
+    _id
     name
     email
     role

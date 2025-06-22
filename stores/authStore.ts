@@ -1,44 +1,60 @@
 import { defineStore } from "pinia";
-import type { User } from "~/types/user";
+import type {
+  User,
+  CreateUserResponse,
+  LoginResponse,
+  UpdateUserResponse,
+  MeResponse,
+  GraphQLResponse,
+} from "~/types/user";
 import { useRuntimeConfig } from "#app";
+import CreateUserQuery from "~/queries/register.gql?raw";
+import LoginQuery from "~/queries/login.gql?raw";
+import UpdateUserQuery from "~/queries/updateUser.gql?raw";
+import MeQuery from "~/queries/me.gql?raw";
+
+interface AuthState {
+  user: User | null;
+  token: string | null;
+}
 
 export const useAuthStore = defineStore("auth", {
-  state: () => ({
-    user: null as User | null,
-    token: null as string | null,
+  state: (): AuthState => ({
+    user: null,
+    token: null,
   }),
   actions: {
-    async login(email: string, password: string) {
+    async login(email: string, password: string): Promise<void> {
       try {
         const {
           public: { GQL_HOST },
         } = useRuntimeConfig();
-        const gqlHost = GQL_HOST || "http://127.0.0.1:3000/graphql"; // Valor por defecto explícito
+        const gqlHost: string = GQL_HOST || "http://127.0.0.1:4000/graphql";
         if (!gqlHost) {
           throw new Error("GQL_HOST no está definido en la configuración.");
         }
-        const query = await import("~/queries/login.gql").then(
-          (m) => m.default
-        );
         const response = await fetch(gqlHost, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-apollo-operation-name": "Login",
           },
           body: JSON.stringify({
-            query,
+            query: LoginQuery,
             variables: { email, password },
           }),
         });
-        const { data, errors } = await response.json();
-        if (errors) throw new Error(errors[0]?.message || "Error en login");
-        this.user = data.login.user;
-        this.token = data.login.token;
+        const result: GraphQLResponse<LoginResponse> = await response.json();
+        console.log("Login response:", result);
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error en login");
+        }
+        this.user = result.data.login.user;
+        this.token = result.data.login.token;
         if (this.token && process.client) {
           localStorage.setItem("token", this.token);
         }
       } catch (error: any) {
+        console.error("Login error:", error);
         throw new Error(error.message || "Error en login");
       }
     },
@@ -47,37 +63,38 @@ export const useAuthStore = defineStore("auth", {
       email: string;
       password: string;
       role: string;
-    }) {
+    }): Promise<void> {
       try {
         const {
           public: { GQL_HOST },
         } = useRuntimeConfig();
-        const gqlHost = GQL_HOST || "http://127.0.0.1:3000/graphql"; // Valor por defecto explícito
+        const gqlHost: string = GQL_HOST || "http://127.0.0.1:4000/graphql";
         if (!gqlHost) {
           throw new Error("GQL_HOST no está definido en la configuración.");
         }
-        const query = await import("@/queries/register.gql").then(
-          (m) => m.default
-        );
         const response = await fetch(gqlHost, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-apollo-operation-name": "Register",
           },
           body: JSON.stringify({
-            query,
+            query: CreateUserQuery,
             variables: { createUserInput: userInput },
           }),
         });
-        const { data, errors } = await response.json();
-        if (errors) throw new Error(errors[0]?.message || "Error en registro");
-        this.user = data.createUser.user;
-        this.token = data.createUser.token;
+        const result: GraphQLResponse<CreateUserResponse> =
+          await response.json();
+        console.log("Register response:", result);
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error en registro");
+        }
+        this.user = result.data.createUser.user;
+        this.token = result.data.createUser.token;
         if (this.token && process.client) {
           localStorage.setItem("token", this.token);
         }
       } catch (error: any) {
+        console.error("Register error:", error);
         throw new Error(error.message || "Error en registro");
       }
     },
@@ -85,7 +102,7 @@ export const useAuthStore = defineStore("auth", {
       name?: string;
       email?: string;
       password?: string;
-    }) {
+    }): Promise<void> {
       try {
         if (!this.token) {
           throw new Error("No se encontró el token de autenticación");
@@ -93,76 +110,82 @@ export const useAuthStore = defineStore("auth", {
         const {
           public: { GQL_HOST },
         } = useRuntimeConfig();
-        const gqlHost = GQL_HOST || "http://127.0.0.1:3000/graphql"; // Valor por defecto explícito
+        const gqlHost: string = GQL_HOST || "http://127.0.0.1:4000/graphql";
         if (!gqlHost) {
           throw new Error("GQL_HOST no está definido en la configuración.");
         }
-        const query = await import("~/queries/updateUser.gql").then(
-          (m) => m.default
-        );
         const response = await fetch(gqlHost, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${this.token}`,
-            "x-apollo-operation-name": "UpdateUser",
+            Authorization: `Bearer ${this.token.trim()}`, // Asegurar que no haya espacios
           },
           body: JSON.stringify({
-            query,
+            query: UpdateUserQuery,
             variables: { updateUserInput: userInput },
           }),
         });
-        const { data, errors } = await response.json();
-        if (errors)
-          throw new Error(errors[0]?.message || "Error al actualizar perfil");
-        this.user = data.updateUser;
+        const result: GraphQLResponse<UpdateUserResponse> =
+          await response.json();
+        console.log("UpdateProfile response:", result);
+        if (result.errors) {
+          throw new Error(
+            result.errors[0]?.message || "Error al actualizar perfil"
+          );
+        }
+        this.user = result.data.updateUser;
       } catch (error: any) {
+        console.error("UpdateProfile error:", error);
         throw new Error(error.message || "Error al actualizar perfil");
       }
     },
-    logout() {
+    logout(): void {
       this.user = null;
       this.token = null;
       if (process.client) {
         localStorage.removeItem("token");
       }
     },
-    async loadUserFromToken() {
-      if (!process.client) return; // Evitar ejecución en SSR
-      const token = localStorage.getItem("token");
+    async loadUserFromToken(): Promise<void> {
+      if (!process.client) return;
+      const token: string | null = localStorage.getItem("token");
       if (!token) return;
       try {
+        console.log("loadUserFromToken: Sending request with token:", token);
         const {
           public: { GQL_HOST },
         } = useRuntimeConfig();
-        const gqlHost = GQL_HOST || "http://127.0.0.1:3000/graphql"; // Valor por defecto explícito
+        const gqlHost: string = GQL_HOST || "http://127.0.0.1:4000/graphql";
         if (!gqlHost) {
           throw new Error("GQL_HOST no está definido en la configuración.");
         }
-        const query = await import("~/queries/me.gql").then((m) => m.default);
-
         const response = await fetch(gqlHost, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            "x-apollo-operation-name": "Me",
+            Authorization: `Bearer ${token.trim()}`, // Asegurar que no haya espacios
           },
-          body: JSON.stringify({ query }),
+          body: JSON.stringify({
+            query: MeQuery,
+          }),
         });
-        const { data, errors } = await response.json();
-        if (errors)
-          throw new Error(errors[0]?.message || "Error al cargar usuario");
-        this.user = data.me;
+        const result: GraphQLResponse<MeResponse> = await response.json();
+        console.log("LoadUser response:", result);
+        if (result.errors) {
+          console.warn("loadUserFromToken: Errors received:", result.errors);
+          return;
+        }
+        this.user = result.data.me;
         this.token = token;
       } catch (error: any) {
-        this.logout();
+        console.error("LoadUser error:", error);
       }
     },
   },
   getters: {
-    isAuthenticated: (state) => !!state.user && !!state.token,
-    isAdmin: (state) => state.user?.role === "admin",
+    isAuthenticated: (state: AuthState): boolean =>
+      !!state.user && !!state.token,
+    isAdmin: (state: AuthState): boolean => state.user?.role === "admin",
   },
   persist: true,
 });
