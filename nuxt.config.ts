@@ -35,18 +35,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      GQL_HOST: "http://127.0.0.1:4000/graphql",
-    },
-  },
-  graphql: {
-    clients: {
-      default: {
-        endpoint: "http://127.0.0.1:4000/graphql",
-        headers: {
-          "Content-Type": "application/json",
-          "x-apollo-operation-name": "CreateForm", // Evita CSRF
-        },
-      },
+      GQL_HOST: process.env.GQL_HOST || "http://127.0.0.1:4000/graphql",
     },
   },
 });

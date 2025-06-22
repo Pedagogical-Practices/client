@@ -1,6 +1,15 @@
 <template>
   <v-container fluid class="pa-4">
     <v-row>
+      <v-col cols="12">
+        <v-text-field
+          variant="outlined"
+          label="Nombre del Formulario"
+          v-model="formBuilderStore.formName"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+    <v-row>
       <!-- Available Elements Column (hidden on mobile if drawer is used) -->
       <v-col cols="12" md="4" class="available-elements-col">
         <AvailableElements />
@@ -57,11 +66,6 @@
                           :icon="getElementIcon(element.type)"
                           class="mr-3"
                         ></v-icon>
-                        <!--span class="element-label">
-                          {{ element.label || "Elemento sin nombre" }} ({{
-                            element.type
-                          }})
-                        </span-->
                       </v-col>
                       <v-col cols="10">
                         <component
@@ -124,7 +128,6 @@
               Copiar JSON
             </v-btn>
             <v-spacer></v-spacer>
-
             <v-btn
               :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"
               @click="show = !show"
@@ -149,24 +152,26 @@
         </v-card>
       </v-col>
     </v-row>
+    <ElementEditor />
+    <v-snackbar
+      v-model="snackbar.show"
+      :color="snackbar.color"
+      :timeout="snackbar.timeout"
+      location="top right"
+    >
+      {{ snackbar.text }}
+      <template v-slot:actions>
+        <v-btn variant="text" @click="snackbar.show = false">Cerrar</v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
-  <ElementEditor />
-  <v-snackbar
-    v-model="snackbar.show"
-    :color="snackbar.color"
-    :timeout="snackbar.timeout"
-    location="top right"
-  >
-    {{ snackbar.text }}
-    <template v-slot:actions>
-      <v-btn variant="text" @click="snackbar.show = false">Cerrar</v-btn>
-    </template>
-  </v-snackbar>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { useFormBuilderStore } from "~/stores/formBuilderStore";
+import { useAuthStore } from "~/stores/authStore";
 import AvailableElements from "~/components/AvailableElements.vue";
 import ElementEditor from "~/components/ElementEditor.vue";
 import { availableElements as elementDefinitions } from "~/components/formElementDefinitions";
@@ -183,14 +188,53 @@ import {
   VDatePicker,
 } from "vuetify/components";
 
-const show = ref(false);
+// Definir middleware para esta página
+definePageMeta({
+  middleware: ["admin"],
+});
+
+const router = useRouter();
 const formBuilderStore = useFormBuilderStore();
+const authStore = useAuthStore();
+const show = ref(false);
 const isDragOver = ref(false);
 const snackbar = ref({
   show: false,
   text: "",
   color: "success",
   timeout: 3000,
+});
+
+onMounted(async () => {
+  try {
+    await authStore.loadUserFromToken();
+    if (!authStore.isAuthenticated) {
+      snackbar.value = {
+        show: true,
+        text: "Por favor inicia sesión.",
+        color: "error",
+        timeout: 3000,
+      };
+      router.push("/login");
+    } else if (!authStore.isAdmin) {
+      snackbar.value = {
+        show: true,
+        text: "Acceso denegado. Solo administradores pueden usar el editor.",
+        color: "error",
+        timeout: 3000,
+      };
+      router.push("/");
+    }
+  } catch (error: Error) {
+    console.error("Error al cargar usuario:", error);
+    snackbar.value = {
+      show: true,
+      text: `Error: ${error.message}`,
+      color: "error",
+      timeout: 3000,
+    };
+    router.push("/login");
+  }
 });
 
 // Mapeo de tipos de elementos a componentes Vuetify
@@ -254,8 +298,14 @@ const handleDrop = (event: DragEvent) => {
       } else {
         console.error("Dropped element type not found:", elementType);
       }
-    } catch (e) {
-      console.error("Failed to parse dropped data:", e);
+    } catch (error: Error) {
+      console.error("Failed to parse dropped data:", error);
+      snackbar.value = {
+        show: true,
+        text: `Error: ${error.message}`,
+        color: "error",
+        timeout: 3000,
+      };
     }
   }
 };
@@ -325,11 +375,11 @@ const copyJsonToClipboard = async () => {
       color: "success",
       timeout: 3000,
     };
-  } catch (err) {
-    console.error("Error al copiar JSON: ", err);
+  } catch (error: Error) {
+    console.error("Error al copiar JSON:", error);
     snackbar.value = {
       show: true,
-      text: "Error al copiar JSON.",
+      text: `Error: ${error.message}`,
       color: "error",
       timeout: 3000,
     };
@@ -338,18 +388,27 @@ const copyJsonToClipboard = async () => {
 
 const saveFormToBackend = async () => {
   try {
+    if (!authStore.token) {
+      throw new Error(
+        "No se encontró el token de autenticación. Por favor inicia sesión."
+      );
+    }
+    const {
+      public: { GQL_HOST },
+    } = useRuntimeConfig();
     const query = await import("~/queries/form.gql?raw").then((m) => m.default);
-    const response = await fetch("http://127.0.0.1:4000/graphql", {
+    const response = await fetch(GQL_HOST, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${authStore.token}`,
         "x-apollo-operation-name": "CreateForm",
       },
       body: JSON.stringify({
         query,
         variables: {
           createFormInput: {
-            name: "Nuevo Formulario",
+            name: formBuilderStore.formName,
             fields: formBuilderStore.formElements.map((element) => ({
               type: element.type,
               label: element.label || "",
@@ -384,7 +443,7 @@ const saveFormToBackend = async () => {
       color: "success",
       timeout: 3000,
     };
-  } catch (error) {
+  } catch (error: Error) {
     console.error("Error al guardar:", error);
     snackbar.value = {
       show: true,
