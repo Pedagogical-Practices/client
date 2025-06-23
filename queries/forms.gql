@@ -1,0 +1,11 @@
+query Forms {
+  forms {
+    _id
+    name
+    createdBy {
+      name
+      email
+    }
+    createdAt
+  }
+}

@@ -168,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useFormBuilderStore } from "~/stores/formBuilderStore";
 import { useAuthStore } from "~/stores/authStore";
@@ -176,8 +176,6 @@ import AvailableElements from "~/components/AvailableElements.vue";
 import ElementEditor from "~/components/ElementEditor.vue";
 import { availableElements as elementDefinitions } from "~/components/formElementDefinitions";
 import type { FormElement } from "~/stores/formBuilderStore";
-
-// Importar componentes Vuetify necesarios
 import {
   VTextField,
   VTextarea,
@@ -188,7 +186,7 @@ import {
   VDatePicker,
 } from "vuetify/components";
 
-// Definir middleware para esta página
+// Middleware para admin
 definePageMeta({
   middleware: ["admin"],
 });
@@ -205,39 +203,6 @@ const snackbar = ref({
   timeout: 3000,
 });
 
-onMounted(async () => {
-  try {
-    await authStore.loadUserFromToken();
-    if (!authStore.isAuthenticated) {
-      snackbar.value = {
-        show: true,
-        text: "Por favor inicia sesión.",
-        color: "error",
-        timeout: 3000,
-      };
-      router.push("/login");
-    } else if (!authStore.isAdmin) {
-      snackbar.value = {
-        show: true,
-        text: "Acceso denegado. Solo administradores pueden usar el editor.",
-        color: "error",
-        timeout: 3000,
-      };
-      router.push("/");
-    }
-  } catch (error: Error) {
-    console.error("Error al cargar usuario:", error);
-    snackbar.value = {
-      show: true,
-      text: `Error: ${error.message}`,
-      color: "error",
-      timeout: 3000,
-    };
-    router.push("/login");
-  }
-});
-
-// Mapeo de tipos de elementos a componentes Vuetify
 const componentMap: Record<string, any> = {
   text: VTextField,
   textarea: VTextarea,
@@ -249,11 +214,11 @@ const componentMap: Record<string, any> = {
 };
 
 const getComponentName = (type: string) => {
-  return componentMap[type] || VTextField; // Fallback a VTextField si el tipo no está mapeado
+  return componentMap[type] || VTextField;
 };
 
-const getElementIcon = (elementType: string): string => {
-  const def = elementDefinitions.find((d) => d.type === elementType);
+const getElementIcon = (type: string): string => {
+  const def = elementDefinitions.find((d) => d.type === type);
   return def ? def.icon : "mdi-help-box";
 };
 
@@ -298,7 +263,7 @@ const handleDrop = (event: DragEvent) => {
       } else {
         console.error("Dropped element type not found:", elementType);
       }
-    } catch (error: Error) {
+    } catch (error: any) {
       console.error("Failed to parse dropped data:", error);
       snackbar.value = {
         show: true,
@@ -346,7 +311,6 @@ const transformedFormJson = computed(() => {
     if (el.type === "button" && el.color) {
       outputEl.color = el.color;
     }
-
     Object.keys(outputEl).forEach((key) => {
       if (
         outputEl[key] === undefined ||
@@ -375,7 +339,7 @@ const copyJsonToClipboard = async () => {
       color: "success",
       timeout: 3000,
     };
-  } catch (error: Error) {
+  } catch (error: any) {
     console.error("Error al copiar JSON:", error);
     snackbar.value = {
       show: true,
@@ -393,16 +357,23 @@ const saveFormToBackend = async () => {
         "No se encontró el token de autenticación. Por favor inicia sesión."
       );
     }
+    if (!formBuilderStore.formName) {
+      throw new Error("El nombre del formulario es obligatorio.");
+    }
     const {
       public: { GQL_HOST },
     } = useRuntimeConfig();
-    const query = await import("~/queries/form.gql?raw").then((m) => m.default);
+    if (!GQL_HOST) {
+      throw new Error("GQL_HOST no está definido en la configuración");
+    }
+    const query = await import("~/queries/createForm.gql?raw").then(
+      (m) => m.default
+    );
     const response = await fetch(GQL_HOST, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authStore.token}`,
-        "x-apollo-operation-name": "CreateForm",
       },
       body: JSON.stringify({
         query,
@@ -426,6 +397,13 @@ const saveFormToBackend = async () => {
               errorType: element.errorType || "",
               description: element.description || "",
               requirementLevel: element.requirementLevel || "Optional",
+              options: element.options || [],
+              disabled: !!element.disabled,
+              readonly: !!element.readonly,
+              name: element.name || "",
+              specificType: element.specificType || "",
+              color: element.color || "",
+              rules: element.rules || [],
             })),
           },
         },
@@ -437,13 +415,16 @@ const saveFormToBackend = async () => {
       throw new Error(data.errors[0]?.message || "Error en la mutación");
     }
 
+    formBuilderStore.initializeForm([]);
+    formBuilderStore.formName = "";
     snackbar.value = {
       show: true,
       text: "¡Formulario guardado exitosamente!",
       color: "success",
       timeout: 3000,
     };
-  } catch (error: Error) {
+    router.push("/forms");
+  } catch (error: any) {
     console.error("Error al guardar:", error);
     snackbar.value = {
       show: true,

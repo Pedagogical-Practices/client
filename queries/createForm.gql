@@ -1,5 +1,5 @@
-query Form($id: String!) {
-  form(id: $id) {
+mutation CreateForm($createFormInput: CreateFormInput!) {
+  createForm(createFormInput: $createFormInput) {
     _id
     name
     fields {
@@ -19,6 +19,16 @@ query Form($id: String!) {
       errorType
       description
       requirementLevel
+      options {
+        label
+        value
+      }
+      disabled
+      readonly
+      name
+      specificType
+      color
+      rules
     }
     createdBy {
       name
