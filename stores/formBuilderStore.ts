@@ -1,72 +1,75 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
 
-// Define a type for form elements for better type safety
 export interface FormElement {
-  // Core properties
-  id: string; // Unique ID for each element
-  type: string; // Main type, e.g., 'text', 'select', 'textarea', 'checkbox', 'button', 'radio-group', 'date-picker'
-  label: string; // User-visible label
-
-  // Common Vuetify/HTML properties
-  value?: any; // Default/initial value of the element
+  id: string;
+  type: string;
+  label: string;
+  value?: any;
   placeholder?: string;
-  hint?: string; // Helper text displayed below the input
-  required?: boolean; // Simple boolean for HTML5 required or v-input required rule
+  hint?: string;
+  required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
-  name?: string; // HTML name attribute, useful for non-JS form submission or specific integrations
-  specificType?: string; // For v-text-field: 'text', 'number', 'email', 'password', 'tel', 'url', 'date', etc.
-                         // For v-btn: 'button', 'submit', 'reset'
+  name?: string;
+  specificType?: string;
+  height?: string | number;
+  width?: string | number;
+  color?: string;
+  options?: string[] | { text: string; value: any }[];
+  rules?: string[];
+  variableName?: string;
+  chapter?: string;
+  question?: string;
+  questionNumber?: string;
+  consistencyCondition?: string;
+  inconsistencyMessage?: string;
+  errorType?: "Soft" | "Hard" | string;
+  description?: string;
+  requirementLevel?: "Required" | "Optional" | "Conditional" | string;
+}
 
-  // Layout and Styling
-  height?: string | number; // e.g., for v-textarea
-  width?: string | number; // Could be for columns or direct styling
-  color?: string; // e.g. for v-btn
-
-  // Data and Behavior
-  options?: string[] | { text: string; value: any }[]; // For v-select, v-radio-group, v-combobox
-  rules?: string[]; // Array of Vuetify validation rules (can be strings or functions in real app, strings for JSON)
-
-  // Custom Metadata Properties (as per issue spec, using camelCase internally)
-  variableName?: string; // Maps to 'nombreVariable'
-  chapter?: string; // Maps to 'capitulo'
-  question?: string; // Maps to 'pregunta'
-  questionNumber?: string; // Maps to 'numeroPregunta'
-  consistencyCondition?: string; // Maps to 'condicionConsistencia'
-  inconsistencyMessage?: string; // Maps to 'mensajeInconsistencia'
-  errorType?: 'Soft' | 'Hard' | string; // Maps to 'tipoError'
-  description?: string; // Maps to 'descripcion'
-  requirementLevel?: 'Required' | 'Optional' | 'Conditional' | string; // Maps to 'obligatoriedad'
-  // Add any other custom fields from the spec if they are distinct
-  // For example, if 'subType' is needed for more granular control within a 'type'
+export interface Form {
+  _id: string;
+  name: string;
+  fields: FormElement[];
+  createdBy: { name: string; email: string };
+  createdAt: string;
 }
 
 export interface FormBuilderState {
   formElements: FormElement[];
   selectedElementId: string | null;
+  formName: string;
+  forms: Form[];
+  currentForm: Form | null;
 }
 
-export const useFormBuilderStore = defineStore('formBuilder', {
+export const useFormBuilderStore = defineStore("formBuilder", {
   state: (): FormBuilderState => ({
     formElements: [],
     selectedElementId: null,
+    formName: "",
+    forms: [],
+    currentForm: null,
   }),
   actions: {
     addElement(element: FormElement) {
-      // Ensure element has a unique ID (simple implementation)
       if (!element.id) {
-        element.id = Date.now().toString() + Math.random().toString(36).substring(2, 9);
+        element.id =
+          Date.now().toString() + Math.random().toString(36).substring(2, 9);
       }
       this.formElements.push(element);
     },
     removeElement(elementId: string) {
-      this.formElements = this.formElements.filter(el => el.id !== elementId);
+      this.formElements = this.formElements.filter((el) => el.id !== elementId);
       if (this.selectedElementId === elementId) {
         this.selectedElementId = null;
       }
     },
     updateElement(updatedElement: FormElement) {
-      const index = this.formElements.findIndex(el => el.id === updatedElement.id);
+      const index = this.formElements.findIndex(
+        (el) => el.id === updatedElement.id
+      );
       if (index !== -1) {
         this.formElements[index] = updatedElement;
       }
@@ -74,25 +77,87 @@ export const useFormBuilderStore = defineStore('formBuilder', {
     setSelectedElement(elementId: string | null) {
       this.selectedElementId = elementId;
     },
-    // Example of an action that might load initial data or reset the store
     initializeForm(elements: FormElement[]) {
       this.formElements = elements;
       this.selectedElementId = null;
-    }
+    },
+    async fetchForms() {
+      try {
+        const {
+          public: { GQL_HOST },
+        } = useRuntimeConfig();
+        if (!GQL_HOST) {
+          throw new Error("GQL_HOST no está definido en la configuración");
+        }
+        const query = await import("~/queries/forms.gql?raw").then(
+          (m) => m.default
+        );
+        const response = await fetch(GQL_HOST, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${useAuthStore().token}`,
+          },
+          body: JSON.stringify({ query }),
+        });
+        const data = await response.json();
+        if (data.errors) {
+          throw new Error(data.errors[0]?.message || "Error fetching forms");
+        }
+        this.forms = data.data.forms;
+      } catch (error: any) {
+        console.error("Error fetching forms:", error);
+      }
+    },
+    async fetchForm(id: string) {
+      try {
+        const {
+          public: { GQL_HOST },
+        } = useRuntimeConfig();
+        if (!GQL_HOST) {
+          throw new Error("GQL_HOST no está definido en la configuración");
+        }
+        const query = await import("~/queries/form.gql?raw").then(
+          (m) => m.default
+        );
+        const response = await fetch(GQL_HOST, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${useAuthStore().token}`,
+          },
+          body: JSON.stringify({
+            query,
+            variables: { id },
+          }),
+        });
+        const data = await response.json();
+        if (data.errors) {
+          throw new Error(data.errors[0]?.message || "Error fetching form");
+        }
+        this.currentForm = data.data.form;
+      } catch (error: any) {
+        console.error("Error fetching form:", error);
+      }
+    },
   },
   getters: {
-    getElement: (state) => (elementId: string): FormElement | undefined => {
-      return state.formElements.find(el => el.id === elementId);
-    },
+    getElement:
+      (state) =>
+      (elementId: string): FormElement | undefined => {
+        return state.formElements.find((el) => el.id === elementId);
+      },
     getFormElements: (state): FormElement[] => {
       return state.formElements;
     },
     getSelectedElement: (state): FormElement | undefined => {
       if (state.selectedElementId) {
-        return state.formElements.find(el => el.id === state.selectedElementId);
+        return state.formElements.find(
+          (el) => el.id === state.selectedElementId
+        );
       }
       return undefined;
     },
   },
-  persist: true, // Enable persistence for the entire store
-})
+  persist: true,
+});
