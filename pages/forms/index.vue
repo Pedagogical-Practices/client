@@ -2,17 +2,30 @@
   <v-container fluid class="pa-4">
     <v-row>
       <v-col cols="12">
-        <h1>Listado de Formularios</h1>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" md="4">
-        <FormFilter v-model="filter" @update:filter="updateFilter" />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12">
-        <FormList :forms="filteredForms" @view-form="viewForm" />
+        <v-card elevation="2">
+          <v-card-title class="d-flex justify-space-between align-center">
+            <span>Listado de Formularios</span>
+            <v-btn
+              color="primary"
+              prepend-icon="mdi-file-document-plus"
+              @click="createNewForm"
+            >
+              Nuevo Formulario
+            </v-btn>
+          </v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col cols="12" md="4">
+                <FormFilter v-model="filter" @update:filter="updateFilter" />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                <FormList :forms="filteredForms" @view-form="viewForm" />
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
     <v-snackbar
@@ -36,6 +49,10 @@ import { useFormBuilderStore } from "~/stores/formBuilderStore";
 import { useAuthStore } from "~/stores/authStore";
 import FormList from "~/components/forms/FormList.vue";
 import FormFilter from "~/components/forms/FormFilter.vue";
+
+definePageMeta({
+  middleware: ["auth"],
+});
 
 const router = useRouter();
 const formBuilderStore = useFormBuilderStore();
@@ -86,6 +103,18 @@ const updateFilter = (value: string) => {
 const viewForm = (formId: string) => {
   router.push(`/forms/${formId}`);
 };
+
+const createNewForm = () => {
+  formBuilderStore.initializeForm([]);
+  formBuilderStore.formName = "";
+  formBuilderStore.setSelectedElement(null);
+  router.push("/editor");
+};
 </script>
 
-<style scoped></style>
+<style scoped>
+.v-card {
+  background-color: #fff;
+  border-radius: 8px;
+}
+</style>

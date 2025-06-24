@@ -75,8 +75,9 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useFormBuilderStore } from "~/stores/formBuilderStore";
-import CourseList from "~/components/courses/CourseList.vue";
+import CourseList from "~/components/CourseList.vue";
 
+// Middleware para admin
 definePageMeta({
   middleware: ["auth"],
 });
