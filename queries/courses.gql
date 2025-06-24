@@ -1,0 +1,10 @@
+query Courses {
+  courses {
+    _id
+    name
+    institution
+    assignedGroups
+    createdBy
+    createdAt
+  }
+}

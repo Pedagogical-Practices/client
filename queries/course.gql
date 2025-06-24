@@ -1,0 +1,10 @@
+query Course($id: String!) {
+  course(id: $id) {
+    _id
+    name
+    institution
+    assignedGroups
+    createdBy
+    createdAt
+  }
+}

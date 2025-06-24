@@ -1,0 +1,10 @@
+mutation CreateProtocol($createProtocolInput: CreateProtocolInput!) {
+  createProtocol(createProtocolInput: $createProtocolInput) {
+    _id
+    courseId
+    name
+    module
+    formId
+    createdAt
+  }
+}

@@ -1,0 +1,10 @@
+mutation SubmitProtocol($createSubmissionInput: CreateSubmissionInput!) {
+  submitProtocol(createSubmissionInput: $createSubmissionInput) {
+    _id
+    protocolId
+    formId
+    data
+    submittedBy
+    createdAt
+  }
+}

@@ -1,0 +1,10 @@
+query Protocols($courseId: String!) {
+  protocols(courseId: $courseId) {
+    _id
+    courseId
+    name
+    module
+    formId
+    createdAt
+  }
+}

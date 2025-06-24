@@ -25,13 +25,23 @@
         >
           <v-card-title class="d-flex justify-space-between align-center">
             <span>Form Builder Canvas</span>
-            <v-btn
-              color="primary"
-              @click="saveFormToBackend"
-              prepend-icon="mdi-content-save"
-            >
-              Guardar Formulario
-            </v-btn>
+            <div>
+              <v-btn
+                color="primary"
+                @click="saveFormToBackend"
+                prepend-icon="mdi-content-save"
+                class="mr-2"
+              >
+                Guardar Formulario
+              </v-btn>
+              <v-btn
+                color="secondary"
+                @click="createNewForm"
+                prepend-icon="mdi-file-document-plus"
+              >
+                Nuevo Formulario
+              </v-btn>
+            </div>
           </v-card-title>
           <v-card-text>
             <p
@@ -76,7 +86,8 @@
                           :hint="element.hint"
                           :persistent-hint="true"
                           :required="element.required"
-                          :disabled="true"
+                          :disabled="false"
+                          :readonly="false"
                           :options="element.options"
                           :specific-type="element.specificType"
                           :height="element.height"
@@ -84,7 +95,9 @@
                           :rules="
                             element.required ? [(v) => !!v || 'Requerido'] : []
                           "
+                          :multiple="element.multiple"
                           class="component-preview"
+                          variant="outlined"
                         />
                       </v-col>
                       <v-col cols="1">
@@ -119,6 +132,16 @@
           <v-card-title class="d-flex justify-space-between align-center">
             <span>JSON Generado del Formulario</span>
           </v-card-title>
+          <v-card-text class="pa-2">
+            <v-textarea
+              v-model="editableFormJsonString"
+              label="Salida JSON del Formulario"
+              auto-grow
+              rows="10"
+              density="compact"
+              class="json-output-textarea"
+            ></v-textarea>
+          </v-card-text>
           <v-card-actions>
             <v-btn
               color="secondary"
@@ -126,6 +149,13 @@
               prepend-icon="mdi-content-copy"
             >
               Copiar JSON
+            </v-btn>
+            <v-btn
+              color="primary"
+              @click="updateFormFromJson"
+              prepend-icon="mdi-upload"
+            >
+              Actualizar Formulario
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn
@@ -138,9 +168,8 @@
               <v-divider></v-divider>
               <v-card-text class="pa-2">
                 <v-textarea
-                  :model-value="transformedFormJsonString"
+                  v-model="editableFormJsonString"
                   label="Salida JSON del Formulario"
-                  readonly
                   auto-grow
                   rows="10"
                   density="compact"
@@ -168,7 +197,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useFormBuilderStore } from "~/stores/formBuilderStore";
 import { useAuthStore } from "~/stores/authStore";
@@ -278,61 +307,88 @@ const handleDrop = (event: DragEvent) => {
 const generateUniqueId = (): string =>
   Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
 
+const createNewForm = () => {
+  formBuilderStore.initializeForm([]);
+  formBuilderStore.formName = "";
+  formBuilderStore.setSelectedElement(null);
+  editableFormJsonString.value = JSON.stringify(
+    { name: "", fields: [] },
+    null,
+    2
+  );
+  snackbar.value = {
+    show: true,
+    text: "¡Nuevo formulario creado!",
+    color: "success",
+    timeout: 3000,
+  };
+};
+
 const transformedFormJson = computed(() => {
-  return formBuilderStore.formElements.map((el) => {
-    const outputEl: Record<string, any> = {
-      id: el.id,
-      tipo: el.type,
-      etiqueta: el.label,
-      valor: el.value,
-      nombreVariable: el.variableName,
-      placeholder: el.placeholder,
-      textoAyuda: el.hint,
-      obligatoriedad: el.requirementLevel,
-      capitulo: el.chapter,
-      pregunta: el.question,
-      numeroPregunta: el.questionNumber,
-      condicionConsistencia: el.consistencyCondition,
-      mensajeInconsistencia: el.inconsistencyMessage,
-      tipoError: el.errorType,
-      descripcion: el.description,
-      reglas: el.rules,
-      nombre: el.name,
-      deshabilitado: el.disabled,
-      soloLectura: el.readonly,
-      subtipo: el.specificType,
-    };
-    if (el.type === "select" || el.type === "radio-group") {
-      outputEl.opciones = el.options;
-    }
-    if (el.type === "textarea" && el.height) {
-      outputEl.altura = el.height;
-    }
-    if (el.type === "button" && el.color) {
-      outputEl.color = el.color;
-    }
-    Object.keys(outputEl).forEach((key) => {
-      if (
-        outputEl[key] === undefined ||
-        outputEl[key] === null ||
-        (Array.isArray(outputEl[key]) && outputEl[key].length === 0)
-      ) {
-        if (outputEl[key] !== "" && outputEl[key] !== false) {
-          delete outputEl[key];
-        }
+  return {
+    name: formBuilderStore.formName,
+    fields: formBuilderStore.formElements.map((el) => {
+      const outputEl: Record<string, any> = {
+        id: el.id,
+        tipo: el.type,
+        etiqueta: el.label,
+        valor: el.value,
+        nombreVariable: el.variableName,
+        placeholder: el.placeholder,
+        textoAyuda: el.hint,
+        obligatoriedad: el.requirementLevel,
+        capitulo: el.chapter,
+        pregunta: el.question,
+        numeroPregunta: el.questionNumber,
+        condicionConsistencia: el.consistencyCondition,
+        mensajeInconsistencia: el.inconsistencyMessage,
+        tipoError: el.errorType,
+        descripcion: el.description,
+        reglas: el.rules,
+        nombre: el.name,
+        deshabilitado: el.disabled,
+        soloLectura: el.readonly,
+        subtipo: el.specificType,
+      };
+      if (el.type === "select" || el.type === "radio-group") {
+        outputEl.opciones = el.options;
+        outputEl.multiple = el.multiple || false;
       }
-    });
-    return outputEl;
-  });
+      if (el.type === "textarea" && el.height) {
+        outputEl.altura = el.height;
+      }
+      if (el.type === "button" && el.color) {
+        outputEl.color = el.color;
+      }
+      Object.keys(outputEl).forEach((key) => {
+        if (
+          outputEl[key] === undefined ||
+          outputEl[key] === null ||
+          (Array.isArray(outputEl[key]) && outputEl[key].length === 0)
+        ) {
+          if (outputEl[key] !== "" && outputEl[key] !== false) {
+            delete outputEl[key];
+          }
+        }
+      });
+      return outputEl;
+    }),
+  };
 });
 
 const transformedFormJsonString = computed(() =>
   JSON.stringify(transformedFormJson.value, null, 2)
 );
 
+const editableFormJsonString = ref(transformedFormJsonString.value);
+
+watch(transformedFormJsonString, (newVal) => {
+  editableFormJsonString.value = newVal;
+});
+
 const copyJsonToClipboard = async () => {
   try {
-    await navigator.clipboard.writeText(transformedFormJsonString.value);
+    await navigator.clipboard.writeText(editableFormJsonString.value);
     snackbar.value = {
       show: true,
       text: "¡JSON copiado al portapapeles!",
@@ -341,6 +397,77 @@ const copyJsonToClipboard = async () => {
     };
   } catch (error: any) {
     console.error("Error al copiar JSON:", error);
+    snackbar.value = {
+      show: true,
+      text: `Error: ${error.message}`,
+      color: "error",
+      timeout: 3000,
+    };
+  }
+};
+
+const updateFormFromJson = async () => {
+  try {
+    const parsedJson = JSON.parse(editableFormJsonString.value);
+    if (!parsedJson.name || !Array.isArray(parsedJson.fields)) {
+      throw new Error("El JSON debe contener 'name' y 'fields' como array");
+    }
+    // Validar que los elementos tengan la estructura correcta
+    const validElements = parsedJson.fields.every(
+      (el: any) =>
+        el.id &&
+        el.tipo &&
+        [
+          "text",
+          "textarea",
+          "checkbox",
+          "select",
+          "button",
+          "radio-group",
+          "date-picker",
+        ].includes(el.tipo)
+    );
+    if (!validElements) {
+      throw new Error("El JSON contiene elementos inválidos en 'fields'");
+    }
+    // Actualizar el store con el nombre y los elementos
+    formBuilderStore.formName = parsedJson.name;
+    formBuilderStore.initializeForm(
+      parsedJson.fields.map((el: any) => ({
+        id: el.id,
+        type: el.tipo,
+        label: el.etiqueta,
+        value: el.valor || "",
+        variableName: el.nombreVariable || "",
+        placeholder: el.placeholder || "",
+        hint: el.textoAyuda || "",
+        requirementLevel: el.obligatoriedad || "Optional",
+        chapter: el.capitulo || "",
+        question: el.pregunta || "",
+        questionNumber: el.numeroPregunta || "",
+        consistencyCondition: el.condicionConsistencia || "",
+        inconsistencyMessage: el.mensajeInconsistencia || "",
+        errorType: el.tipoError || "Soft",
+        description: el.descripcion || "",
+        name: el.nombre || "",
+        disabled: !!el.deshabilitado,
+        readonly: !!el.soloLectura,
+        options: el.opciones || [],
+        specificType: el.subtipo || "",
+        height: el.altura ? Number(el.altura) : undefined,
+        color: el.color || "",
+        rules: el.reglas || [],
+        multiple: !!el.multiple,
+      }))
+    );
+    snackbar.value = {
+      show: true,
+      text: "¡Formulario actualizado desde JSON!",
+      color: "success",
+      timeout: 3000,
+    };
+  } catch (error: any) {
+    console.error("Error al actualizar desde JSON:", error);
     snackbar.value = {
       show: true,
       text: `Error: ${error.message}`,
@@ -380,31 +507,39 @@ const saveFormToBackend = async () => {
         variables: {
           createFormInput: {
             name: formBuilderStore.formName,
-            fields: formBuilderStore.formElements.map((element) => ({
-              type: element.type,
-              label: element.label || "",
-              value: element.value || "",
-              variableName: element.variableName || "",
-              placeholder: element.placeholder || "",
-              hint: element.hint || "",
-              height: element.height ? String(element.height) : "auto",
-              required: !!element.required,
-              chapter: element.chapter || "General",
-              question: element.question || "",
-              questionNumber: element.questionNumber || "",
-              consistencyCondition: element.consistencyCondition || "",
-              inconsistencyMessage: element.inconsistencyMessage || "",
-              errorType: element.errorType || "",
-              description: element.description || "",
-              requirementLevel: element.requirementLevel || "Optional",
-              options: element.options || [],
-              disabled: !!element.disabled,
-              readonly: !!element.readonly,
-              name: element.name || "",
-              specificType: element.specificType || "",
-              color: element.color || "",
-              rules: element.rules || [],
-            })),
+            fields: formBuilderStore.formElements.map((element) => {
+              const field = {
+                type: element.type,
+                label: element.label || "",
+                value: element.value || "",
+                variableName: element.variableName || "",
+                placeholder: element.placeholder || "",
+                hint: element.hint || "",
+                height: element.height ? String(element.height) : "auto",
+                required: !!element.required,
+                chapter: element.chapter || "General",
+                question: element.question || "",
+                questionNumber: element.questionNumber || "",
+                consistencyCondition: element.consistencyCondition || "",
+                inconsistencyMessage: element.inconsistencyMessage || "",
+                errorType: element.errorType || "",
+                description: element.description || "",
+                requirementLevel: element.requirementLevel || "Optional",
+                options:
+                  element.options?.map((opt: any) =>
+                    typeof opt === "string"
+                      ? { value: opt, label: opt }
+                      : { value: opt.value, label: opt.text || opt.value }
+                  ) || [],
+                disabled: !!element.disabled,
+                readonly: !!element.readonly,
+                name: element.name || "",
+                specificType: element.specificType || "",
+                color: element.color || "",
+                rules: element.rules || [],
+              };
+              return field;
+            }),
           },
         },
       }),
@@ -504,12 +639,7 @@ const saveFormToBackend = async () => {
   font-size: 0.9rem;
   margin-right: 16px;
 }
-.component-preview {
-  flex: 1;
-  min-width: 200px;
-  max-width: 400px;
-  margin-right: 16px;
-}
+
 .element-actions {
   display: flex;
   align-items: center;

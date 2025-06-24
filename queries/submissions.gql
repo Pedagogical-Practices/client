@@ -1,0 +1,10 @@
+query Submissions($protocolId: String!) {
+  submissions(protocolId: $protocolId) {
+    _id
+    protocolId
+    formId
+    data
+    submittedBy
+    createdAt
+  }
+}

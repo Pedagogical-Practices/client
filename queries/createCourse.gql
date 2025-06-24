@@ -1,0 +1,10 @@
+mutation CreateCourse($createCourseInput: CreateCourseInput!) {
+  createCourse(createCourseInput: $createCourseInput) {
+    _id
+    name
+    institution
+    assignedGroups
+    createdBy
+    createdAt
+  }
+}

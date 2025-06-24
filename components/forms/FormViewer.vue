@@ -17,13 +17,15 @@
           :hint="field.hint"
           :persistent-hint="true"
           :required="field.required"
-          :disabled="true"
+          :disabled="field.disabled"
+          :readonly="field.readonly"
           :options="field.options"
           :specific-type="field.specificType"
           :height="field.height"
           :color="field.color"
           :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
           class="field-component"
+          variant="outlined"
         />
         <v-divider class="my-2" v-if="field !== fields[fields.length - 1]" />
       </v-col>
