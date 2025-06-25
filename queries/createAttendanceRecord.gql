@@ -1,0 +1,19 @@
+# queries/createAttendanceRecord.gql
+mutation CreateAttendanceRecord(
+  $createAttendanceRecordInput: CreateAttendanceRecordInput!
+) {
+  createAttendanceRecord(
+    createAttendanceRecordInput: $createAttendanceRecordInput
+  ) {
+    week
+    date
+    topic
+    hours
+    group
+    classType
+    other
+    advisorSignature
+    tutorSignature
+    observations
+  }
+}

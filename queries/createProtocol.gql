@@ -1,3 +1,4 @@
+# queries/createProtocol.gql
 mutation CreateProtocol($createProtocolInput: CreateProtocolInput!) {
   createProtocol(createProtocolInput: $createProtocolInput) {
     _id
@@ -5,6 +6,7 @@ mutation CreateProtocol($createProtocolInput: CreateProtocolInput!) {
     name
     module
     formId
+    createdBy
     createdAt
   }
 }

@@ -1,3 +1,4 @@
+# queries/protocol.gql
 query Protocol($id: String!) {
   protocol(id: $id) {
     _id
@@ -5,6 +6,19 @@ query Protocol($id: String!) {
     name
     module
     formId
+    createdBy
     createdAt
+    attendanceRecords {
+      week
+      date
+      topic
+      hours
+      group
+      classType
+      other
+      advisorSignature
+      tutorSignature
+      observations
+    }
   }
 }
