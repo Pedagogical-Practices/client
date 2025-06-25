@@ -5,7 +5,7 @@
         <v-text-field
           variant="outlined"
           label="Nombre del Formulario"
-          v-model="formBuilderStore.formName"
+          v-model="formStore.formName"
         ></v-text-field>
       </v-col>
     </v-row>
@@ -45,7 +45,7 @@
           </v-card-title>
           <v-card-text>
             <p
-              v-if="formBuilderStore.formElements.length === 0 && !isDragOver"
+              v-if="formElementStore.formElements.length === 0 && !isDragOver"
               class="empty-form-message"
             >
               Arrastra elementos aquí o usa el panel para añadirlos.
@@ -55,17 +55,17 @@
             </p>
 
             <div
-              v-if="formBuilderStore.formElements.length > 0"
+              v-if="formElementStore.formElements.length > 0"
               class="elements-list mt-3"
             >
               <ul>
                 <li
-                  v-for="element in formBuilderStore.formElements"
+                  v-for="element in formElementStore.formElements"
                   :key="element.id"
                   class="form-element-item pa-3"
                   :class="{
                     'selected-element':
-                      formBuilderStore.selectedElementId === element.id,
+                      formElementStore.selectedElementId === element.id,
                   }"
                   @click="selectElementForEditing(element.id)"
                 >
@@ -93,7 +93,9 @@
                           :height="element.height"
                           :color="element.color"
                           :rules="
-                            element.required ? [(v) => !!v || 'Requerido'] : []
+                            element.required
+                              ? [(v: any) => !!v || 'Requerido']
+                              : []
                           "
                           :multiple="element.multiple"
                           class="component-preview"
@@ -199,12 +201,15 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { useRouter } from "vue-router";
-import { useFormBuilderStore } from "~/stores/formBuilderStore";
+import {
+  useFormElementStore,
+  type FormElement,
+} from "~/stores/formElementStore";
+import { useFormStore } from "~/stores/formStores";
 import { useAuthStore } from "~/stores/authStore";
 import AvailableElements from "~/components/AvailableElements.vue";
 import ElementEditor from "~/components/ElementEditor.vue";
 import { availableElements as elementDefinitions } from "~/components/formElementDefinitions";
-import type { FormElement } from "~/stores/formBuilderStore";
 import {
   VTextField,
   VTextarea,
@@ -215,17 +220,30 @@ import {
   VDatePicker,
 } from "vuetify/components";
 
+// Interfaz para la definición de elementos
+interface ElementDefinition {
+  type: string;
+  icon: string;
+  defaultConfig: Partial<FormElement>;
+}
+
 // Middleware para admin
 definePageMeta({
   middleware: ["admin"],
 });
 
 const router = useRouter();
-const formBuilderStore = useFormBuilderStore();
+const formElementStore = useFormElementStore();
+const formStore = useFormStore();
 const authStore = useAuthStore();
-const show = ref(false);
-const isDragOver = ref(false);
-const snackbar = ref({
+const show = ref<boolean>(false);
+const isDragOver = ref<boolean>(false);
+const snackbar = ref<{
+  show: boolean;
+  text: string;
+  color: string;
+  timeout: number;
+}>({
   show: false,
   text: "",
   color: "success",
@@ -242,75 +260,76 @@ const componentMap: Record<string, any> = {
   "date-picker": VDatePicker,
 };
 
-const getComponentName = (type: string) => {
+const getComponentName = (type: string): any => {
   return componentMap[type] || VTextField;
 };
 
 const getElementIcon = (type: string): string => {
-  const def = elementDefinitions.find((d) => d.type === type);
+  const def = elementDefinitions.find(
+    (d: ElementDefinition) => d.type === type
+  );
   return def ? def.icon : "mdi-help-box";
 };
 
-const selectElementForEditing = (elementId: string) => {
-  formBuilderStore.setSelectedElement(elementId);
+const selectElementForEditing = (elementId: string): void => {
+  formElementStore.setSelectedElement(elementId);
 };
 
-const removeElement = (elementId: string) => {
-  formBuilderStore.removeElement(elementId);
-  if (formBuilderStore.selectedElementId === elementId) {
-    formBuilderStore.setSelectedElement(null);
+const removeElement = (elementId: string): void => {
+  formElementStore.removeElement(elementId);
+  if (formElementStore.selectedElementId === elementId) {
+    formElementStore.setSelectedElement(null);
   }
 };
 
-const handleDragOver = (event: DragEvent) => {
+const handleDragOver = (event: DragEvent): void => {
   event.preventDefault();
   if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
   isDragOver.value = true;
 };
 
-const handleDragLeave = () => {
+const handleDragLeave = (): void => {
   isDragOver.value = false;
 };
 
-const handleDrop = (event: DragEvent) => {
+const handleDrop = (event: DragEvent): void => {
   event.preventDefault();
   isDragOver.value = false;
-  if (event.dataTransfer) {
-    const rawData = event.dataTransfer.getData("application/json");
-    try {
-      const { type: elementType } = JSON.parse(rawData) as { type: string };
-      const elementDef = elementDefinitions.find(
-        (def) => def.type === elementType
-      );
-      if (elementDef) {
-        const newElement: FormElement = {
-          ...JSON.parse(JSON.stringify(elementDef.defaultConfig)),
-          id: generateUniqueId(),
-          type: elementDef.type,
-        };
-        formBuilderStore.addElement(newElement);
-      } else {
-        console.error("Dropped element type not found:", elementType);
-      }
-    } catch (error: any) {
-      console.error("Failed to parse dropped data:", error);
-      snackbar.value = {
-        show: true,
-        text: `Error: ${error.message}`,
-        color: "error",
-        timeout: 3000,
-      };
+  if (!event.dataTransfer) return;
+
+  const rawData = event.dataTransfer.getData("application/json");
+  try {
+    const { type: elementType } = JSON.parse(rawData) as { type: string };
+    const elementDef = elementDefinitions.find(
+      (def: ElementDefinition) => def.type === elementType
+    );
+    if (!elementDef) {
+      throw new Error(`Tipo de elemento no encontrado: ${elementType}`);
     }
+    const newElement: FormElement = {
+      ...elementDef.defaultConfig,
+      id: generateUniqueId(),
+      type: elementDef.type,
+    };
+    formElementStore.addElement(newElement);
+  } catch (error: any) {
+    console.error("Error al parsear datos arrastrados:", error);
+    snackbar.value = {
+      show: true,
+      text: `Error: ${error.message}`,
+      color: "error",
+      timeout: 3000,
+    };
   }
 };
 
 const generateUniqueId = (): string =>
   Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
 
-const createNewForm = () => {
-  formBuilderStore.initializeForm([]);
-  formBuilderStore.formName = "";
-  formBuilderStore.setSelectedElement(null);
+const createNewForm = (): void => {
+  formElementStore.initializeForm([]);
+  formStore.formName = "";
+  formElementStore.setSelectedElement(null);
   editableFormJsonString.value = JSON.stringify(
     { name: "", fields: [] },
     null,
@@ -326,8 +345,8 @@ const createNewForm = () => {
 
 const transformedFormJson = computed(() => {
   return {
-    name: formBuilderStore.formName,
-    fields: formBuilderStore.formElements.map((el) => {
+    name: formStore.formName,
+    fields: formElementStore.formElements.map((el: FormElement) => {
       const outputEl: Record<string, any> = {
         id: el.id,
         tipo: el.type,
@@ -352,7 +371,7 @@ const transformedFormJson = computed(() => {
       };
       if (el.type === "select" || el.type === "radio-group") {
         outputEl.opciones = el.options;
-        outputEl.multiple = el.multiple || false;
+        outputEl.multiple = el.multiple ?? false;
       }
       if (el.type === "textarea" && el.height) {
         outputEl.altura = el.height;
@@ -380,13 +399,13 @@ const transformedFormJsonString = computed(() =>
   JSON.stringify(transformedFormJson.value, null, 2)
 );
 
-const editableFormJsonString = ref(transformedFormJsonString.value);
+const editableFormJsonString = ref<string>(transformedFormJsonString.value);
 
-watch(transformedFormJsonString, (newVal) => {
+watch(transformedFormJsonString, (newVal: string) => {
   editableFormJsonString.value = newVal;
 });
 
-const copyJsonToClipboard = async () => {
+const copyJsonToClipboard = async (): Promise<void> => {
   try {
     await navigator.clipboard.writeText(editableFormJsonString.value);
     snackbar.value = {
@@ -406,13 +425,15 @@ const copyJsonToClipboard = async () => {
   }
 };
 
-const updateFormFromJson = async () => {
+const updateFormFromJson = async (): Promise<void> => {
   try {
-    const parsedJson = JSON.parse(editableFormJsonString.value);
+    const parsedJson = JSON.parse(editableFormJsonString.value) as {
+      name: string;
+      fields: any[];
+    };
     if (!parsedJson.name || !Array.isArray(parsedJson.fields)) {
       throw new Error("El JSON debe contener 'name' y 'fields' como array");
     }
-    // Validar que los elementos tengan la estructura correcta
     const validElements = parsedJson.fields.every(
       (el: any) =>
         el.id &&
@@ -430,35 +451,36 @@ const updateFormFromJson = async () => {
     if (!validElements) {
       throw new Error("El JSON contiene elementos inválidos en 'fields'");
     }
-    // Actualizar el store con el nombre y los elementos
-    formBuilderStore.formName = parsedJson.name;
-    formBuilderStore.initializeForm(
-      parsedJson.fields.map((el: any) => ({
-        id: el.id,
-        type: el.tipo,
-        label: el.etiqueta,
-        value: el.valor || "",
-        variableName: el.nombreVariable || "",
-        placeholder: el.placeholder || "",
-        hint: el.textoAyuda || "",
-        requirementLevel: el.obligatoriedad || "Optional",
-        chapter: el.capitulo || "",
-        question: el.pregunta || "",
-        questionNumber: el.numeroPregunta || "",
-        consistencyCondition: el.condicionConsistencia || "",
-        inconsistencyMessage: el.mensajeInconsistencia || "",
-        errorType: el.tipoError || "Soft",
-        description: el.descripcion || "",
-        name: el.nombre || "",
-        disabled: !!el.deshabilitado,
-        readonly: !!el.soloLectura,
-        options: el.opciones || [],
-        specificType: el.subtipo || "",
-        height: el.altura ? Number(el.altura) : undefined,
-        color: el.color || "",
-        rules: el.reglas || [],
-        multiple: !!el.multiple,
-      }))
+    formStore.formName = parsedJson.name;
+    formElementStore.initializeForm(
+      parsedJson.fields.map(
+        (el: any): FormElement => ({
+          id: el.id,
+          type: el.tipo,
+          label: el.etiqueta ?? "",
+          value: el.valor ?? "",
+          variableName: el.nombreVariable ?? "",
+          placeholder: el.placeholder ?? "",
+          hint: el.textoAyuda ?? "",
+          requirementLevel: el.obligatoriedad ?? "Optional",
+          chapter: el.capitulo ?? "",
+          question: el.pregunta ?? "",
+          questionNumber: el.numeroPregunta ?? "",
+          consistencyCondition: el.condicionConsistencia ?? "",
+          inconsistencyMessage: el.mensajeInconsistencia ?? "",
+          errorType: el.tipoError ?? "Soft",
+          description: el.descripcion ?? "",
+          name: el.nombre ?? "",
+          disabled: !!el.deshabilitado,
+          readonly: !!el.soloLectura,
+          options: el.opciones ?? [],
+          specificType: el.subtipo ?? "",
+          height: el.altura ? Number(el.altura) : undefined,
+          color: el.color ?? "",
+          rules: el.reglas ?? [],
+          multiple: !!el.multiple,
+        })
+      )
     );
     snackbar.value = {
       show: true,
@@ -477,14 +499,14 @@ const updateFormFromJson = async () => {
   }
 };
 
-const saveFormToBackend = async () => {
+const saveFormToBackend = async (): Promise<void> => {
   try {
     if (!authStore.token) {
       throw new Error(
         "No se encontró el token de autenticación. Por favor inicia sesión."
       );
     }
-    if (!formBuilderStore.formName) {
+    if (!formStore.formName) {
       throw new Error("El nombre del formulario es obligatorio.");
     }
     const {
@@ -506,40 +528,40 @@ const saveFormToBackend = async () => {
         query,
         variables: {
           createFormInput: {
-            name: formBuilderStore.formName,
-            fields: formBuilderStore.formElements.map((element) => {
-              const field = {
+            name: formStore.formName,
+            fields: formElementStore.formElements.map(
+              (element: FormElement) => ({
                 type: element.type,
-                label: element.label || "",
-                value: element.value || "",
-                variableName: element.variableName || "",
-                placeholder: element.placeholder || "",
-                hint: element.hint || "",
+                label: element.label ?? "",
+                value: element.value ?? "",
+                variableName: element.variableName ?? "",
+                placeholder: element.placeholder ?? "",
+                hint: element.hint ?? "",
                 height: element.height ? String(element.height) : "auto",
                 required: !!element.required,
-                chapter: element.chapter || "General",
-                question: element.question || "",
-                questionNumber: element.questionNumber || "",
-                consistencyCondition: element.consistencyCondition || "",
-                inconsistencyMessage: element.inconsistencyMessage || "",
-                errorType: element.errorType || "",
-                description: element.description || "",
-                requirementLevel: element.requirementLevel || "Optional",
+                chapter: element.chapter ?? "General",
+                question: element.question ?? "",
+                questionNumber: element.questionNumber ?? "",
+                consistencyCondition: element.consistencyCondition ?? "",
+                inconsistencyMessage: element.inconsistencyMessage ?? "",
+                errorType: element.errorType ?? "",
+                description: element.description ?? "",
+                requirementLevel: element.requirementLevel ?? "Optional",
                 options:
                   element.options?.map((opt: any) =>
                     typeof opt === "string"
                       ? { value: opt, label: opt }
-                      : { value: opt.value, label: opt.text || opt.value }
-                  ) || [],
+                      : { value: opt.value, label: opt.text ?? opt.value }
+                  ) ?? [],
                 disabled: !!element.disabled,
                 readonly: !!element.readonly,
-                name: element.name || "",
-                specificType: element.specificType || "",
-                color: element.color || "",
-                rules: element.rules || [],
-              };
-              return field;
-            }),
+                name: element.name ?? "",
+                specificType: element.specificType ?? "",
+                color: element.color ?? "",
+                rules: element.rules ?? [],
+                multiple: !!element.multiple,
+              })
+            ),
           },
         },
       }),
@@ -547,11 +569,11 @@ const saveFormToBackend = async () => {
 
     const data = await response.json();
     if (data.errors) {
-      throw new Error(data.errors[0]?.message || "Error en la mutación");
+      throw new Error(data.errors[0]?.message ?? "Error en la mutación");
     }
 
-    formBuilderStore.initializeForm([]);
-    formBuilderStore.formName = "";
+    formElementStore.initializeForm([]);
+    formStore.formName = "";
     snackbar.value = {
       show: true,
       text: "¡Formulario guardado exitosamente!",
@@ -639,7 +661,6 @@ const saveFormToBackend = async () => {
   font-size: 0.9rem;
   margin-right: 16px;
 }
-
 .element-actions {
   display: flex;
   align-items: center;

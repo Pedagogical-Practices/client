@@ -4,7 +4,7 @@
       <v-col cols="12">
         <v-card>
           <v-card-title class="d-flex justify-space-between align-center">
-            <span>Curso: {{ formBuilderStore.currentCourse?.name }}</span>
+            <span>Curso: {{ courseStore.currentCourse?.name }}</span>
             <v-btn
               color="primary"
               @click="openCreateProtocolDialog"
@@ -19,7 +19,7 @@
               <v-col cols="12" md="6">
                 <v-text-field
                   label="Institución"
-                  :model-value="formBuilderStore.currentCourse?.institution"
+                  :model-value="courseStore.currentCourse?.institution"
                   readonly
                   variant="outlined"
                 />
@@ -28,7 +28,7 @@
                 <v-text-field
                   label="Grupos Asignados"
                   :model-value="
-                    formBuilderStore.currentCourse?.assignedGroups.join(', ')
+                    courseStore.currentCourse?.assignedGroups.join(', ')
                   "
                   readonly
                   variant="outlined"
@@ -36,7 +36,7 @@
               </v-col>
             </v-row>
             <ProtocolList
-              :protocols="formBuilderStore.protocols"
+              :protocols="protocolStore.protocols"
               @view="viewProtocol"
               class="mt-4"
             />
@@ -73,7 +73,7 @@
               v-model="newProtocol.formId"
               label="Formulario"
               :items="
-                formBuilderStore.forms.map((f) => ({
+                formStore.forms.map((f: any) => ({
                   title: f.name,
                   value: f._id,
                 }))
@@ -109,9 +109,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useFormBuilderStore } from "~/stores/formBuilderStore";
+// import { useFormBuilderStore } from "~/stores/formBuilderStore";
+import { useCourseStore } from "~/stores/courseStore";
+import { useProtocolStore } from "~/stores/protocolStore";
+import { useFormStore } from "~/stores/formStores";
 import { useAuthStore } from "~/stores/authStore";
-import ProtocolList from "~/components/protocols/ProtocolList.vue";
+import ProtocolList from "~/components/ProtocolList.vue";
 
 definePageMeta({
   middleware: ["auth"],
@@ -119,7 +122,10 @@ definePageMeta({
 
 const route = useRoute();
 const router = useRouter();
-const formBuilderStore = useFormBuilderStore();
+// const formBuilderStore = useFormBuilderStore();
+const courseStore = useCourseStore();
+const protocolStore = useProtocolStore();
+const formStore = useFormStore();
 const authStore = useAuthStore();
 const createProtocolDialog = ref(false);
 const createProtocolForm = ref();
@@ -137,9 +143,9 @@ const snackbar = ref({
 
 onMounted(async () => {
   const courseId = route.params.id as string;
-  await formBuilderStore.fetchCourse(courseId);
-  await formBuilderStore.fetchProtocols(courseId);
-  await formBuilderStore.fetchForms(); // Para el select de formularios
+  await courseStore.fetchCourse(courseId);
+  await protocolStore.fetchProtocols(courseId);
+  await formStore.fetchForms(); // Para el select de formularios
 });
 
 const openCreateProtocolDialog = () => {
@@ -152,7 +158,7 @@ const createProtocol = async () => {
   if (!valid) return;
 
   try {
-    await formBuilderStore.createProtocol({
+    await protocolStore.createProtocol({
       ...newProtocol.value,
       courseId: route.params.id as string,
     });

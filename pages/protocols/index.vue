@@ -15,7 +15,7 @@
           </v-card-title>
           <v-card-text>
             <ProtocolList
-              :protocols="formBuilderStore.protocols"
+              :protocols="protocolStore.protocols"
               @view="viewProtocol"
             />
           </v-card-text>
@@ -48,7 +48,7 @@
             ></v-text-field>
             <v-select
               v-model="newProtocol.courseId"
-              :items="formBuilderStore.courses"
+              :items="courseStore.courses"
               item-title="name"
               item-value="_id"
               label="Curso"
@@ -58,7 +58,7 @@
             ></v-select>
             <v-select
               v-model="newProtocol.formId"
-              :items="formBuilderStore.forms"
+              :items="formStore.forms"
               item-title="name"
               item-value="_id"
               label="Formulario"
@@ -102,15 +102,23 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useFormBuilderStore } from "~/stores/formBuilderStore";
+// import { useFormBuilderStore } from "~/stores/formBuilderStore";
 import ProtocolList from "~/components/ProtocolList.vue";
+
+import { useFormStore } from "~/stores/formStores";
+import { useProtocolStore } from "~/stores/protocolStore";
+import { useCourseStore } from "~/stores/courseStore";
 
 definePageMeta({
   middleware: ["auth"],
 });
 
 const router = useRouter();
-const formBuilderStore = useFormBuilderStore();
+// const formBuilderStore = useFormBuilderStore();
+const formStore = useFormStore();
+const protocolStore = useProtocolStore();
+const courseStore = useCourseStore();
+
 const dialog = ref(false);
 const newProtocol = ref({
   name: "",
@@ -126,10 +134,10 @@ const snackbar = ref({
 });
 
 onMounted(async () => {
-  await formBuilderStore.fetchCourses();
-  await formBuilderStore.fetchForms();
-  if (formBuilderStore.courses.length > 0) {
-    await formBuilderStore.fetchProtocols(formBuilderStore.courses[0]._id);
+  await courseStore.fetchCourses();
+  await formStore.fetchForms();
+  if (courseStore.courses.length > 0) {
+    await protocolStore.fetchProtocols(courseStore.courses[0]._id);
   }
 });
 
@@ -148,7 +156,7 @@ const createProtocol = async () => {
     ) {
       throw new Error("Todos los campos son obligatorios");
     }
-    await formBuilderStore.createProtocol({
+    await protocolStore.createProtocol({
       name: newProtocol.value.name,
       module: newProtocol.value.module,
       courseId: newProtocol.value.courseId,
@@ -161,7 +169,7 @@ const createProtocol = async () => {
       timeout: 3000,
     };
     dialog.value = false;
-    await formBuilderStore.fetchProtocols(newProtocol.value.courseId);
+    await protocolStore.fetchProtocols(newProtocol.value.courseId);
   } catch (error: any) {
     snackbar.value = {
       show: true,

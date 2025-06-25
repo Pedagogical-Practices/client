@@ -83,7 +83,7 @@ const handleUpdateProfile = async () => {
       color: "success",
       timeout: 3000,
     };
-  } catch (error) {
+  } catch (error: any) {
     snackbar.value = {
       show: true,
       text: error.message,

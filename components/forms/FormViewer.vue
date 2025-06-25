@@ -23,7 +23,7 @@
           :specific-type="field.specificType"
           :height="field.height"
           :color="field.color"
-          :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
+          :rules="field.required ? [(v: any) => !!v || 'Requerido'] : []"
           class="field-component"
           variant="outlined"
         />
@@ -44,7 +44,7 @@ import {
   VRadioGroup,
   VDatePicker,
 } from "vuetify/components";
-import type { FormElement } from "~/stores/formBuilderStore";
+import type { FormElement } from "~/stores/formElementStore";
 
 defineProps<{
   fields: FormElement[];
