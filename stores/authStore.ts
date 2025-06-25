@@ -44,7 +44,7 @@ export const useAuthStore = defineStore("auth", {
           }),
         });
         const result: GraphQLResponse<LoginResponse> = await response.json();
-        console.log("Login response:", result);
+        // console.log("Login response:", result);
         if (result.errors) {
           throw new Error(result.errors[0]?.message || "Error en login");
         }
@@ -151,7 +151,7 @@ export const useAuthStore = defineStore("auth", {
       const token: string | null = localStorage.getItem("token");
       if (!token) return;
       try {
-        console.log("loadUserFromToken: Sending request with token:", token);
+        // console.log("loadUserFromToken: Sending request with token:", token);
         const {
           public: { GQL_HOST },
         } = useRuntimeConfig();
@@ -170,15 +170,15 @@ export const useAuthStore = defineStore("auth", {
           }),
         });
         const result: GraphQLResponse<MeResponse> = await response.json();
-        console.log("LoadUser response:", result);
+        // console.log("LoadUser response:", result);
         if (result.errors) {
-          console.warn("loadUserFromToken: Errors received:", result.errors);
+          // console.warn("loadUserFromToken: Errors received:", result.errors);
           return;
         }
         this.user = result.data.me;
         this.token = token;
       } catch (error: any) {
-        console.error("LoadUser error:", error);
+        // console.error("LoadUser error:", error);
       }
     },
   },

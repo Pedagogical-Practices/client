@@ -45,7 +45,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useFormBuilderStore } from "~/stores/formBuilderStore";
+// import { useFormBuilderStore } from "~/stores/formBuilderStore";
+import { useFormStore } from "~/stores/formStores";
+import { useFormElementStore } from "~/stores/formElementStore";
 import { useAuthStore } from "~/stores/authStore";
 import FormList from "~/components/forms/FormList.vue";
 import FormFilter from "~/components/forms/FormFilter.vue";
@@ -55,7 +57,9 @@ definePageMeta({
 });
 
 const router = useRouter();
-const formBuilderStore = useFormBuilderStore();
+const formStore = useFormStore();
+const formElementStore = useFormElementStore();
+// const formBuilderStore = useFormBuilderStore();
 const authStore = useAuthStore();
 const filter = ref("");
 const snackbar = ref({
@@ -76,7 +80,7 @@ onMounted(async () => {
       };
       router.push("/login");
     } else {
-      await formBuilderStore.fetchForms();
+      await formStore.fetchForms();
     }
   } catch (error: any) {
     console.error("Error al cargar datos:", error);
@@ -91,7 +95,7 @@ onMounted(async () => {
 });
 
 const filteredForms = computed(() => {
-  return formBuilderStore.forms.filter((form) =>
+  return formStore.forms.filter((form) =>
     form.name.toLowerCase().includes(filter.value.toLowerCase())
   );
 });
@@ -105,9 +109,9 @@ const viewForm = (formId: string) => {
 };
 
 const createNewForm = () => {
-  formBuilderStore.initializeForm([]);
-  formBuilderStore.formName = "";
-  formBuilderStore.setSelectedElement(null);
+  formElementStore.initializeForm([]);
+  formStore.formName = "";
+  formElementStore.setSelectedElement(null);
   router.push("/editor");
 };
 </script>

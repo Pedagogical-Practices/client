@@ -72,7 +72,7 @@ const handleLogin = async () => {
       timeout: 3000,
     };
     router.push("/editor");
-  } catch (error) {
+  } catch (error: any) {
     snackbar.value = {
       show: true,
       text: error.message,

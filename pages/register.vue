@@ -79,7 +79,7 @@ const register = async (): Promise<void> => {
       role: role.value,
     });
     router.push("/editor");
-  } catch (error: Error) {
+  } catch (error: any) {
     console.error("Form register error:", error);
     snackbar.value = {
       show: true,

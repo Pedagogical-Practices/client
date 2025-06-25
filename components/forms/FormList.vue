@@ -21,12 +21,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-interface Form {
-  _id: string;
-  name: string;
-  createdBy: { name: string; email: string };
-  createdAt: string;
-}
+import type { Form } from "~/stores/formStores";
 
 defineProps<{
   forms: Form[];

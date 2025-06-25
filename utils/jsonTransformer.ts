@@ -1,7 +1,10 @@
-import type { FormElement } from '~/stores/formBuilderStore';
+// import type { FormElement } from '~/stores/formBuilderStore';
+import type { FormElement } from "~/stores/formElementStore";
 
-export function transformFormElementsToJson(formElements: FormElement[]): Record<string, any>[] {
-  return formElements.map(el => {
+export function transformFormElementsToJson(
+  formElements: FormElement[]
+): Record<string, any>[] {
+  return formElements.map((el) => {
     const outputEl: Record<string, any> = {
       // Ensure all keys from the spec are considered
       id: el.id, // Keep internal ID for reference during development/testing if needed
@@ -24,31 +27,35 @@ export function transformFormElementsToJson(formElements: FormElement[]): Record
       deshabilitado: el.disabled,
       soloLectura: el.readonly,
       subtipo: el.specificType, // For v-text-field's type: 'text', 'number', etc.
-                               // Or for v-btn type: 'button', 'submit'
+      // Or for v-btn type: 'button', 'submit'
       // altura: el.height, // Only add if defined, see below
       // color: el.color, // Only add if defined, see below
       // opciones: el.options // Only add if defined, see below
     };
 
     // Add type-specific or conditional properties
-    if (el.type === 'select' || el.type === 'radio-group') {
+    if (el.type === "select" || el.type === "radio-group") {
       outputEl.opciones = el.options;
     }
-    if (el.type === 'textarea' && el.height) {
+    if (el.type === "textarea" && el.height) {
       outputEl.altura = el.height;
     }
-    if (el.type === 'button' && el.color) {
+    if (el.type === "button" && el.color) {
       outputEl.color = el.color;
     }
     // Add other conditional properties from FormElement if they exist
 
     // Remove undefined/null properties or empty arrays for cleaner JSON,
     // but keep empty strings and boolean 'false'
-    Object.keys(outputEl).forEach(key => {
+    Object.keys(outputEl).forEach((key) => {
       const val = outputEl[key];
-      if (val === undefined || val === null || (Array.isArray(val) && val.length === 0)) {
+      if (
+        val === undefined ||
+        val === null ||
+        (Array.isArray(val) && val.length === 0)
+      ) {
         // Exception: allow empty string '' and boolean false
-        if (val !== '' && val !== false) {
+        if (val !== "" && val !== false) {
           delete outputEl[key];
         }
       }

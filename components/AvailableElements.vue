@@ -36,14 +36,18 @@
 </template>
 
 <script setup lang="ts">
-import { useFormBuilderStore } from "~/stores/formBuilderStore";
+//import { useFormBuilderStore } from "~/stores/formBuilderStore";
+import { useFormElementStore } from "~/stores/formElementStore";
+
 import {
   availableElements,
   type AvailableElementDefinition,
 } from "./formElementDefinitions";
-import type { FormElement } from "~/stores/formBuilderStore";
 
-const formBuilderStore = useFormBuilderStore();
+const formElement = useFormElementStore();
+//import type { FormElement } from "~/stores/formBuilderStore";
+
+// const formBuilderStore = useFormBuilderStore();
 
 const addElementByClick = (elementDef: AvailableElementDefinition) => {
   const newElementConfig = JSON.parse(JSON.stringify(elementDef.defaultConfig));
@@ -52,7 +56,7 @@ const addElementByClick = (elementDef: AvailableElementDefinition) => {
     id: generateUniqueId(),
     type: elementDef.type,
   };
-  formBuilderStore.addElement(newElement);
+  formElement.addElement(newElement);
 };
 
 const handleDragStart = (

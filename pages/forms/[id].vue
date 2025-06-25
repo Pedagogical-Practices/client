@@ -54,15 +54,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useFormBuilderStore } from "~/stores/formBuilderStore";
+// import { useFormBuilderStore } from "~/stores/formBuilderStore";
+import { useFormStore } from "~/stores/formStores";
 import { useAuthStore } from "~/stores/authStore";
 import FormViewer from "~/components/forms/FormViewer.vue";
 
 const route = useRoute();
 const router = useRouter();
-const formBuilderStore = useFormBuilderStore();
+// const formBuilderStore = useFormBuilderStore();
+const formStore = useFormStore();
 const authStore = useAuthStore();
-const form = ref(formBuilderStore.currentForm);
+const form = ref(formStore.currentForm);
 const snackbar = ref({
   show: false,
   text: "",
@@ -82,8 +84,8 @@ onMounted(async () => {
       router.push("/login");
     } else {
       const formId = route.params.id as string;
-      await formBuilderStore.fetchForm(formId);
-      form.value = formBuilderStore.currentForm;
+      await formStore.fetchForm(formId);
+      form.value = formStore.currentForm;
       if (!form.value) {
         snackbar.value = {
           show: true,

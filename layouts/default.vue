@@ -8,20 +8,12 @@
         ></v-app-bar-nav-icon>
 
         <v-toolbar-title>Control de prácticas pedagógicas </v-toolbar-title>
-
-        <!--template v-if="$vuetify.display.mdAndUp">
-          <v-btn icon="mdi-magnify" variant="text"></v-btn>
-
-          <v-btn icon="mdi-filter" variant="text"></v-btn>
-        </template-->
-
         <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
       </v-app-bar>
 
       <v-navigation-drawer
         v-model="drawer"
-        :location="$vuetify.display.mobile ? 'bottom' : undefined"
-        temporary
+        :temporary="$vuetify.display.smAndDown"
       >
         <v-list>
           <v-list-subheader>Plain Variant</v-list-subheader>
