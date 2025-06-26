@@ -24,7 +24,7 @@ export interface UpdateUserResponse {
 }
 
 export interface MeResponse {
-  me: User;
+  me: User | null;
 }
 
 export interface GraphQLResponse<T> {

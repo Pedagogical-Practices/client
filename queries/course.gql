@@ -4,7 +4,11 @@ query Course($id: String!) {
     name
     institution
     assignedGroups
-    createdBy
+    createdBy {
+      _id
+      name
+      email
+    }
     createdAt
   }
 }
