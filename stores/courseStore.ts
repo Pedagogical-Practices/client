@@ -6,7 +6,11 @@ export interface Course {
   name: string;
   institution: string;
   assignedGroups: string[];
-  createdBy: string;
+  createdBy: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   createdAt: string;
 }
 
@@ -54,6 +58,9 @@ export const useCourseStore = defineStore("course", {
         const query = await import("~/queries/course.gql?raw").then(
           (m) => m.default
         );
+
+        console.log("fetchCourses: Token:", useAuthStore().token);
+
         const response = await fetch(GQL_HOST, {
           method: "POST",
           headers: {

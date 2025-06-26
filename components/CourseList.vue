@@ -5,6 +5,9 @@
     :items-per-page="10"
     class="elevation-1"
   >
+    <template v-slot:item.createdBy="{ item }">
+      {{ item.createdBy.name }} ({{ item.createdBy.email }})
+    </template>
     <template v-slot:item.actions="{ item }">
       <v-btn
         size="small"
@@ -27,6 +30,12 @@ defineProps<{
     name: string;
     institution: string;
     assignedGroups: string[];
+    createdBy: {
+      _id: string;
+      name: string;
+      email: string;
+    };
+    createdAt: string;
   }>;
 }>();
 
@@ -40,6 +49,7 @@ const headers = ref([
     key: "assignedGroups",
     value: (item: any) => item.assignedGroups.join(", "),
   },
+  { title: "Creado por", key: "createdBy" },
   { title: "Acciones", key: "actions", sortable: false },
 ]);
 </script>
