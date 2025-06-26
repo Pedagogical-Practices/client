@@ -4,7 +4,11 @@ query Courses {
     name
     institution
     assignedGroups
-    createdBy
+    createdBy {
+      _id
+      name
+      email
+    }
     createdAt
   }
 }

@@ -4,7 +4,11 @@ mutation CreateCourse($createCourseInput: CreateCourseInput!) {
     name
     institution
     assignedGroups
-    createdBy
+    createdBy {
+      _id
+      name
+      email
+    }
     createdAt
   }
 }

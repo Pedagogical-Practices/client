@@ -1,3 +1,4 @@
+// stores/authStore.ts
 import { defineStore } from "pinia";
 import type {
   User,
@@ -12,6 +13,7 @@ import CreateUserQuery from "~/queries/register.gql?raw";
 import LoginQuery from "~/queries/login.gql?raw";
 import UpdateUserQuery from "~/queries/updateUser.gql?raw";
 import MeQuery from "~/queries/me.gql?raw";
+import { navigateTo } from "nuxt/app";
 
 interface AuthState {
   user: User | null;
@@ -44,7 +46,7 @@ export const useAuthStore = defineStore("auth", {
           }),
         });
         const result: GraphQLResponse<LoginResponse> = await response.json();
-        // console.log("Login response:", result);
+        console.log("authStore: Login response:", result);
         if (result.errors) {
           throw new Error(result.errors[0]?.message || "Error en login");
         }
@@ -52,9 +54,12 @@ export const useAuthStore = defineStore("auth", {
         this.token = result.data.login.token;
         if (this.token && process.client) {
           localStorage.setItem("token", this.token);
+          console.log("authStore: Token saved:", this.token);
+          console.log("authStore: User set:", this.user);
+          await navigateTo(this.user?.role === "admin" ? "/editor" : "/");
         }
       } catch (error: any) {
-        console.error("Login error:", error);
+        console.error("authStore: Login error:", error);
         throw new Error(error.message || "Error en login");
       }
     },
@@ -84,7 +89,7 @@ export const useAuthStore = defineStore("auth", {
         });
         const result: GraphQLResponse<CreateUserResponse> =
           await response.json();
-        console.log("Register response:", result);
+        console.log("authStore: Register response:", result);
         if (result.errors) {
           throw new Error(result.errors[0]?.message || "Error en registro");
         }
@@ -92,9 +97,12 @@ export const useAuthStore = defineStore("auth", {
         this.token = result.data.createUser.token;
         if (this.token && process.client) {
           localStorage.setItem("token", this.token);
+          console.log("authStore: Token saved:", this.token);
+          console.log("authStore: User set:", this.user);
+          await navigateTo(this.user?.role === "admin" ? "/editor" : "/");
         }
       } catch (error: any) {
-        console.error("Register error:", error);
+        console.error("authStore: Register error:", error);
         throw new Error(error.message || "Error en registro");
       }
     },
@@ -118,7 +126,7 @@ export const useAuthStore = defineStore("auth", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${this.token.trim()}`, // Asegurar que no haya espacios
+            Authorization: `Bearer ${this.token.trim()}`,
           },
           body: JSON.stringify({
             query: UpdateUserQuery,
@@ -127,15 +135,16 @@ export const useAuthStore = defineStore("auth", {
         });
         const result: GraphQLResponse<UpdateUserResponse> =
           await response.json();
-        console.log("UpdateProfile response:", result);
+        console.log("authStore: UpdateProfile response:", result);
         if (result.errors) {
           throw new Error(
             result.errors[0]?.message || "Error al actualizar perfil"
           );
         }
         this.user = result.data.updateUser;
+        console.log("authStore: User updated:", this.user);
       } catch (error: any) {
-        console.error("UpdateProfile error:", error);
+        console.error("authStore: UpdateProfile error:", error);
         throw new Error(error.message || "Error al actualizar perfil");
       }
     },
@@ -144,6 +153,7 @@ export const useAuthStore = defineStore("auth", {
       this.token = null;
       if (process.client) {
         localStorage.removeItem("token");
+        console.log("authStore: Logged out");
       }
     },
     async loadUserFromToken(): Promise<void> {
@@ -151,7 +161,13 @@ export const useAuthStore = defineStore("auth", {
       const token: string | null = localStorage.getItem("token");
       if (!token) return;
       try {
-        // console.log("loadUserFromToken: Sending request with token:", token);
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        console.log("authStore: Decoded token payload:", payload);
+        if (!payload.sub) {
+          console.log("authStore: Token does not contain sub, clearing token");
+          this.logout();
+          return;
+        }
         const {
           public: { GQL_HOST },
         } = useRuntimeConfig();
@@ -163,22 +179,27 @@ export const useAuthStore = defineStore("auth", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token.trim()}`, // Asegurar que no haya espacios
+            Authorization: `Bearer ${token.trim()}`,
           },
           body: JSON.stringify({
             query: MeQuery,
           }),
         });
         const result: GraphQLResponse<MeResponse> = await response.json();
-        // console.log("LoadUser response:", result);
+        console.log("authStore: LoadUser response:", result);
         if (result.errors) {
-          // console.warn("loadUserFromToken: Errors received:", result.errors);
-          return;
+          console.warn("authStore: loadUserFromToken errors:", result.errors);
+          return; // No ejecutar logout
+        }
+        if (!result.data?.me) {
+          console.warn("authStore: No user data in me query response:", result);
+          return; // Mantener this.user del login
         }
         this.user = result.data.me;
         this.token = token;
+        console.log("authStore: User loaded:", this.user);
       } catch (error: any) {
-        // console.error("LoadUser error:", error);
+        console.error("authStore: LoadUser error:", error);
       }
     },
   },

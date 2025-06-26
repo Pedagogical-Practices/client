@@ -71,17 +71,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-// import { useFormBuilderStore } from "~/stores/formBuilderStore";
 import { useCourseStore } from "~/stores/courseStore";
 import CourseList from "~/components/CourseList.vue";
 
-// Middleware para admin
 definePageMeta({
   middleware: ["auth"],
 });
 
 const router = useRouter();
-// const formBuilderStore = useFormBuilderStore();
 const courseStore = useCourseStore();
 const createCourseDialog = ref(false);
 const createCourseForm = ref();
