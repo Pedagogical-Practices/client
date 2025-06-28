@@ -7,13 +7,16 @@
           @click.stop="drawer = !drawer"
         ></v-app-bar-nav-icon>
 
-        <v-toolbar-title>Control de prácticas pedagógicas </v-toolbar-title>
+        <v-toolbar-title>Control de prácticas pedagógicas</v-toolbar-title>
         <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
       </v-app-bar>
 
       <v-navigation-drawer
         v-model="drawer"
-        :temporary="$vuetify.display.smAndDown"
+        :temporary="isMobile"
+        :mobile="isMobile"
+        location="left"
+        theme="light"
       >
         <v-list>
           <v-list-subheader>Plain Variant</v-list-subheader>
@@ -25,6 +28,7 @@
             color="primary"
             variant="plain"
             :to="item.to"
+            @click="drawer = false"
           >
             <template v-slot:prepend>
               <v-icon :icon="item.icon"></v-icon>
@@ -41,8 +45,10 @@
     </v-layout>
   </v-card>
 </template>
+
 <script setup>
-import { ref, watch } from "vue";
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 const items = [
   {
@@ -82,6 +88,18 @@ const items = [
     icon: "mdi-account-profile",
   },
   {
+    title: "Asistencia",
+    value: "attendance",
+    to: "/attendance",
+    icon: "mdi-chart-bar",
+  },
+  {
+    title: "Configuración",
+    value: "settings",
+    to: "/settings",
+    icon: "mdi-cog",
+  },
+  {
     title: "Cerrar sesión",
     value: "logout",
     to: "/logout",
@@ -90,9 +108,18 @@ const items = [
 ];
 
 const drawer = ref(false);
-const group = ref(null);
+const isMobile = ref(false);
+const router = useRouter();
 
-watch(group, () => {
+// Cerrar el drawer cuando cambia la ruta
+router.afterEach(() => {
   drawer.value = false;
+});
+
+onMounted(() => {
+  isMobile.value = window.innerWidth < 600; // Ajustar según el breakpoint de Vuetify
+  window.addEventListener("resize", () => {
+    isMobile.value = window.innerWidth < 600;
+  });
 });
 </script>
