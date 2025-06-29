@@ -93,6 +93,13 @@ export const useCourseStore = defineStore("course", {
         const mutation = await import("~/queries/createCourse.gql?raw").then(
           (m) => m.default
         );
+        const variables = {
+          createCourseInput: {
+            name: input.name,
+            institution: input.institution,
+            assignedGroups: input.assignedGroups,
+          },
+        };
         const response = await fetch(GQL_HOST, {
           method: "POST",
           headers: {
@@ -101,7 +108,7 @@ export const useCourseStore = defineStore("course", {
           },
           body: JSON.stringify({
             query: mutation,
-            variables: { createCourseInput: input },
+            variables,
           }),
         });
         const data = await response.json();

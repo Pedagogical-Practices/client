@@ -1,6 +1,6 @@
 query Me {
   me {
-    _id
+    sub
     name
     email
     role

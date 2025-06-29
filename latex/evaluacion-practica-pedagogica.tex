@@ -1,0 +1,130 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times} % Fuente Times New Roman
+\usepackage[margin=2cm]{geometry} % Márgenes de 2 cm
+\usepackage{tabularx} % Tablas ajustables
+\usepackage{booktabs} % Líneas de tabla mejoradas
+\usepackage{graphicx} % Para el logotipo
+\usepackage{parskip} % Espaciado entre párrafos
+\usepackage{array} % Mejoras en tablas
+\usepackage{enumitem} % Listas personalizadas
+
+\begin{document}
+
+% Cabecera con logotipo y título
+\begin{center}
+    \vspace*{1cm}
+    % Placeholder para el logotipo (reemplazar con el archivo real, ej. client/latex/logo.png)
+    \includegraphics[height=2cm]{logo.png} % {LogoUniversidad}
+    \vspace{0.5cm}
+    \textbf{\Large FORMATO DE EVALUACIÓN DE LA PRÁCTICA PEDAGÓGICA DEL MAESTRO EN FORMACIÓN} \\
+    \vspace{0.5cm}
+    \textbf{Universidad de Córdoba - Facultad de Educación y Ciencias Humanas} \\
+    \textbf{Licenciatura en Informática y Medios Audiovisuales}
+\end{center}
+
+% Campos de identificación
+\vspace{0.5cm}
+\begin{tabularx}{\textwidth}{@{}p{5cm}X@{}}
+    \toprule
+    \textbf{INSTITUCIÓN EDUCATIVA:} & \hrulefill \\
+    \textbf{DOCENTE ASESOR:} & \hrulefill \\
+    \textbf{MAESTRO EN FORMACIÓN:} & \hrulefill \\
+    \textbf{PROGRAMA:} & \hrulefill \\
+    \textbf{SEMESTRE:} & \hrulefill \\
+    \textbf{SEDE:} & \hrulefill \\
+    \textbf{CURSO:} & \hrulefill \\
+    \textbf{FECHA DE LA EVALUACIÓN:} & \hrulefill \\
+    \bottomrule
+\end{tabularx}
+
+% Objetivos
+\vspace{0.5cm}
+\noindent
+\textbf{OBJETIVOS:} \\
+Valorar el desempeño personal y profesional (actitudes, valores, motivaciones) de los maestros en formación, e identificar fortalezas y debilidades para establecer estrategias de mejoramiento.
+
+% Instrucciones
+\vspace{0.5cm}
+\noindent
+\textbf{INSTRUCCIONES:} \\
+El docente asesor debe marcar con una X la valoración cualitativa correspondiente a cada indicador, utilizando la siguiente escala: \\
+\begin{itemize}[noitemsep]
+    \item \textbf{E - Excelente}: Desempeño sobresaliente.
+    \item \textbf{B - Bueno}: Desempeño adecuado.
+    \item \textbf{R - Regular}: Desempeño con deficiencias que requieren mejora.
+    \item \textbf{D - Deficiente}: Desempeño insuficiente.
+\end{itemize}
+Al final, indique la valoración cuantitativa general (0 a 5) para el reporte de calificación.
+
+% Áreas de evaluación
+\vspace{0.5cm}
+\noindent
+\textbf{GESTIÓN ACADÉMICA}
+\begin{table}[h]
+    \centering
+    \scriptsize % Tamaño pequeño para ajustar la tabla
+    \begin{tabularx}{\textwidth}{|p{5cm}|X|c|c|c|c|}
+        \hline
+        \textbf{Indicador} & \textbf{Descripción} & \textbf{E} & \textbf{B} & \textbf{R} & \textbf{D} \\
+        \hline
+        Dominio de contenidos & Solvencia, coherencia, fluidez verbal & & & & \\
+        \hline
+        Planeación y organización académica & Planeación acorde al PEI, explicitación de competencias/logros, creatividad/innovación, cumplimiento en entregas & & & & \\
+        \hline
+        Pedagógica y didáctica & Fundamentación, aportes teóricos, estrategias de enseñanza/aprendizaje, selección de recursos, diseño de estrategias innovadoras, atención a NEE, motivación/disciplina, competencias comunicativas & & & & \\
+        \hline
+        Evaluación del aprendizaje & Diseño/aplicación de métodos, evaluación permanente, programación puntual, reflexión de resultados, retroalimentación & & & & \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\vspace{0.5cm}
+\noindent
+\textbf{COMPETENCIAS PROFESIONALES}
+\begin{table}[h]
+    \centering
+    \scriptsize
+    \begin{tabularx}{\textwidth}{|p{5cm}|X|c|c|c|c|}
+        \hline
+        \textbf{Indicador} & \textbf{Descripción} & \textbf{E} & \textbf{B} & \textbf{R} & \textbf{D} \\
+        \hline
+        Liderazgo & Trabajo colectivo, fomento de valores & & & & \\
+        \hline
+        Comunicación y relaciones interpersonales & Relaciones cordiales, argumentos claros, escucha atenta & & & & \\
+        \hline
+        Trabajo en equipo & Relaciones colaborativas, participación en proyectos & & & & \\
+        \hline
+        Negociación y mediación & Identificación de conflictos, diálogo constructivo, facilitación de acuerdos & & & & \\
+        \hline
+        Compromiso social e institucional & Presentación personal, respeto, puntualidad, comportamiento ético & & & & \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+% Observaciones
+\vspace{0.5cm}
+\noindent
+\textbf{OBSERVACIONES:} \\
+\begin{tabularx}{\textwidth}{|X|}
+    \hline
+    \vspace{4cm} \\ % Espacio para comentarios
+    \hline
+\end{tabularx}
+
+% Valoración cuantitativa
+\vspace{0.5cm}
+\begin{tabularx}{\textwidth}{@{}p{5cm}X@{}}
+    \toprule
+    \textbf{VALORACIÓN CUANTITATIVA (0 a 5):} & \hrulefill \\
+    \bottomrule
+\end{tabularx}
+
+% Firma
+\vspace{0.5cm}
+\begin{center}
+    \textbf{Firma del Docente Asesor:} \hrulefill
+\end{center}
+
+\end{document}

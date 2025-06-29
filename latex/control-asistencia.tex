@@ -1,0 +1,91 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times} % Fuente Times New Roman
+\usepackage[margin=2cm]{geometry} % Márgenes de 2 cm
+\usepackage{tabularx} % Tablas ajustables
+\usepackage{booktabs} % Líneas de tabla mejoradas
+\usepackage{multirow} % Celdas combinadas
+\usepackage{graphicx} % Para el logotipo
+\usepackage{parskip} % Espaciado entre párrafos
+\usepackage{array} % Mejoras en tablas
+
+\begin{document}
+
+% Cabecera con logotipo y título
+\begin{center}
+    \vspace*{1cm}
+    % Placeholder para el logotipo (reemplazar con el archivo real, ej. client/latex/logo.png)
+    \includegraphics[height=2cm]{logo.png} % {LogoUniversidad}
+    \vspace{0.5cm}
+    \textbf{\Large FORMATO DE CONTROL DE ASISTENCIA Y ACTIVIDADES CURRICULARES} \\
+    \vspace{0.5cm}
+    \textbf{Universidad de Córdoba - Facultad de Educación y Ciencias Humanas} \\
+    \textbf{Licenciatura en Informática y Medios Audiovisuales}
+\end{center}
+
+% Campos de identificación
+\vspace{0.5cm}
+\begin{tabularx}{\textwidth}{@{}p{5cm}X@{}}
+    \toprule
+    \textbf{DOCENTE EN FORMACIÓN:} & \hrulefill \\
+    \textbf{DOCENTE ASESOR:} & \hrulefill \\
+    \textbf{INSTITUCIÓN EDUCATIVA:} & \hrulefill \\
+    \textbf{DOCENTE TUTOR:} & \hrulefill \\
+    \textbf{GRUPOS ASIGNADOS:} & \hrulefill \\
+    \bottomrule
+\end{tabularx}
+
+% Tabla de asistencia
+\vspace{0.5cm}
+\noindent
+\textbf{Tabla de Control de Asistencia y Actividades}
+\begin{table}[h]
+    \centering
+    \scriptsize % Tamaño de fuente pequeño para ajustar la tabla
+    \begin{tabularx}{\textwidth}{|c|X|X|c|X|c|c|X|X|}
+        \hline
+        \textbf{SEMANA} & \textbf{Fecha} & \textbf{Tema / Actividad} & \textbf{No. de horas} & \textbf{Grupo} & \textbf{Clase} & \textbf{Otra} & \textbf{Firma del docente asesor} & \textbf{Firma Docente Tutor} \\
+        \hline
+        % Ejemplo de fila (mapeo a CreateAttendanceRecordInput)
+        % SEMANA -> week, Fecha -> date, Tema / Actividad -> topic, No. de horas -> hours, Grupo -> group
+        & & & & & & & & \\
+        \hline
+        & & & & & & & & \\
+        \hline
+        & & & & & & & & \\
+        \hline
+        & & & & & & & & \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+% Notas
+\vspace{0.5cm}
+\noindent
+\textbf{Notas:}
+\begin{itemize}
+    \item En caso de que el practicante no se presente, debe indicarse ``no se presentó'' en la columna ``Tema'' y debe ir la firma del docente asesor.
+    \item Si el número de filas semanales no coincide con la asistencia del docente en formación, el formato debe ajustarse, siendo este el único cambio permitido.
+\end{itemize}
+
+% Sección de observaciones
+\vspace{0.5cm}
+\noindent
+\textbf{OBSERVACIONES:} \\
+\begin{tabularx}{\textwidth}{|X|}
+    \hline
+    \vspace{4cm} \\ % Espacio para comentarios
+    \hline
+\end{tabularx}
+
+% Firmas
+\vspace{0.5cm}
+\begin{center}
+    \begin{tabular}{p{7cm}p{7cm}}
+        \hline
+        \textbf{Firma del Docente Asesor:} \hrulefill & \textbf{Firma del Docente Tutor:} \hrulefill \\
+    \end{tabular}
+\end{center}
+
+\end{document}

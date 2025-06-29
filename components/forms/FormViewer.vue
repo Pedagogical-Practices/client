@@ -11,7 +11,10 @@
       <v-col cols="12">
         <component
           :is="getComponentName(field.type)"
-          v-model="field.value"
+          :model-value="
+            field.type === 'checkbox' ? field.value === 'true' : field.value
+          "
+          @update:model-value="(val: any) => updateFieldValue(field, val)"
           :label="field.label"
           :placeholder="field.placeholder"
           :hint="field.hint"
@@ -46,8 +49,12 @@ import {
 } from "vuetify/components";
 import type { FormElement } from "~/stores/formElementStore";
 
-defineProps<{
+const props = defineProps<{
   fields: FormElement[];
+}>();
+
+const emit = defineEmits<{
+  (e: "update:fields", fields: FormElement[]): void;
 }>();
 
 const componentMap: Record<string, any> = {
@@ -62,6 +69,15 @@ const componentMap: Record<string, any> = {
 
 const getComponentName = (type: string) => {
   return componentMap[type] || VTextField;
+};
+
+const updateFieldValue = (field: FormElement, newValue: any) => {
+  const updatedFields = props.fields.map((f) =>
+    f === field
+      ? { ...f, value: field.type === "checkbox" ? String(newValue) : newValue }
+      : f
+  );
+  emit("update:fields", updatedFields);
 };
 </script>
 
