@@ -5,7 +5,7 @@ query Courses {
     institution
     assignedGroups
     createdBy {
-      _id
+      sub
       name
       email
     }
