@@ -5,7 +5,7 @@ query Course($id: String!) {
     institution
     assignedGroups
     createdBy {
-      sub
+      _id
       name
       email
     }

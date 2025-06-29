@@ -5,7 +5,7 @@ mutation CreateCourse($createCourseInput: CreateCourseInput!) {
     institution
     assignedGroups
     createdBy {
-      sub
+      _id
       name
       email
     }
