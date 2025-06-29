@@ -1,0 +1,8 @@
+input GenerateAttendancePDFInput {
+  teacherName: String!
+  advisorName: String!
+  institution: String!
+  tutorName: String!
+  assignedGroups: String!
+  records: [CreateAttendanceRecordInput!]!
+}

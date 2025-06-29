@@ -108,7 +108,11 @@ const createCourse = async () => {
   if (!valid) return;
 
   try {
-    await courseStore.createCourse(newCourse.value);
+    await courseStore.createCourse({
+      name: newCourse.value.name,
+      institution: newCourse.value.institution,
+      assignedGroups: newCourse.value.assignedGroups,
+    });
     snackbar.value = {
       show: true,
       text: "¡Curso creado exitosamente!",

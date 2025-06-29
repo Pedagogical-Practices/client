@@ -10,11 +10,9 @@
       </v-col>
     </v-row>
     <v-row>
-      <!-- Available Elements Column (hidden on mobile if drawer is used) -->
       <v-col cols="12" md="4" class="available-elements-col">
         <AvailableElements />
       </v-col>
-
       <v-col cols="12" md="8" class="form-builder-col">
         <v-card
           class="drop-zone mb-4 pa-2"
@@ -53,7 +51,6 @@
             <p v-if="isDragOver" class="drop-prompt-message">
               Suelta aquí para añadir el elemento.
             </p>
-
             <div
               v-if="formElementStore.formElements.length > 0"
               class="elements-list mt-3"
@@ -129,7 +126,6 @@
             </div>
           </v-card-text>
         </v-card>
-
         <v-card class="mt-4 json-output-card">
           <v-card-title class="d-flex justify-space-between align-center">
             <span>JSON Generado del Formulario</span>
@@ -208,8 +204,11 @@ import {
 import { useFormStore } from "~/stores/formStores";
 import { useAuthStore } from "~/stores/authStore";
 import AvailableElements from "~/components/AvailableElements.vue";
+import {
+  availableElements,
+  type AvailableElementDefinition,
+} from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
-import { availableElements as elementDefinitions } from "~/components/formElementDefinitions";
 import {
   VTextField,
   VTextarea,
@@ -220,14 +219,6 @@ import {
   VDatePicker,
 } from "vuetify/components";
 
-// Interfaz para la definición de elementos
-interface ElementDefinition {
-  type: string;
-  icon: string;
-  defaultConfig: Partial<FormElement>;
-}
-
-// Middleware para admin
 definePageMeta({
   middleware: ["admin"],
 });
@@ -265,8 +256,8 @@ const getComponentName = (type: string): any => {
 };
 
 const getElementIcon = (type: string): string => {
-  const def = elementDefinitions.find(
-    (d: ElementDefinition) => d.type === type
+  const def = availableElements.find(
+    (d: AvailableElementDefinition) => d.type === type
   );
   return def ? def.icon : "mdi-help-box";
 };
@@ -300,8 +291,8 @@ const handleDrop = (event: DragEvent): void => {
   const rawData = event.dataTransfer.getData("application/json");
   try {
     const { type: elementType } = JSON.parse(rawData) as { type: string };
-    const elementDef = elementDefinitions.find(
-      (def: ElementDefinition) => def.type === elementType
+    const elementDef = availableElements.find(
+      (def: AvailableElementDefinition) => def.type === elementType
     );
     if (!elementDef) {
       throw new Error(`Tipo de elemento no encontrado: ${elementType}`);
@@ -533,19 +524,22 @@ const saveFormToBackend = async (): Promise<void> => {
               (element: FormElement) => ({
                 type: element.type,
                 label: element.label ?? "",
-                value: element.value ?? "",
+                value:
+                  element.value !== undefined && element.value !== null
+                    ? String(element.value)
+                    : null,
                 variableName: element.variableName ?? "",
                 placeholder: element.placeholder ?? "",
                 hint: element.hint ?? "",
-                height: element.height ? String(element.height) : "auto",
+                height: element.height ? String(element.height) : null,
                 required: !!element.required,
-                chapter: element.chapter ?? "General",
-                question: element.question ?? "",
-                questionNumber: element.questionNumber ?? "",
-                consistencyCondition: element.consistencyCondition ?? "",
-                inconsistencyMessage: element.inconsistencyMessage ?? "",
-                errorType: element.errorType ?? "",
-                description: element.description ?? "",
+                chapter: element.chapter ?? null,
+                question: element.question ?? null,
+                questionNumber: element.questionNumber ?? null,
+                consistencyCondition: element.consistencyCondition ?? null,
+                inconsistencyMessage: element.inconsistencyMessage ?? null,
+                errorType: element.errorType ?? null,
+                description: element.description ?? null,
                 requirementLevel: element.requirementLevel ?? "Optional",
                 options:
                   element.options?.map((opt: any) =>
@@ -555,9 +549,9 @@ const saveFormToBackend = async (): Promise<void> => {
                   ) ?? [],
                 disabled: !!element.disabled,
                 readonly: !!element.readonly,
-                name: element.name ?? "",
-                specificType: element.specificType ?? "",
-                color: element.color ?? "",
+                name: element.name ?? null,
+                specificType: element.specificType ?? null,
+                color: element.color ?? null,
                 rules: element.rules ?? [],
                 multiple: !!element.multiple,
               })

@@ -36,18 +36,14 @@
 </template>
 
 <script setup lang="ts">
-//import { useFormBuilderStore } from "~/stores/formBuilderStore";
 import { useFormElementStore } from "~/stores/formElementStore";
-
+import type { FormElement } from "~/stores/formElementStore";
 import {
   availableElements,
   type AvailableElementDefinition,
 } from "./formElementDefinitions";
 
 const formElement = useFormElementStore();
-//import type { FormElement } from "~/stores/formBuilderStore";
-
-// const formBuilderStore = useFormBuilderStore();
 
 const addElementByClick = (elementDef: AvailableElementDefinition) => {
   const newElementConfig = JSON.parse(JSON.stringify(elementDef.defaultConfig));
@@ -70,7 +66,6 @@ const handleDragStart = (
     );
     event.dataTransfer.effectAllowed = "copy";
   }
-  // console.log(`Dragging: ${elementDef.displayName}`); // Keep for debugging if needed
 };
 
 const generateUniqueId = (): string => {
@@ -80,25 +75,23 @@ const generateUniqueId = (): string => {
 
 <style scoped>
 .available-elements-card {
-  border-radius: 8px; /* Slightly more rounded corners for the card */
+  border-radius: 8px;
 }
 .v-list-item {
-  /* border-bottom: 1px solid #f0f0f0; */ /* Removing individual borders for a cleaner look with nav list */
   padding-top: 10px;
   padding-bottom: 10px;
   cursor: grab;
   transition: background-color 0.2s ease-in-out;
 }
 .v-list-item:not(:last-child) {
-  border-bottom: 1px solid #eeeeee; /* subtle separator */
+  border-bottom: 1px solid #eeeeee;
 }
-
 .v-list-item:hover {
-  background-color: #e9f5ff; /* A light blue hover, adjust to theme */
+  background-color: #e9f5ff;
 }
 .draggable-element-item:active {
   cursor: grabbing;
-  background-color: #dcf0ff; /* Slightly darker on active drag */
+  background-color: #dcf0ff;
 }
 .v-list-item-title {
   line-height: 1.4;

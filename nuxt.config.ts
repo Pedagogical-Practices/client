@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     "@nuxt/test-utils",
     "@nuxt/ui",
     "@pinia/nuxt",
+    "@nuxtjs/apollo",
     "pinia-plugin-persistedstate/nuxt",
   ],
   vite: {
