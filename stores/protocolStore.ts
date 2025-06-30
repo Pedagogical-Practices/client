@@ -1,12 +1,14 @@
 import { defineStore } from "pinia";
 import { useAuthStore } from "./authStore";
+import type { Form } from "~/types/form"; // Asumiendo que tienes un tipo Form en ~/types/form.ts
 
 export interface Protocol {
   _id: string;
-  courseId: string;
+  // courseId: string; // Eliminado
   name: string;
   module: string;
-  formId: string;
+  // formId: string; // Eliminado
+  forms: Form[]; // Nuevo campo: array de objetos Form
   createdAt: string;
 }
 
@@ -21,7 +23,7 @@ export const useProtocolStore = defineStore("protocol", {
     currentProtocol: null,
   }),
   actions: {
-    async fetchProtocols(courseId: string) {
+    async fetchProtocols() {
       try {
         const {
           public: { GQL_HOST },
@@ -29,7 +31,11 @@ export const useProtocolStore = defineStore("protocol", {
         const query = await import("~/queries/protocols.gql?raw").then(
           (m) => m.default
         );
-        const response = await fetch(GQL_HOST, {
+        const gqlHost: string = GQL_HOST || "http://127.0.0.1:4000/graphql";
+        if (!gqlHost) {
+          throw new Error("GQL_HOST no está definido en la configuración.");
+        }
+        const response = await fetch(gqlHost, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -37,10 +43,10 @@ export const useProtocolStore = defineStore("protocol", {
           },
           body: JSON.stringify({
             query,
-            variables: { courseId },
           }),
         });
         const data = await response.json();
+        console.log("fetchProtocols: API Response Data:", data); // Añadido para depuración
         if (data.errors) {
           throw new Error(
             data.errors[0]?.message || "Error fetching protocols"
@@ -48,7 +54,7 @@ export const useProtocolStore = defineStore("protocol", {
         }
         this.protocols = data.data.protocols;
       } catch (error: any) {
-        console.error("Error fetching protocols:", error);
+        console.error("fetchProtocols: Error:", error);
       }
     },
     async fetchProtocol(id: string) {
@@ -56,10 +62,14 @@ export const useProtocolStore = defineStore("protocol", {
         const {
           public: { GQL_HOST },
         } = useRuntimeConfig();
+        const gqlHost: string = GQL_HOST || "http://127.0.0.1:4000/graphql";
+        if (!gqlHost) {
+          throw new Error("GQL_HOST no está definido en la configuración.");
+        }
         const query = await import("~/queries/protocol.gql?raw").then(
           (m) => m.default
         );
-        const response = await fetch(GQL_HOST, {
+        const response = await fetch(gqlHost, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -80,19 +90,22 @@ export const useProtocolStore = defineStore("protocol", {
       }
     },
     async createProtocol(input: {
-      courseId: string;
       name: string;
       module: string;
-      formId: string;
+      formIds: string[];
     }) {
       try {
         const {
           public: { GQL_HOST },
         } = useRuntimeConfig();
+        const gqlHost: string = GQL_HOST || "http://127.0.0.1:4000/graphql";
+        if (!gqlHost) {
+          throw new Error("GQL_HOST no está definido en la configuración.");
+        }
         const mutation = await import("~/queries/createProtocol.gql?raw").then(
           (m) => m.default
         );
-        const response = await fetch(GQL_HOST, {
+        const response = await fetch(gqlHost, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

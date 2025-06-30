@@ -1,5 +1,5 @@
 export interface User {
-  sub: string;
+  _id: string; // Cambiado de 'sub' a '_id'
   name: string;
   email: string;
   role: string;

@@ -1,37 +1,31 @@
 import { defineStore } from "pinia";
 import { useAuthStore } from "./authStore";
-
-export interface Submission {
-  _id: string;
-  protocolId: string;
-  formId: string;
-  data: Record<string, any>;
-  submittedBy: string;
-  createdAt: string;
-}
+import type { Submission } from "~/types/submission";
 
 interface SubmissionState {
   submissions: Submission[];
+  currentSubmission: Submission | null;
 }
 
 export const useSubmissionStore = defineStore("submission", {
   state: (): SubmissionState => ({
     submissions: [],
+    currentSubmission: null,
   }),
   actions: {
-    async submitProtocol(input: {
-      protocolId: string;
-      formId: string;
-      data: Record<string, any>;
-    }) {
+    async createSubmission(input: { formId: string; data: Record<string, any> }): Promise<Submission> {
       try {
         const {
           public: { GQL_HOST },
         } = useRuntimeConfig();
-        const mutation = await import("~/queries/submitProtocol.gql?raw").then(
+        const gqlHost: string = GQL_HOST || "http://127.0.0.1:4000/graphql";
+        if (!gqlHost) {
+          throw new Error("GQL_HOST no está definido en la configuración.");
+        }
+        const mutation = await import("~/queries/createSubmission.gql?raw").then(
           (m) => m.default
         );
-        const response = await fetch(GQL_HOST, {
+        const response = await fetch(gqlHost, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -44,25 +38,28 @@ export const useSubmissionStore = defineStore("submission", {
         });
         const data = await response.json();
         if (data.errors) {
-          throw new Error(
-            data.errors[0]?.message || "Error submitting protocol"
-          );
+          throw new Error(data.errors[0]?.message || "Error creating submission");
         }
-        this.submissions.push(data.data.submitProtocol);
+        // this.submissions.push(data.data.createSubmission); // Opcional: añadir a la lista local
+        return data.data.createSubmission;
       } catch (error: any) {
-        console.error("Error submitting protocol:", error);
+        console.error("Error creating submission:", error);
         throw error;
       }
     },
-    async fetchSubmissions(protocolId: string) {
+    async fetchSubmission(id: string): Promise<Submission> {
       try {
         const {
           public: { GQL_HOST },
         } = useRuntimeConfig();
-        const query = await import("~/queries/submissions.gql?raw").then(
+        const gqlHost: string = GQL_HOST || "http://127.0.0.1:4000/graphql";
+        if (!gqlHost) {
+          throw new Error("GQL_HOST no está definido en la configuración.");
+        }
+        const query = await import("~/queries/submission.gql?raw").then(
           (m) => m.default
         );
-        const response = await fetch(GQL_HOST, {
+        const response = await fetch(gqlHost, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -70,20 +67,21 @@ export const useSubmissionStore = defineStore("submission", {
           },
           body: JSON.stringify({
             query,
-            variables: { protocolId },
+            variables: { id },
           }),
         });
         const data = await response.json();
         if (data.errors) {
-          throw new Error(
-            data.errors[0]?.message || "Error fetching submissions"
-          );
+          throw new Error(data.errors[0]?.message || "Error fetching submission");
         }
-        this.submissions = data.data.submissions;
+        this.currentSubmission = data.data.submission;
+        return data.data.submission;
       } catch (error: any) {
-        console.error("Error fetching submissions:", error);
+        console.error("Error fetching submission:", error);
+        throw error;
       }
     },
+    // Puedes añadir más acciones como fetchSubmissions, updateSubmission, deleteSubmission
   },
   persist: true,
 });

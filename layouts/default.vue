@@ -58,6 +58,13 @@ const items = [
     icon: "mdi-home",
   },
   {
+    title: "Cerrar sesión",
+    value: "logout",
+    to: "/logout",
+    icon: "mdi-logout",
+  },
+
+  {
     title: "Editor",
     value: "editor",
     to: "/editor",
@@ -100,10 +107,10 @@ const items = [
     icon: "mdi-cog",
   },
   {
-    title: "Cerrar sesión",
-    value: "logout",
-    to: "/logout",
-    icon: "mdi-logout",
+    title: "Prácticas",
+    value: "practices",
+    to: "/practices",
+    icon: "mdi-school",
   },
 ];
 

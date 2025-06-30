@@ -1,10 +1,14 @@
 query Protocol($id: String!) {
   protocol(id: $id) {
     _id
-    courseId
     name
     module
-    formId
+    forms { # Seleccionar los campos del formulario
+      _id
+      name
+      # Otros campos de Form que necesites, ej: fields { ... }
+    }
+    createdBy
     createdAt
   }
 }
