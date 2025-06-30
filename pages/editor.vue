@@ -130,16 +130,7 @@
           <v-card-title class="d-flex justify-space-between align-center">
             <span>JSON Generado del Formulario</span>
           </v-card-title>
-          <v-card-text class="pa-2">
-            <v-textarea
-              v-model="editableFormJsonString"
-              label="Salida JSON del Formulario"
-              auto-grow
-              rows="10"
-              density="compact"
-              class="json-output-textarea"
-            ></v-textarea>
-          </v-card-text>
+
           <v-card-actions>
             <v-btn
               color="secondary"
@@ -165,6 +156,8 @@
             <div v-show="show">
               <v-divider></v-divider>
               <v-card-text class="pa-2">
+                <!-- Reemplazar con el componente de editor JSON -->
+                <v-card-text class="pa-2">
                 <v-textarea
                   v-model="editableFormJsonString"
                   label="Salida JSON del Formulario"
@@ -173,6 +166,7 @@
                   density="compact"
                   class="json-output-textarea"
                 ></v-textarea>
+              </v-card-text>
               </v-card-text>
             </div>
           </v-expand-transition>
@@ -466,10 +460,11 @@ const updateFormFromJson = async (): Promise<void> => {
           name: el.name ?? "",
           disabled: !!el.disabled,
           readonly: !!el.readonly,
-          options: el.options?.map((opt: any) => ({
-            label: opt.label ?? opt.text ?? "", // Handle both 'label' and 'text'
-            value: opt.value ?? "",
-          })) ?? [],
+          options:
+            el.options?.map((opt: any) => ({
+              label: opt.label ?? opt.text ?? "", // Handle both 'label' and 'text'
+              value: opt.value ?? "",
+            })) ?? [],
           specificType: el.specificType ?? "",
           height: el.height ? String(el.height) : undefined, // Ensure string for height
           color: el.color ?? "",

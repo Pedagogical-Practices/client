@@ -1,7 +1,7 @@
 // stores/authStore.ts
 import { defineStore } from "pinia";
 import type {
-  User,
+  UserDto,
   CreateUserResponse,
   LoginResponse,
   UpdateUserResponse,
@@ -16,7 +16,7 @@ import MeQuery from "~/queries/me.gql?raw";
 import { navigateTo } from "nuxt/app";
 
 interface AuthState {
-  user: User | null;
+  user: UserDto | null;
   token: string | null;
 }
 

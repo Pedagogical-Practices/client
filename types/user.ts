@@ -1,33 +1,15 @@
-export interface User {
-  _id: string; // Cambiado de 'sub' a '_id'
+export const UserRoles = {
+  ADMIN: 'admin',
+  STUDENT: 'student',
+  TEACHER_DIRECTIVE: 'teacher_directive',
+  ADMINISTRATIVE: 'administrative',
+  FAMILY: 'family',
+  COORDINATOR: 'coordinator',
+};
+
+export interface UserDto {
+  _id: string;
   name: string;
   email: string;
   role: string;
-}
-
-export interface CreateUserResponse {
-  createUser: {
-    token: string;
-    user: User;
-  };
-}
-
-export interface LoginResponse {
-  login: {
-    token: string;
-    user: User;
-  };
-}
-
-export interface UpdateUserResponse {
-  updateUser: User;
-}
-
-export interface MeResponse {
-  me: User | null;
-}
-
-export interface GraphQLResponse<T> {
-  data: T;
-  errors?: Array<{ message: string }>;
 }
