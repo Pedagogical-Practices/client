@@ -2,7 +2,40 @@
   <v-container fluid>
     <v-row v-for="(field, index) in formDefinition.fields" :key="index">
       <v-col cols="12">
+        <template v-if="field.type === 'date-picker'">
+          <v-menu
+            :close-on-content-click="false"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ props }">
+              <v-text-field
+                v-model="localFormData[field.variableName]"
+                :label="field.label"
+                :placeholder="field.placeholder"
+                :hint="field.hint"
+                :persistent-hint="true"
+                :required="field.required"
+                :disabled="field.disabled"
+                :readonly="field.readonly"
+                :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
+                variant="outlined"
+                density="compact"
+                v-bind="props"
+                append-inner-icon="mdi-calendar"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="localFormData[field.variableName]"
+              @update:model-value="localFormData[field.variableName] = $event ? $event.toISOString().split('T')[0] : null"
+              color="primary"
+              :show-current="true"
+            ></v-date-picker>
+          </v-menu>
+        </template>
         <component
+          v-else
           :is="getComponentName(field.type)"
           v-model="localFormData[field.variableName]"
           :label="field.label"
@@ -45,6 +78,7 @@ import {
   VRadioGroup,
   VRadio,
   VDatePicker,
+  VMenu, // Importar VMenu
 } from 'vuetify/components';
 import type { Form } from '~/types/form'; // Importar el tipo Form
 
@@ -81,7 +115,7 @@ const componentMap: Record<string, any> = {
   checkbox: VCheckbox,
   select: VSelect,
   'radio-group': VRadioGroup,
-  'date-picker': VDatePicker,
+  // 'date-picker': VDatePicker, // Eliminado de aquí, se maneja con VMenu y VTextField
   // 'time-picker': VTextField, // Necesitará un componente específico o un VTextField con formato
 };
 
