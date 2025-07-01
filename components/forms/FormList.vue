@@ -14,6 +14,14 @@
         title="Ver Detalles"
         icon="mdi-eye"
       ></v-btn>
+      <v-btn
+        size="small"
+        variant="text"
+        color="secondary"
+        @click.stop="$emit('edit-form', item._id)"
+        title="Editar Formulario"
+        icon="mdi-pencil"
+      ></v-btn>
     </template>
   </v-data-table>
 </template>
@@ -29,6 +37,7 @@ defineProps<{
 
 const emit = defineEmits<{
   (e: "view-form", formId: string): void;
+  (e: "edit-form", formId: string): void;
 }>();
 
 const headers = ref([

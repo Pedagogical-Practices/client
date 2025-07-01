@@ -1,0 +1,8 @@
+query institution($id: String!) {
+  institution(id: $id) {
+    _id
+    name
+    address
+    phone
+  }
+}

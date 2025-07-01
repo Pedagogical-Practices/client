@@ -27,6 +27,7 @@ export interface FormElement {
   description?: string;
   requirementLevel?: "Required" | "Optional" | "Conditional" | string;
   multiple?: boolean;
+  dataSource?: string;
 }
 
 interface FormElementState {

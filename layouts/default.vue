@@ -94,6 +94,18 @@ const items = [
     icon: "mdi-chart-bar",
   },
   {
+    title: "Administrador",
+    value: "admin",
+    to: "/admin",
+    icon: "mdi-account-cog",
+  },
+  {
+    title: "Instituciones",
+    value: "institutions",
+    to: "/admin/institutions",
+    icon: "mdi-bank",
+  },
+  {
     title: "Configuración",
     value: "settings",
     to: "/settings",

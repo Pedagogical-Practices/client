@@ -203,6 +203,7 @@ import {
   type AvailableElementDefinition,
 } from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
+import EntityAutocomplete from "~/components/EntityAutocomplete.vue"; // Import EntityAutocomplete
 import {
   VTextField,
   VTextarea,
@@ -243,6 +244,7 @@ const componentMap: Record<string, any> = {
   button: VBtn,
   "radio-group": VRadioGroup,
   "date-picker": VDatePicker,
+  "institution-select": EntityAutocomplete, // Add institution-select to componentMap
 };
 
 const getComponentName = (type: string): any => {
@@ -365,6 +367,10 @@ const transformedFormJson = computed(() => {
       if (el.type === "button" && el.color) {
         outputEl.color = el.color;
       }
+      // Handle specificType for EntityAutocomplete
+      if (el.type === "institution-select" && el.specificType) {
+        outputEl.specificType = el.specificType;
+      }
       // Clean up undefined/null/empty array values, but keep false and empty strings
       Object.keys(outputEl).forEach((key) => {
         if (
@@ -433,6 +439,7 @@ const updateFormFromJson = async (): Promise<void> => {
           "radio-group",
           "date-picker",
           "time-picker", // Added time-picker
+          "institution-select", // Add institution-select
         ].includes(el.type)
     );
     if (!validElements) {

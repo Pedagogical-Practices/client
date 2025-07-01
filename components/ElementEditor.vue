@@ -131,6 +131,18 @@
                   variant="filled"
                 ></v-text-field>
               </v-col>
+              <v-col cols="12" md="6" v-if="editableElement.type === 'select' || editableElement.type === 'autocomplete'">
+                <v-select
+                  v-model="editableElement.dataSource"
+                  :items="['institutions', 'teachers', 'students', 'courses']"
+                  label="Data Source"
+                  hint="Source for dynamic options (e.g., institutions, teachers)."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                  clearable
+                ></v-select>
+              </v-col>
             </v-row>
           </v-window-item>
 

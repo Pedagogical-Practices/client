@@ -34,6 +34,21 @@
             ></v-date-picker>
           </v-menu>
         </template>
+        <template v-else-if="field.dataSource">
+          <EntityAutocomplete
+            v-model="localFormData[field.variableName]"
+            :dataSource="field.dataSource"
+            :label="field.label"
+            :required="field.required"
+            :disabled="field.disabled"
+            :readonly="field.readonly"
+            :hint="field.hint"
+            :persistent-hint="true"
+            :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
+            variant="outlined"
+            density="compact"
+          ></EntityAutocomplete>
+        </template>
         <component
           v-else
           :is="getComponentName(field.type)"
@@ -81,6 +96,7 @@ import {
   VMenu, // Importar VMenu
 } from 'vuetify/components';
 import type { Form } from '~/types/form'; // Importar el tipo Form
+import EntityAutocomplete from '~/components/EntityAutocomplete.vue';
 
 const props = defineProps<{
   formDefinition: Form;

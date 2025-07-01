@@ -21,7 +21,11 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                <FormList :forms="filteredForms" @view-form="viewForm" />
+                <FormList
+                  :forms="filteredForms"
+                  @view-form="viewForm"
+                  @edit-form="editForm"
+                />
               </v-col>
             </v-row>
           </v-card-text>
@@ -106,6 +110,10 @@ const updateFilter = (value: string) => {
 
 const viewForm = (formId: string) => {
   router.push(`/forms/${formId}`);
+};
+
+const editForm = (formId: string) => {
+  router.push(`/forms/edit/${formId}`);
 };
 
 const createNewForm = () => {

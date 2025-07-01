@@ -80,6 +80,38 @@ export const useFormStore = defineStore("form", {
         console.error("Error fetching form:", error);
       }
     },
+    async fetchFormById(id: string) {
+      try {
+        const {
+          public: { GQL_HOST },
+        } = useRuntimeConfig();
+        const query = await import("~/queries/form.gql?raw").then(
+          (m) => m.default
+        );
+        const response = await fetch(GQL_HOST, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${useAuthStore().token}`,
+          },
+          body: JSON.stringify({
+            query,
+            variables: { id },
+          }),
+        });
+        const data = await response.json();
+        if (data.errors) {
+          throw new Error(data.errors[0]?.message || "Error fetching form");
+        }
+        const form = data.data.form;
+        this.formName = form.name;
+        const formElementStore = useFormElementStore();
+        formElementStore.initializeForm(form.fields);
+      } catch (error: any) {
+        console.error("Error fetching form by id:", error);
+        throw error;
+      }
+    },
   async submitForm(practiceId: string, formId: string, formData: Record<string, any>) {
       try {
         const { public: { GQL_HOST } } = useRuntimeConfig();
