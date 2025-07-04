@@ -17,27 +17,33 @@ export const useSubmissionStore = defineStore("submission", {
   }),
   actions: {
     async createSubmission(input: CreateSubmissionInput): Promise<Submission> {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.mutate({
+        const result = await $apollo.default.mutate({
           mutation: CreateSubmissionMutation,
           variables: { createSubmissionInput: input },
         });
-        return data.createSubmission;
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error creating submission");
+        }
+        return result.data.submitProtocol;
       } catch (error: any) {
         console.error("Error creating submission:", error);
         throw error;
       }
     },
     async fetchSubmission(id: string): Promise<Submission> {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({
+        const result = await $apollo.default.query({
           query: SubmissionQuery,
           variables: { id },
         });
-        this.currentSubmission = data.submission;
-        return data.submission;
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error fetching submission");
+        }
+        this.currentSubmission = result.data.submission;
+        return result.data.submission;
       } catch (error: any) {
         console.error("Error fetching submission:", error);
         throw error;

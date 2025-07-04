@@ -346,7 +346,7 @@ import { useNuxtApp } from "#app";
 
 const formElement = useFormElementStore();
 const dataSourceStore = useDataSourceStore(); // Initialize dataSourceStore
-const { $gqlClient } = useNuxtApp();
+const { $apollo } = useNuxtApp();
 
 const selectedElement = computed(() => formElement.getSelectedElement);
 const editableElement = ref<FormElement | null>(null);

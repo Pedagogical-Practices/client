@@ -20,33 +20,42 @@ export const usePracticeStore = defineStore("practice", {
   }),
   actions: {
     async fetchPractices() {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({ query: PracticesQuery });
-        this.practices = data.practices;
+        const result = await $apollo.default.query({ query: PracticesQuery });
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error fetching practices");
+        }
+        this.practices = result.data.practices;
       } catch (error: any) {
         console.error("Error fetching practices:", error);
       }
     },
 
     async fetchPractice(id: string) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({ query: PracticeQuery, variables: { id } });
-        this.currentPractice = data.practice;
+        const result = await $apollo.default.query({ query: PracticeQuery, variables: { id } });
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error fetching practice");
+        }
+        this.currentPractice = result.data.practice;
       } catch (error: any) {
         console.error("Error fetching practice:", error);
       }
     },
 
     async createPractice(input: CreatePracticeInput) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.mutate({
+        const result = await $apollo.default.mutate({
           mutation: CreatePracticeMutation,
           variables: { createPracticeInput: input },
         });
-        this.practices.push(data.createPractice);
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error creating practice");
+        }
+        this.practices.push(result.data.createPractice);
       } catch (error: any) {
         console.error("Error creating practice:", error);
         throw error;
@@ -54,17 +63,20 @@ export const usePracticeStore = defineStore("practice", {
     },
 
     async updatePractice(input: UpdatePracticeInput) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.mutate({
+        const result = await $apollo.default.mutate({
           mutation: UpdatePracticeMutation,
           variables: { updatePracticeInput: input },
         });
-        const index = this.practices.findIndex((p) => p._id === data.updatePractice._id);
-        if (index !== -1) {
-          this.practices[index] = data.updatePractice;
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error updating practice");
         }
-        this.currentPractice = data.updatePractice;
+        const index = this.practices.findIndex((p) => p._id === result.data.updatePractice._id);
+        if (index !== -1) {
+          this.practices[index] = result.data.updatePractice;
+        }
+        this.currentPractice = result.data.updatePractice;
       } catch (error: any) {
         console.error("Error updating practice:", error);
         throw error;
@@ -72,9 +84,9 @@ export const usePracticeStore = defineStore("practice", {
     },
 
     async removePractice(id: string) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        await $gqlClient.mutate({ mutation: RemovePracticeMutation, variables: { id } });
+        await $apollo.default.mutate({ mutation: RemovePracticeMutation, variables: { id } });
         this.practices = this.practices.filter((p) => p._id !== id);
       } catch (error: any) {
         console.error("Error removing practice:", error);

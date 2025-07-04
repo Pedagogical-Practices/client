@@ -29,14 +29,14 @@ export const useDashboardStore = defineStore('dashboard', {
     async fetchAdminCoordinatorDashboardData() {
       this.loading = true;
       this.error = null;
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
 
       try {
         const [usersCountData, practicesCountData, protocolsCountData, formsCountData] = await Promise.all([
-          client.query({ query: UsersCountQuery }),
-          client.query({ query: PracticesCountQuery }),
-          client.query({ query: ProtocolsCountQuery }),
-          client.query({ query: FormsCountQuery }),
+          $apollo.default.query({ query: UsersCountQuery }),
+          $apollo.default.query({ query: PracticesCountQuery }),
+          $apollo.default.query({ query: ProtocolsCountQuery }),
+          $apollo.default.query({ query: FormsCountQuery }),
         ]);
 
         this.usersCount = usersCountData.data.usersCount;

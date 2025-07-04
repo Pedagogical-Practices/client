@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { useNuxtApp } from "#app";
-import type { Course, CreateCourseInput } from "~/types/course"; // Asume que tienes estos tipos
+import type { Course, CreateCourseInput } from "~/types/course";
 
 import CoursesQuery from "~/queries/courses.gql?raw";
 import CourseQuery from "~/queries/course.gql?raw";
@@ -18,36 +18,42 @@ export const useCourseStore = defineStore("course", {
   }),
   actions: {
     async fetchCourses() {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({ query: CoursesQuery });
-        this.courses = data.courses;
+        const result = await $apollo.default.query({ query: CoursesQuery });
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error fetching courses");
+        }
+        this.courses = result.data.courses;
       } catch (error: any) {
         console.error("Error fetching courses:", error);
       }
     },
 
     async fetchCourse(id: string) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({
-          query: CourseQuery,
-          variables: { id },
-        });
-        this.currentCourse = data.course;
+        const result = await $apollo.default.query({ query: CourseQuery, variables: { id } });
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error fetching course");
+        }
+        this.currentCourse = result.data.course;
       } catch (error: any) {
         console.error("Error fetching course:", error);
       }
     },
 
     async createCourse(input: CreateCourseInput) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.mutate({
+        const result = await $apollo.default.mutate({
           mutation: CreateCourseMutation,
           variables: { createCourseInput: input },
         });
-        this.courses.push(data.createCourse);
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error creating course");
+        }
+        this.courses.push(result.data.createCourse);
       } catch (error: any) {
         console.error("Error creating course:", error);
         throw error;

@@ -18,33 +18,42 @@ export const useProtocolStore = defineStore("protocol", {
   }),
   actions: {
     async fetchProtocols() {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({ query: ProtocolsQuery });
-        this.protocols = data.protocols;
+        const result = await $apollo.default.query({ query: ProtocolsQuery });
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error fetching protocols");
+        }
+        this.protocols = result.data.protocols;
       } catch (error: any) {
         console.error("fetchProtocols: Error:", error);
       }
     },
 
     async fetchProtocol(id: string) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({ query: ProtocolQuery, variables: { id } });
-        this.currentProtocol = data.protocol;
+        const result = await $apollo.default.query({ query: ProtocolQuery, variables: { id } });
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error fetching protocol");
+        }
+        this.currentProtocol = result.data.protocol;
       } catch (error: any) {
         console.error("Error fetching protocol:", error);
       }
     },
 
     async createProtocol(input: CreateProtocolInput) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.mutate({
+        const result = await $apollo.default.mutate({
           mutation: CreateProtocolMutation,
           variables: { createProtocolInput: input },
         });
-        this.protocols.push(data.createProtocol);
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error creating protocol");
+        }
+        this.protocols.push(result.data.createProtocol);
       } catch (error: any) {
         console.error("Error creating protocol:", error);
         throw error;

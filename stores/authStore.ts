@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import { useNuxtApp } from "#app";
+import { navigateTo } from "nuxt/app";
 import type { UserDto, CreateUserInput, UpdateUserInput } from "~/types/user";
+
 import CreateUserMutation from "~/queries/register.gql?raw";
 import LoginMutation from "~/queries/login.gql?raw";
 import UpdateUserMutation from "~/queries/updateUser.gql?raw";
 import MeQuery from "~/queries/me.gql?raw";
-import { navigateTo } from "nuxt/app";
 
 interface AuthState {
   user: UserDto | null;
@@ -19,17 +20,18 @@ export const useAuthStore = defineStore("auth", {
   }),
   actions: {
     async login(email: string, password: string): Promise<void> {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.mutate({
+        const result = await $apollo.default.mutate({
           mutation: LoginMutation,
           variables: { email, password },
         });
-        if (!data.login) throw new Error("Login failed");
-
-        this.user = data.login.user;
-        this.token = data.login.token;
-
+        
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error en login");
+        }
+        this.user = result.data.login.user;
+        this.token = result.data.login.token;
         if (this.token && process.client) {
           localStorage.setItem("token", this.token);
           await navigateTo(this.user?.role === "admin" ? "/editor" : "/");
@@ -41,17 +43,18 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async register(userInput: CreateUserInput): Promise<void> {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.mutate({
+        const result = await $apollo.default.mutate({
           mutation: CreateUserMutation,
           variables: { createUserInput: userInput },
         });
-        if (!data.createUser) throw new Error("Registration failed");
-
-        this.user = data.createUser.user;
-        this.token = data.createUser.token;
-
+        
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error en registro");
+        }
+        this.user = result.data.createUser.user;
+        this.token = result.data.createUser.token;
         if (this.token && process.client) {
           localStorage.setItem("token", this.token);
           await navigateTo(this.user?.role === "admin" ? "/editor" : "/");
@@ -63,13 +66,22 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async updateProfile(userInput: UpdateUserInput): Promise<void> {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.mutate({
+        const result = await $apollo.default.mutate({
           mutation: UpdateUserMutation,
           variables: { updateUserInput: userInput },
+          context: {
+            headers: {
+              Authorization: `Bearer ${this.token?.trim()}`,
+            },
+          },
         });
-        this.user = data.updateUser;
+        
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error al actualizar perfil");
+        }
+        this.user = result.data.updateUser;
       } catch (error: any) {
         console.error("authStore: UpdateProfile error:", error);
         throw new Error(error.message || "Error al actualizar perfil");
@@ -82,26 +94,34 @@ export const useAuthStore = defineStore("auth", {
       if (process.client) {
         localStorage.removeItem("token");
       }
-      // Opcional: Limpiar la caché de Apollo
-      const { $gqlClient } = useNuxtApp();
-      $gqlClient.clearStore();
+      const { $apollo } = useNuxtApp();
+      $apollo.default.clearStore();
       navigateTo("/login");
     },
 
     async loadUserFromToken(): Promise<void> {
-      if (!process.client || !localStorage.getItem("token")) return;
+      if (!process.client) return;
+      const token: string | null = localStorage.getItem("token");
+      if (!token) return;
       
-      this.token = localStorage.getItem("token");
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
 
       try {
-        const { data } = await $gqlClient.query({ query: MeQuery, fetchPolicy: 'network-only' });
-        if (!data.me) {
+        const result = await $apollo.default.query({ query: MeQuery, fetchPolicy: 'network-only', context: { headers: { Authorization: `Bearer ${token.trim()}` } } });
+        
+        if (result.errors) {
+          console.warn("authStore: loadUserFromToken errors:", result.errors);
           this.logout();
           return;
         }
-        this.user = data.me;
-      } catch (error) {
+        if (!result.data?.me) {
+          console.warn("authStore: No user data in me query response:", result);
+          this.logout();
+          return;
+        }
+        this.user = result.data.me;
+        this.token = token;
+      } catch (error: any) {
         console.error("authStore: LoadUser error:", error);
         this.logout();
       }

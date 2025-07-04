@@ -19,13 +19,13 @@ export const useInstitutionStore = defineStore('institution', {
   }),
   actions: {
     async fetchInstitutions(search?: string) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({
-          query: InstitutionsQuery,
-          variables: { search },
-        });
-        this.institutions = data.institutions;
+        const result = await $apollo.default.query({ query: InstitutionsQuery, variables: { search } });
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || 'Error fetching institutions');
+        }
+        this.institutions = result.data.institutions;
       } catch (error: any) {
         console.error('Error fetching institutions:', error);
         throw error;
@@ -33,13 +33,16 @@ export const useInstitutionStore = defineStore('institution', {
     },
 
     async createInstitution(institution: Omit<Institution, '_id'>) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.mutate({
+        const result = await $apollo.default.mutate({
           mutation: CreateInstitutionMutation,
           variables: { createInstitutionInput: institution },
         });
-        this.institutions.push(data.createInstitution);
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || 'Error creating institution');
+        }
+        this.institutions.push(result.data.createInstitution);
       } catch (error: any) {
         console.error('Error creating institution:', error);
         throw error;
@@ -47,15 +50,18 @@ export const useInstitutionStore = defineStore('institution', {
     },
 
     async updateInstitution(institution: Institution) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.mutate({
+        const result = await $apollo.default.mutate({
           mutation: UpdateInstitutionMutation,
           variables: { updateInstitutionInput: institution },
         });
-        const index = this.institutions.findIndex(i => i._id === data.updateInstitution._id);
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || 'Error updating institution');
+        }
+        const index = this.institutions.findIndex(i => i._id === result.data.updateInstitution._id);
         if (index !== -1) {
-          this.institutions.splice(index, 1, data.updateInstitution);
+          this.institutions.splice(index, 1, result.data.updateInstitution);
         }
       } catch (error: any) {
         console.error('Error updating institution:', error);
@@ -64,9 +70,9 @@ export const useInstitutionStore = defineStore('institution', {
     },
 
     async deleteInstitution(id: string) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        await $gqlClient.mutate({
+        await $apollo.default.mutate({
           mutation: DeleteInstitutionMutation,
           variables: { id },
         });
@@ -78,13 +84,16 @@ export const useInstitutionStore = defineStore('institution', {
     },
 
     async fetchInstitutionById(id: string): Promise<Institution | null> {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({
+        const result = await $apollo.default.query({
           query: InstitutionQuery,
           variables: { id },
         });
-        return data.institution;
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || 'Error fetching institution by ID');
+        }
+        return result.data.institution;
       } catch (error: any) {
         console.error('Error fetching institution by ID:', error);
         throw error;

@@ -24,30 +24,39 @@ export const useFormStore = defineStore("form", {
   }),
   actions: {
     async fetchForms() {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({ query: FormsQuery });
-        this.forms = data.forms;
+        const result = await $apollo.default.query({ query: FormsQuery });
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error fetching forms");
+        }
+        this.forms = result.data.forms;
       } catch (error: any) {
         console.error("Error fetching forms:", error);
       }
     },
 
     async fetchForm(id: string) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({ query: FormQuery, variables: { id } });
-        this.currentForm = data.form;
+        const result = await $apollo.default.query({ query: FormQuery, variables: { id } });
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error fetching form");
+        }
+        this.currentForm = result.data.form;
       } catch (error: any) {
         console.error("Error fetching form:", error);
       }
     },
 
     async fetchFormById(id: string) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       try {
-        const { data } = await $gqlClient.query({ query: FormQuery, variables: { id } });
-        const form = data.form;
+        const result = await $apollo.default.query({ query: FormQuery, variables: { id } });
+        if (result.errors) {
+          throw new Error(result.errors[0]?.message || "Error fetching form");
+        }
+        const form = result.data.form;
         this.formName = form.name;
         const formElementStore = useFormElementStore();
         formElementStore.initializeForm(form.fields);
@@ -58,7 +67,7 @@ export const useFormStore = defineStore("form", {
     },
 
     async submitForm(practiceId: string, formId: string, formData: Record<string, any>) {
-      const { $gqlClient } = useNuxtApp();
+      const { $apollo } = useNuxtApp();
       const practiceStore = usePracticeStore();
       
       if (!practiceStore.currentPractice?.protocol?._id) {
@@ -68,7 +77,7 @@ export const useFormStore = defineStore("form", {
 
       try {
         // Paso 1: Crear la Submission
-        const { data: submitData } = await client.mutate({
+        const submitResult = await $apollo.default.mutate({
           mutation: SubmitProtocolMutation,
           variables: {
             createSubmissionInput: {
@@ -78,10 +87,13 @@ export const useFormStore = defineStore("form", {
             },
           },
         });
-        const submissionId = submitData.submitProtocol._id;
+        if (submitResult.errors) {
+          throw new Error(submitResult.errors[0]?.message || 'Error submitting form data');
+        }
+        const submissionId = submitResult.data.submitProtocol._id;
 
         // Paso 2: Registrar la Submission en la Practice
-        await client.mutate({
+        const registerResult = await $apollo.default.mutate({
           mutation: RegisterFormSubmissionMutation,
           variables: {
             formId,
@@ -89,6 +101,9 @@ export const useFormStore = defineStore("form", {
             submissionId,
           },
         });
+        if (registerResult.errors) {
+          throw new Error(registerResult.errors[0]?.message || 'Error registering form submission with practice');
+        }
 
         console.log('Formulario guardado y registrado exitosamente.');
       } catch (error: any) {
