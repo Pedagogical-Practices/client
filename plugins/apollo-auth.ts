@@ -2,21 +2,25 @@ import { defineNuxtPlugin } from '#app';
 import { useAuthStore } from '~/stores/authStore';
 
 export default defineNuxtPlugin(async (nuxtApp) => {
-  const authStore = useAuthStore();
+  // Asegúrate de que este plugin solo se ejecute en el cliente
+  if (process.client) {
+    const authStore = useAuthStore();
 
-  nuxtApp.hook('app:created', () => {
-    if (nuxtApp.$graphql) {
-      nuxtApp.$graphql.setHeaders({
-        authorization: authStore.token ? `Bearer ${authStore.token}` : '',
-      });
+    // Hook para interceptar cada solicitud Apollo y añadir el token
+    nuxtApp.hook('apollo:request', ({ setContext }) => {
+      setContext(({ headers }) => ({
+        headers: {
+          ...headers,
+          authorization: authStore.token ? `Bearer ${authStore.token}` : '',
+        },
+      }));
+    });
 
-      authStore.$subscribe((mutation, state) => {
-        nuxtApp.$graphql.setHeaders({
-          authorization: state.token ? `Bearer ${state.token}` : '',
-        });
-      });
-    } else {
-      console.warn('nuxtApp.$graphql no está disponible en app:created');
-    }
-  });
+    // Observar cambios en el token del store para actualizar las cabeceras dinámicamente
+    authStore.$subscribe((mutation, state) => {
+      // No necesitamos llamar a setHeaders aquí directamente en el cliente de Apollo
+      // porque el hook apollo:request se encargará de obtener el token más reciente
+      // en cada solicitud.
+    });
+  }
 });
