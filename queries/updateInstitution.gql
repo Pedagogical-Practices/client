@@ -1,4 +1,4 @@
-mutation updateInstitution($updateInstitutionInput: UpdateInstitutionInput!) {
+mutation UpdateInstitution($updateInstitutionInput: UpdateInstitutionInput!) {
   updateInstitution(updateInstitutionInput: $updateInstitutionInput) {
     _id
     name

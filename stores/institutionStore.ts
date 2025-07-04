@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia';
-import { useAuthStore } from './authStore';
+import { useNuxtApp } from '#app';
+import type { Institution } from '~/types/institution'; // Asegúrate de tener este tipo definido
 
-export interface Institution {
-  _id?: string;
-  name: string;
-  address?: string;
-  phone?: string;
-}
+// Importar las consultas
+import InstitutionsQuery from '~/queries/institutions.gql?raw';
+import InstitutionQuery from '~/queries/institution.gql?raw';
+import CreateInstitutionMutation from '~/queries/createInstitution.gql?raw';
+import UpdateInstitutionMutation from '~/queries/updateInstitution.gql?raw';
+import DeleteInstitutionMutation from '~/queries/deleteInstitution.gql?raw';
 
 interface InstitutionState {
   institutions: Institution[];
@@ -18,75 +19,27 @@ export const useInstitutionStore = defineStore('institution', {
   }),
   actions: {
     async fetchInstitutions(search?: string) {
+      const { $gqlClient } = useNuxtApp();
       try {
-        const { public: { GQL_HOST } } = useRuntimeConfig();
-        const authStore = useAuthStore();
-        const query = `
-          query Institutions($search: String) {
-            institutions(search: $search) {
-              _id
-              name
-              address
-              phone
-            }
-          }
-        `;
-        const response = await fetch(GQL_HOST, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`,
-          },
-          body: JSON.stringify({
-            query,
-            variables: { search },
-          }),
+        const { data } = await $gqlClient.query({
+          query: InstitutionsQuery,
+          variables: { search },
         });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || 'Error fetching institutions');
-        }
-        this.institutions = data.data.institutions;
+        this.institutions = data.institutions;
       } catch (error: any) {
         console.error('Error fetching institutions:', error);
         throw error;
       }
     },
 
-    async createInstitution(institution: Institution) {
+    async createInstitution(institution: Omit<Institution, '_id'>) {
+      const { $gqlClient } = useNuxtApp();
       try {
-        const { public: { GQL_HOST } } = useRuntimeConfig();
-        const authStore = useAuthStore();
-
-        // Crear un nuevo objeto sin el campo _id para la mutación
-        const { _id, ...institutionData } = institution;
-
-        const mutation = `
-          mutation CreateInstitution($createInstitutionInput: CreateInstitutionInput!) {
-            createInstitution(createInstitutionInput: $createInstitutionInput) {
-              _id
-              name
-              address
-              phone
-            }
-          }
-        `;
-        const response = await fetch(GQL_HOST, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`,
-          },
-          body: JSON.stringify({
-            query: mutation,
-            variables: { createInstitutionInput: institutionData }, // Usar institutionData aquí
-          }),
+        const { data } = await $gqlClient.mutate({
+          mutation: CreateInstitutionMutation,
+          variables: { createInstitutionInput: institution },
         });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || 'Error creating institution');
-        }
-        this.institutions.push(data.data.createInstitution);
+        this.institutions.push(data.createInstitution);
       } catch (error: any) {
         console.error('Error creating institution:', error);
         throw error;
@@ -94,37 +47,15 @@ export const useInstitutionStore = defineStore('institution', {
     },
 
     async updateInstitution(institution: Institution) {
+      const { $gqlClient } = useNuxtApp();
       try {
-        const { public: { GQL_HOST } } = useRuntimeConfig();
-        const authStore = useAuthStore();
-        const mutation = `
-          mutation UpdateInstitution($updateInstitutionInput: UpdateInstitutionInput!) {
-            updateInstitution(updateInstitutionInput: $updateInstitutionInput) {
-              _id
-              name
-              address
-              phone
-            }
-          }
-        `;
-        const response = await fetch(GQL_HOST, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`,
-          },
-          body: JSON.stringify({
-            query: mutation,
-            variables: { updateInstitutionInput: institution },
-          }),
+        const { data } = await $gqlClient.mutate({
+          mutation: UpdateInstitutionMutation,
+          variables: { updateInstitutionInput: institution },
         });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || 'Error updating institution');
-        }
-        const index = this.institutions.findIndex(i => i._id === data.data.updateInstitution._id);
+        const index = this.institutions.findIndex(i => i._id === data.updateInstitution._id);
         if (index !== -1) {
-          this.institutions.splice(index, 1, data.data.updateInstitution);
+          this.institutions.splice(index, 1, data.updateInstitution);
         }
       } catch (error: any) {
         console.error('Error updating institution:', error);
@@ -133,32 +64,13 @@ export const useInstitutionStore = defineStore('institution', {
     },
 
     async deleteInstitution(id: string) {
+      const { $gqlClient } = useNuxtApp();
       try {
-        const { public: { GQL_HOST } } = useRuntimeConfig();
-        const authStore = useAuthStore();
-        const mutation = `
-          mutation DeleteInstitution($id: String!) {
-            deleteInstitution(id: $id)
-          }
-        `;
-        const response = await fetch(GQL_HOST, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`,
-          },
-          body: JSON.stringify({
-            query: mutation,
-            variables: { id },
-          }),
+        await $gqlClient.mutate({
+          mutation: DeleteInstitutionMutation,
+          variables: { id },
         });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || 'Error deleting institution');
-        }
-        if (data.data.deleteInstitution) {
-          this.institutions = this.institutions.filter(i => i._id !== id);
-        }
+        this.institutions = this.institutions.filter(i => i._id !== id);
       } catch (error: any) {
         console.error('Error deleting institution:', error);
         throw error;
@@ -166,35 +78,13 @@ export const useInstitutionStore = defineStore('institution', {
     },
 
     async fetchInstitutionById(id: string): Promise<Institution | null> {
+      const { $gqlClient } = useNuxtApp();
       try {
-        const { public: { GQL_HOST } } = useRuntimeConfig();
-        const authStore = useAuthStore();
-        const query = `
-          query Institution($id: String!) {
-            institution(id: $id) {
-              _id
-              name
-              address
-              phone
-            }
-          }
-        `;
-        const response = await fetch(GQL_HOST, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`,
-          },
-          body: JSON.stringify({
-            query,
-            variables: { id },
-          }),
+        const { data } = await $gqlClient.query({
+          query: InstitutionQuery,
+          variables: { id },
         });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || 'Error fetching institution by ID');
-        }
-        return data.data.institution;
+        return data.institution;
       } catch (error: any) {
         console.error('Error fetching institution by ID:', error);
         throw error;

@@ -1,18 +1,14 @@
 import { defineStore } from "pinia";
-import { useAuthStore } from "./authStore";
+import { useNuxtApp } from "#app";
+import type { Form } from "~/types/form";
 import type { FormElement } from "~/stores/formElementStore";
+import { useFormElementStore } from "~/stores/formElementStore";
+import { usePracticeStore } from "~/stores/practiceStore";
 
-export interface Form {
-  _id: string;
-  name: string;
-  fields: FormElement[];
-  createdBy: {
-    id: string;
-    name?: string;
-    email?: string;
-  };
-  createdAt: string;
-}
+import FormsQuery from "~/queries/forms.gql?raw";
+import FormQuery from "~/queries/form.gql?raw";
+import SubmitProtocolMutation from '~/queries/submitProtocol.gql?raw';
+import RegisterFormSubmissionMutation from '~/queries/registerFormSubmission.gql?raw';
 
 interface FormState {
   forms: Form[];
@@ -28,82 +24,30 @@ export const useFormStore = defineStore("form", {
   }),
   actions: {
     async fetchForms() {
+      const { $gqlClient } = useNuxtApp();
       try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const query = await import("~/queries/forms.gql?raw").then(
-          (m) => m.default
-        );
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({ query }),
-        });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || "Error fetching forms");
-        }
-        this.forms = data.data.forms;
+        const { data } = await $gqlClient.query({ query: FormsQuery });
+        this.forms = data.forms;
       } catch (error: any) {
         console.error("Error fetching forms:", error);
       }
     },
+
     async fetchForm(id: string) {
+      const { $gqlClient } = useNuxtApp();
       try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const query = await import("~/queries/form.gql?raw").then(
-          (m) => m.default
-        );
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({
-            query,
-            variables: { id },
-          }),
-        });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || "Error fetching form");
-        }
-        this.currentForm = data.data.form;
+        const { data } = await $gqlClient.query({ query: FormQuery, variables: { id } });
+        this.currentForm = data.form;
       } catch (error: any) {
         console.error("Error fetching form:", error);
       }
     },
+
     async fetchFormById(id: string) {
+      const { $gqlClient } = useNuxtApp();
       try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const query = await import("~/queries/form.gql?raw").then(
-          (m) => m.default
-        );
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({
-            query,
-            variables: { id },
-          }),
-        });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || "Error fetching form");
-        }
-        const form = data.data.form;
+        const { data } = await $gqlClient.query({ query: FormQuery, variables: { id } });
+        const form = data.form;
         this.formName = form.name;
         const formElementStore = useFormElementStore();
         formElementStore.initializeForm(form.fields);
@@ -112,73 +56,44 @@ export const useFormStore = defineStore("form", {
         throw error;
       }
     },
-  async submitForm(practiceId: string, formId: string, formData: Record<string, any>) {
+
+    async submitForm(practiceId: string, formId: string, formData: Record<string, any>) {
+      const { $gqlClient } = useNuxtApp();
+      const practiceStore = usePracticeStore();
+      
+      if (!practiceStore.currentPractice?.protocol?._id) {
+        throw new Error('Protocol ID not found for current practice.');
+      }
+      const protocolId = practiceStore.currentPractice.protocol._id;
+
       try {
-        const { public: { GQL_HOST } } = useRuntimeConfig();
-        const authStore = useAuthStore();
-        const practiceStore = usePracticeStore();
-
-        if (!practiceStore.currentPractice?.protocol?._id) {
-          throw new Error('Protocol ID not found for current practice.');
-        }
-        const protocolId = practiceStore.currentPractice.protocol._id;
-
         // Paso 1: Crear la Submission
-        const submitProtocolMutation = await import('~/queries/submitProtocol.gql?raw').then(m => m.default);
-        const submitResponse = await fetch(GQL_HOST, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`,
-          },
-          body: JSON.stringify({
-            query: submitProtocolMutation,
-            variables: {
-              createSubmissionInput: {
-                formId,
-                protocolId,
-                data: formData,
-              },
+        const { data: submitData } = await client.mutate({
+          mutation: SubmitProtocolMutation,
+          variables: {
+            createSubmissionInput: {
+              formId,
+              protocolId,
+              data: formData,
             },
-          }),
+          },
         });
-        const submitData = await submitResponse.json();
-
-        if (submitData.errors) {
-          throw new Error(submitData.errors[0]?.message || 'Error submitting form data');
-        }
-        const submissionId = submitData.data.submitProtocol._id;
+        const submissionId = submitData.submitProtocol._id;
 
         // Paso 2: Registrar la Submission en la Practice
-        const registerFormSubmissionMutation = await import('~/queries/registerFormSubmission.gql?raw').then(m => m.default);
-        const registerResponse = await fetch(GQL_HOST, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`,
+        await client.mutate({
+          mutation: RegisterFormSubmissionMutation,
+          variables: {
+            formId,
+            practiceId,
+            submissionId,
           },
-          body: JSON.stringify({
-            query: registerFormSubmissionMutation,
-            variables: {
-              formId,
-              practiceId,
-              submissionId,
-            },
-          }),
         });
-        const registerData = await registerResponse.json();
-
-        if (registerData.errors) {
-          throw new Error(registerData.errors[0]?.message || 'Error registering form submission with practice');
-        }
-
-        // Opcional: Actualizar la práctica en la store si es necesario
-        // practiceStore.currentPractice = registerData.data.registerFormSubmission;
 
         console.log('Formulario guardado y registrado exitosamente.');
       } catch (error: any) {
         console.error('Error al guardar el formulario:', error);
-        throw error; // Re-lanzar el error para que la UI pueda manejarlo
+        throw error;
       }
     },
   },

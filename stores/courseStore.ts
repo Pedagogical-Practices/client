@@ -1,18 +1,10 @@
 import { defineStore } from "pinia";
-import { useAuthStore } from "./authStore";
+import { useNuxtApp } from "#app";
+import type { Course, CreateCourseInput } from "~/types/course"; // Asume que tienes estos tipos
 
-export interface Course {
-  _id: string;
-  name: string;
-  institution: string;
-  assignedGroups: string[];
-  createdBy: {
-    _id: string;
-    name: string;
-    email: string;
-  };
-  createdAt: string;
-}
+import CoursesQuery from "~/queries/courses.gql?raw";
+import CourseQuery from "~/queries/course.gql?raw";
+import CreateCourseMutation from "~/queries/createCourse.gql?raw";
 
 interface CourseState {
   courses: Course[];
@@ -26,96 +18,36 @@ export const useCourseStore = defineStore("course", {
   }),
   actions: {
     async fetchCourses() {
+      const { $gqlClient } = useNuxtApp();
       try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const query = await import("~/queries/courses.gql?raw").then(
-          (m) => m.default
-        );
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({ query }),
-        });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || "Error fetching courses");
-        }
-        this.courses = data.data.courses;
+        const { data } = await $gqlClient.query({ query: CoursesQuery });
+        this.courses = data.courses;
       } catch (error: any) {
         console.error("Error fetching courses:", error);
       }
     },
+
     async fetchCourse(id: string) {
+      const { $gqlClient } = useNuxtApp();
       try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const query = await import("~/queries/course.gql?raw").then(
-          (m) => m.default
-        );
-
-        console.log("fetchCourses: Token:", useAuthStore().token);
-
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({
-            query,
-            variables: { id },
-          }),
+        const { data } = await $gqlClient.query({
+          query: CourseQuery,
+          variables: { id },
         });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || "Error fetching course");
-        }
-        this.currentCourse = data.data.course;
+        this.currentCourse = data.course;
       } catch (error: any) {
         console.error("Error fetching course:", error);
       }
     },
-    async createCourse(input: {
-      name: string;
-      institution: string;
-      assignedGroups: string[];
-    }) {
+
+    async createCourse(input: CreateCourseInput) {
+      const { $gqlClient } = useNuxtApp();
       try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const mutation = await import("~/queries/createCourse.gql?raw").then(
-          (m) => m.default
-        );
-        const variables = {
-          createCourseInput: {
-            name: input.name,
-            institution: input.institution,
-            assignedGroups: input.assignedGroups,
-          },
-        };
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({
-            query: mutation,
-            variables,
-          }),
+        const { data } = await $gqlClient.mutate({
+          mutation: CreateCourseMutation,
+          variables: { createCourseInput: input },
         });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || "Error creating course");
-        }
-        this.courses.push(data.data.createCourse);
+        this.courses.push(data.createCourse);
       } catch (error: any) {
         console.error("Error creating course:", error);
         throw error;

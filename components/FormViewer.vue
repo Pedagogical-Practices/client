@@ -49,6 +49,22 @@
             density="compact"
           ></EntityAutocomplete>
         </template>
+        <template v-else-if="field.type === 'dynamic-select'">
+          <DynamicSelect
+            v-model="localFormData[field.variableName]"
+            :dataSource="field.dataSource"
+            :label="field.label"
+            :options="field.options"
+            item-title="label"
+            item-value="value"
+            :required="field.required"
+            :disabled="field.disabled"
+            :readonly="field.readonly"
+            :hint="field.hint"
+            :persistent-hint="true"
+            :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
+          ></DynamicSelect>
+        </template>
         <component
           v-else
           :is="getComponentName(field.type)"
@@ -97,6 +113,7 @@ import {
 } from 'vuetify/components';
 import type { Form } from '~/types/form'; // Importar el tipo Form
 import EntityAutocomplete from '~/components/EntityAutocomplete.vue';
+import DynamicSelect from '~/components/forms/DynamicSelect.vue';
 
 const props = defineProps<{
   formDefinition: Form;
@@ -131,6 +148,7 @@ const componentMap: Record<string, any> = {
   checkbox: VCheckbox,
   select: VSelect,
   'radio-group': VRadioGroup,
+  'dynamic-select': DynamicSelect,
   // 'date-picker': VDatePicker, // Eliminado de aquí, se maneja con VMenu y VTextField
   // 'time-picker': VTextField, // Necesitará un componente específico o un VTextField con formato
 };

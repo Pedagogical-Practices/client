@@ -1,4 +1,4 @@
-query institutions($search: String) {
+query Institutions($search: String) {
   institutions(search: $search) {
     _id
     name

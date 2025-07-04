@@ -21,7 +21,6 @@ export default defineNuxtConfig({
     "@nuxt/test-utils",
     "@nuxt/ui",
     "@pinia/nuxt",
-    "@nuxtjs/apollo",
     "pinia-plugin-persistedstate/nuxt",
   ],
   vite: {
@@ -41,7 +40,7 @@ export default defineNuxtConfig({
   },
   "graphql-client": {
     watch: true,
-    autoImport: true,
+    autoImport: false,
     functionPrefix: "Gql",
     documentPaths: ["./queries"],
     preferGETQueries: false,

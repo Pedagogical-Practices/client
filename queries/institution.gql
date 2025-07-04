@@ -1,4 +1,4 @@
-query institution($id: String!) {
+query Institution($id: String!) {
   institution(id: $id) {
     _id
     name

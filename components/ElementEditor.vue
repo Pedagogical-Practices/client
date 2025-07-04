@@ -337,16 +337,16 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
-import { Gql } from "#graphql-client"; // Importa la instancia global de Gql
 import {
   useFormElementStore,
   type FormElement,
 } from "~/stores/formElementStore";
 import { useDataSourceStore } from "~/stores/dataSourceStore"; // Import useDataSourceStore
+import { useNuxtApp } from "#app";
 
 const formElement = useFormElementStore();
 const dataSourceStore = useDataSourceStore(); // Initialize dataSourceStore
-const client = Gql().client; // Accede al cliente de Apollo a través de Gql().client
+const { $gqlClient } = useNuxtApp();
 
 const selectedElement = computed(() => formElement.getSelectedElement);
 const editableElement = ref<FormElement | null>(null);
