@@ -56,9 +56,7 @@ import { useAuthStore } from "~/stores/authStore";
 import FormList from "~/components/forms/FormList.vue";
 import FormFilter from "~/components/forms/FormFilter.vue";
 
-definePageMeta({
-  middleware: ["auth"],
-});
+definePageMeta({});
 
 const router = useRouter();
 const formStore = useFormStore();

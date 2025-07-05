@@ -134,9 +134,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { usePracticeStore } from '~/stores/practiceStore';
 import { PracticeStatus } from '~/types/practice';
 
-definePageMeta({
-  middleware: ['auth'], // Solo usuarios autenticados pueden ver detalles
-});
+definePageMeta({});
 
 const route = useRoute();
 const router = useRouter();

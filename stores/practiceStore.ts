@@ -1,12 +1,12 @@
 import { defineStore } from "pinia";
-import { useNuxtApp } from "#app";
 import type { Practice, CreatePracticeInput, UpdatePracticeInput } from "~/types/practice";
 
-import PracticesQuery from "~/queries/practices.gql?raw";
-import PracticeQuery from "~/queries/practice.gql?raw";
-import CreatePracticeMutation from "~/queries/createPractice.gql?raw";
-import UpdatePracticeMutation from "~/queries/updatePractice.gql?raw";
-import RemovePracticeMutation from "~/queries/removePractice.gql?raw";
+// Import GQL documents
+import PracticesQuery from "~/queries/practices.gql";
+import PracticeQuery from "~/queries/practice.gql";
+import CreatePracticeMutation from "~/queries/createPractice.gql";
+import UpdatePracticeMutation from "~/queries/updatePractice.gql";
+import RemovePracticeMutation from "~/queries/removePractice.gql";
 
 interface PracticeState {
   practices: Practice[];
@@ -20,42 +20,37 @@ export const usePracticeStore = defineStore("practice", {
   }),
   actions: {
     async fetchPractices() {
-      const { $apollo } = useNuxtApp();
-      try {
-        const result = await $apollo.default.query({ query: PracticesQuery });
-        if (result.errors) {
-          throw new Error(result.errors[0]?.message || "Error fetching practices");
-        }
-        this.practices = result.data.practices;
-      } catch (error: any) {
-        console.error("Error fetching practices:", error);
+      const { data, error } = await useAsyncQuery(PracticesQuery);
+      if (error.value) {
+        console.error("Error fetching practices:", error.value);
+        return;
+      }
+      if (data.value?.practices) {
+        this.practices = data.value.practices;
       }
     },
 
     async fetchPractice(id: string) {
-      const { $apollo } = useNuxtApp();
-      try {
-        const result = await $apollo.default.query({ query: PracticeQuery, variables: { id } });
-        if (result.errors) {
-          throw new Error(result.errors[0]?.message || "Error fetching practice");
-        }
-        this.currentPractice = result.data.practice;
-      } catch (error: any) {
-        console.error("Error fetching practice:", error);
+      const { data, error } = await useAsyncQuery(PracticeQuery, { id });
+      if (error.value) {
+        console.error("Error fetching practice:", error.value);
+        return;
+      }
+      if (data.value?.practice) {
+        this.currentPractice = data.value.practice;
       }
     },
 
     async createPractice(input: CreatePracticeInput) {
-      const { $apollo } = useNuxtApp();
+      const { mutate } = useMutation(CreatePracticeMutation);
       try {
-        const result = await $apollo.default.mutate({
-          mutation: CreatePracticeMutation,
-          variables: { createPracticeInput: input },
-        });
-        if (result.errors) {
+        const result = await mutate({ createPracticeInput: input });
+        if (result?.errors) {
           throw new Error(result.errors[0]?.message || "Error creating practice");
         }
-        this.practices.push(result.data.createPractice);
+        if (result?.data?.createPractice) {
+          this.practices.push(result.data.createPractice);
+        }
       } catch (error: any) {
         console.error("Error creating practice:", error);
         throw error;
@@ -63,20 +58,19 @@ export const usePracticeStore = defineStore("practice", {
     },
 
     async updatePractice(input: UpdatePracticeInput) {
-      const { $apollo } = useNuxtApp();
+      const { mutate } = useMutation(UpdatePracticeMutation);
       try {
-        const result = await $apollo.default.mutate({
-          mutation: UpdatePracticeMutation,
-          variables: { updatePracticeInput: input },
-        });
-        if (result.errors) {
+        const result = await mutate({ updatePracticeInput: input });
+        if (result?.errors) {
           throw new Error(result.errors[0]?.message || "Error updating practice");
         }
-        const index = this.practices.findIndex((p) => p._id === result.data.updatePractice._id);
-        if (index !== -1) {
-          this.practices[index] = result.data.updatePractice;
+        if (result?.data?.updatePractice) {
+          const index = this.practices.findIndex((p) => p._id === result.data.updatePractice._id);
+          if (index !== -1) {
+            this.practices[index] = result.data.updatePractice;
+          }
+          this.currentPractice = result.data.updatePractice;
         }
-        this.currentPractice = result.data.updatePractice;
       } catch (error: any) {
         console.error("Error updating practice:", error);
         throw error;
@@ -84,9 +78,12 @@ export const usePracticeStore = defineStore("practice", {
     },
 
     async removePractice(id: string) {
-      const { $apollo } = useNuxtApp();
+      const { mutate } = useMutation(RemovePracticeMutation);
       try {
-        await $apollo.default.mutate({ mutation: RemovePracticeMutation, variables: { id } });
+        const result = await mutate({ id });
+        if (result?.errors) {
+          throw new Error(result.errors[0]?.message || "Error removing practice");
+        }
         this.practices = this.practices.filter((p) => p._id !== id);
       } catch (error: any) {
         console.error("Error removing practice:", error);

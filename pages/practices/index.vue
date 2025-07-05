@@ -194,9 +194,7 @@ import { useAuthStore } from "~/stores/authStore";
 import { useProtocolStore } from "~/stores/protocolStore";
 import { PracticeStatus } from "~/types/practice"; // Importar el enum
 
-definePageMeta({
-  middleware: ["admin"], // Solo administradores pueden acceder
-});
+definePageMeta({});
 
 const router = useRouter();
 const practiceStore = usePracticeStore();

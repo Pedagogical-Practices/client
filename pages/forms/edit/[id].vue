@@ -12,9 +12,7 @@ import { useRoute } from 'vue-router';
 import { useFormStore } from '~/stores/formStores';
 import Editor from '~/pages/editor.vue';
 
-definePageMeta({
-  middleware: ['auth'],
-});
+definePageMeta({});
 
 const route = useRoute();
 const formStore = useFormStore();

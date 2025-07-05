@@ -342,11 +342,8 @@ import {
   type FormElement,
 } from "~/stores/formElementStore";
 import { useDataSourceStore } from "~/stores/dataSourceStore"; // Import useDataSourceStore
-import { useNuxtApp } from "#app";
 
 const formElement = useFormElementStore();
-const dataSourceStore = useDataSourceStore(); // Initialize dataSourceStore
-const { $apollo } = useNuxtApp();
 
 const selectedElement = computed(() => formElement.getSelectedElement);
 const editableElement = ref<FormElement | null>(null);

@@ -116,6 +116,7 @@ const filteredInstitutions = computed(() => {
 });
 
 onMounted(() => {
+  console.log('institutions/index.vue: onMounted - Calling fetchInstitutions');
   institutionStore.fetchInstitutions();
 });
 
@@ -133,13 +134,16 @@ async function saveInstitution() {
   try {
     if (editedInstitution.value._id) {
       // Si tiene _id, es una actualización
+      console.log('institutions/index.vue: Saving existing institution', editedInstitution.value);
       await institutionStore.updateInstitution(editedInstitution.value);
     } else {
       // Si no tiene _id, es una creación. Excluimos _id explícitamente.
+      console.log('institutions/index.vue: Creating new institution', editedInstitution.value);
       const { _id, ...institutionToCreate } = editedInstitution.value;
       await institutionStore.createInstitution(institutionToCreate);
     }
     closeDialog();
+    console.log('institutions/index.vue: Refreshing institutions after save');
     await institutionStore.fetchInstitutions(); // Refrescar la lista después de guardar
   } catch (error) {
     console.error('Error saving institution:', error);
@@ -150,7 +154,9 @@ async function saveInstitution() {
 async function deleteInstitution(id?: string) {
   if (id && confirm('¿Estás seguro de que quieres eliminar esta institución?')) {
     try {
+      console.log('institutions/index.vue: Deleting institution with ID:', id);
       await institutionStore.deleteInstitution(id);
+      console.log('institutions/index.vue: Refreshing institutions after delete');
       await institutionStore.fetchInstitutions(); // Refresh the list
     } catch (error) {
       console.error('Error deleting institution:', error);

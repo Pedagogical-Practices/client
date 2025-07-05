@@ -74,9 +74,7 @@ import { useRouter } from "vue-router";
 import { useCourseStore } from "~/stores/courseStore";
 import CourseList from "~/components/CourseList.vue";
 
-definePageMeta({
-  middleware: ["auth"],
-});
+definePageMeta({});
 
 const router = useRouter();
 const courseStore = useCourseStore();

@@ -1,14 +1,13 @@
 import { defineStore } from "pinia";
-import { useNuxtApp } from "#app";
 import type { Form } from "~/types/form";
-import type { FormElement } from "~/stores/formElementStore";
 import { useFormElementStore } from "~/stores/formElementStore";
 import { usePracticeStore } from "~/stores/practiceStore";
 
-import FormsQuery from "~/queries/forms.gql?raw";
-import FormQuery from "~/queries/form.gql?raw";
-import SubmitProtocolMutation from '~/queries/submitProtocol.gql?raw';
-import RegisterFormSubmissionMutation from '~/queries/registerFormSubmission.gql?raw';
+// Import GQL documents
+import FormsQuery from "~/queries/forms.gql";
+import FormQuery from "~/queries/form.gql";
+import SubmitProtocolMutation from '~/queries/submitProtocol.gql';
+import RegisterFormSubmissionMutation from '~/queries/registerFormSubmission.gql';
 
 interface FormState {
   forms: Form[];
@@ -24,50 +23,42 @@ export const useFormStore = defineStore("form", {
   }),
   actions: {
     async fetchForms() {
-      const { $apollo } = useNuxtApp();
-      try {
-        const result = await $apollo.default.query({ query: FormsQuery });
-        if (result.errors) {
-          throw new Error(result.errors[0]?.message || "Error fetching forms");
-        }
-        this.forms = result.data.forms;
-      } catch (error: any) {
-        console.error("Error fetching forms:", error);
+      const { data, error } = await useAsyncQuery(FormsQuery);
+      if (error.value) {
+        console.error("Error fetching forms:", error.value);
+        return;
+      }
+      if (data.value?.forms) {
+        this.forms = data.value.forms;
       }
     },
 
     async fetchForm(id: string) {
-      const { $apollo } = useNuxtApp();
-      try {
-        const result = await $apollo.default.query({ query: FormQuery, variables: { id } });
-        if (result.errors) {
-          throw new Error(result.errors[0]?.message || "Error fetching form");
-        }
-        this.currentForm = result.data.form;
-      } catch (error: any) {
-        console.error("Error fetching form:", error);
+      const { data, error } = await useAsyncQuery(FormQuery, { id });
+      if (error.value) {
+        console.error("Error fetching form:", error.value);
+        return;
+      }
+      if (data.value?.form) {
+        this.currentForm = data.value.form;
       }
     },
 
     async fetchFormById(id: string) {
-      const { $apollo } = useNuxtApp();
-      try {
-        const result = await $apollo.default.query({ query: FormQuery, variables: { id } });
-        if (result.errors) {
-          throw new Error(result.errors[0]?.message || "Error fetching form");
-        }
-        const form = result.data.form;
+      const { data, error } = await useAsyncQuery(FormQuery, { id });
+      if (error.value) {
+        console.error("Error fetching form by id:", error.value);
+        throw error.value;
+      }
+      if (data.value?.form) {
+        const form = data.value.form;
         this.formName = form.name;
         const formElementStore = useFormElementStore();
         formElementStore.initializeForm(form.fields);
-      } catch (error: any) {
-        console.error("Error fetching form by id:", error);
-        throw error;
       }
     },
 
     async submitForm(practiceId: string, formId: string, formData: Record<string, any>) {
-      const { $apollo } = useNuxtApp();
       const practiceStore = usePracticeStore();
       
       if (!practiceStore.currentPractice?.protocol?._id) {
@@ -75,33 +66,34 @@ export const useFormStore = defineStore("form", {
       }
       const protocolId = practiceStore.currentPractice.protocol._id;
 
+      // Get the mutation functions
+      const { mutate: submitProtocol } = useMutation(SubmitProtocolMutation);
+      const { mutate: registerSubmission } = useMutation(RegisterFormSubmissionMutation);
+
       try {
-        // Paso 1: Crear la Submission
-        const submitResult = await $apollo.default.mutate({
-          mutation: SubmitProtocolMutation,
-          variables: {
-            createSubmissionInput: {
-              formId,
-              protocolId,
-              data: formData,
-            },
+        // Step 1: Create the Submission
+        const submitResult = await submitProtocol({
+          createSubmissionInput: {
+            formId,
+            protocolId,
+            data: formData,
           },
         });
-        if (submitResult.errors) {
+        if (submitResult?.errors) {
           throw new Error(submitResult.errors[0]?.message || 'Error submitting form data');
         }
-        const submissionId = submitResult.data.submitProtocol._id;
+        const submissionId = submitResult?.data.submitProtocol._id;
+        if (!submissionId) {
+          throw new Error('Failed to get submission ID from the server.');
+        }
 
-        // Paso 2: Registrar la Submission en la Practice
-        const registerResult = await $apollo.default.mutate({
-          mutation: RegisterFormSubmissionMutation,
-          variables: {
-            formId,
-            practiceId,
-            submissionId,
-          },
+        // Step 2: Register the Submission in the Practice
+        const registerResult = await registerSubmission({
+          formId,
+          practiceId,
+          submissionId,
         });
-        if (registerResult.errors) {
+        if (registerResult?.errors) {
           throw new Error(registerResult.errors[0]?.message || 'Error registering form submission with practice');
         }
 

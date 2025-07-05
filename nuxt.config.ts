@@ -31,11 +31,18 @@ export default defineNuxtConfig({
     },
   },
   build: {
-    transpile: ["vuetify", "nuxt-graphql-request"],
+    transpile: ["vuetify"],
   },
   runtimeConfig: {
     public: {
       GQL_HOST: process.env.GQL_HOST || "http://127.0.0.1:4000/graphql",
+    },
+  },
+  apollo: {
+    clients: {
+      default: {
+        httpEndpoint: process.env.GQL_HOST || "http://127.0.0.1:4000/graphql",
+      },
     },
   },
 });

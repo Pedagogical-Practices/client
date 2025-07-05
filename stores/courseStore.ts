@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
-import { useNuxtApp } from "#app";
 import type { Course, CreateCourseInput } from "~/types/course";
 
-import CoursesQuery from "~/queries/courses.gql?raw";
-import CourseQuery from "~/queries/course.gql?raw";
-import CreateCourseMutation from "~/queries/createCourse.gql?raw";
+// Import GQL documents
+import CoursesQuery from "~/queries/courses.gql";
+import CourseQuery from "~/queries/course.gql";
+import CreateCourseMutation from "~/queries/createCourse.gql";
 
 interface CourseState {
   courses: Course[];
@@ -18,45 +18,40 @@ export const useCourseStore = defineStore("course", {
   }),
   actions: {
     async fetchCourses() {
-      const { $apollo } = useNuxtApp();
-      try {
-        const result = await $apollo.default.query({ query: CoursesQuery });
-        if (result.errors) {
-          throw new Error(result.errors[0]?.message || "Error fetching courses");
-        }
-        this.courses = result.data.courses;
-      } catch (error: any) {
-        console.error("Error fetching courses:", error);
+      const { data, error } = await useAsyncQuery(CoursesQuery);
+      if (error.value) {
+        console.error("Error fetching courses:", error.value);
+        return;
+      }
+      if (data.value?.courses) {
+        this.courses = data.value.courses;
       }
     },
 
     async fetchCourse(id: string) {
-      const { $apollo } = useNuxtApp();
-      try {
-        const result = await $apollo.default.query({ query: CourseQuery, variables: { id } });
-        if (result.errors) {
-          throw new Error(result.errors[0]?.message || "Error fetching course");
-        }
-        this.currentCourse = result.data.course;
-      } catch (error: any) {
-        console.error("Error fetching course:", error);
+      const { data, error } = await useAsyncQuery(CourseQuery, { id });
+      if (error.value) {
+        console.error("Error fetching course:", error.value);
+        return;
+      }
+      if (data.value?.course) {
+        this.currentCourse = data.value.course;
       }
     },
 
     async createCourse(input: CreateCourseInput) {
-      const { $apollo } = useNuxtApp();
+      const { mutate, error } = useMutation(CreateCourseMutation);
       try {
-        const result = await $apollo.default.mutate({
-          mutation: CreateCourseMutation,
-          variables: { createCourseInput: input },
-        });
-        if (result.errors) {
+        const result = await mutate({ createCourseInput: input });
+        if (result?.errors) {
           throw new Error(result.errors[0]?.message || "Error creating course");
         }
-        this.courses.push(result.data.createCourse);
-      } catch (error: any) {
-        console.error("Error creating course:", error);
-        throw error;
+        if (result?.data?.createCourse) {
+          this.courses.push(result.data.createCourse);
+        }
+      } catch (err: any) {
+        console.error("Error creating course:", err);
+        throw err;
       }
     },
   },

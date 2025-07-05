@@ -214,9 +214,7 @@ import {
   VDatePicker,
 } from "vuetify/components";
 
-definePageMeta({
-  middleware: ["admin"],
-});
+definePageMeta({});
 
 const router = useRouter();
 const formElementStore = useFormElementStore();

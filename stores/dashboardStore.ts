@@ -1,11 +1,10 @@
 import { defineStore } from 'pinia';
-import { useNuxtApp } from '#app';
 
 // Importar las consultas GraphQL
-import UsersCountQuery from '~/queries/usersCount.gql?raw';
-import PracticesCountQuery from '~/queries/practicesCount.gql?raw';
-import ProtocolsCountQuery from '~/queries/protocolsCount.gql?raw';
-import FormsCountQuery from '~/queries/formsCount.gql?raw';
+import UsersCountQuery from '~/queries/usersCount.gql';
+import PracticesCountQuery from '~/queries/practicesCount.gql';
+import ProtocolsCountQuery from '~/queries/protocolsCount.gql';
+import FormsCountQuery from '~/queries/formsCount.gql';
 
 interface DashboardState {
   usersCount: number | null;
@@ -29,20 +28,28 @@ export const useDashboardStore = defineStore('dashboard', {
     async fetchAdminCoordinatorDashboardData() {
       this.loading = true;
       this.error = null;
-      const { $apollo } = useNuxtApp();
 
       try {
-        const [usersCountData, practicesCountData, protocolsCountData, formsCountData] = await Promise.all([
-          $apollo.default.query({ query: UsersCountQuery }),
-          $apollo.default.query({ query: PracticesCountQuery }),
-          $apollo.default.query({ query: ProtocolsCountQuery }),
-          $apollo.default.query({ query: FormsCountQuery }),
+        // We use useAsyncQuery for each piece of data.
+        // This will also cache the results.
+        const [usersCountResult, practicesCountResult, protocolsCountResult, formsCountResult] = await Promise.all([
+          useAsyncQuery(UsersCountQuery),
+          useAsyncQuery(PracticesCountQuery),
+          useAsyncQuery(ProtocolsCountQuery),
+          useAsyncQuery(FormsCountQuery),
         ]);
 
-        this.usersCount = usersCountData.data.usersCount;
-        this.practicesCount = practicesCountData.data.practicesCount;
-        this.protocolsCount = protocolsCountData.data.protocolsCount;
-        this.formsCount = formsCountData.data.formsCount;
+        if (usersCountResult.error.value) throw usersCountResult.error.value;
+        this.usersCount = usersCountResult.data.value?.usersCount;
+
+        if (practicesCountResult.error.value) throw practicesCountResult.error.value;
+        this.practicesCount = practicesCountResult.data.value?.practicesCount;
+
+        if (protocolsCountResult.error.value) throw protocolsCountResult.error.value;
+        this.protocolsCount = protocolsCountResult.data.value?.protocolsCount;
+
+        if (formsCountResult.error.value) throw formsCountResult.error.value;
+        this.formsCount = formsCountResult.data.value?.formsCount;
 
       } catch (err: any) {
         this.error = err.message || 'Failed to fetch dashboard data.';

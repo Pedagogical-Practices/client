@@ -102,9 +102,7 @@ import { useFormStore } from "~/stores/formStores";
 import { useProtocolStore } from "~/stores/protocolStore";
 // import { useCourseStore } from "~/stores/courseStore"; // Ya no es necesario
 
-definePageMeta({
-  middleware: ["auth"],
-});
+definePageMeta({});
 
 const router = useRouter();
 // const formBuilderStore = useFormBuilderStore();

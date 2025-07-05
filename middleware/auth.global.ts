@@ -1,44 +1,50 @@
-// middleware/auth.global.ts
-import { defineNuxtRouteMiddleware, navigateTo } from "nuxt/app";
-import { useAuthStore } from "~/stores/authStore";
+import { useAuthStore } from '~/stores/authStore';
+import MeQuery from "~/queries/me.gql";
 
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware(async (to, from) => {
+  // Routes that require the user to be authenticated.
+  const protectedRoutes = ['/editor', '/forms', '/protocols', '/practices', '/courses', '/institutions', '/profile', '/settings'];
+  // Routes that require admin privileges.
+  const adminRoutes = ['/editor']; // Add other admin-only routes here
+
   const authStore = useAuthStore();
-  if (process.client) {
-    await authStore.loadUserFromToken();
-    console.log("auth.global.ts: authStore.user:", authStore.user);
-    console.log(
-      "auth.global.ts: authStore.isAuthenticated:",
-      authStore.isAuthenticated
-    );
-    if (authStore.token) {
-      try {
-        const token = authStore.token;
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        console.log("auth.global.ts: Decoded token payload:", payload);
-        if (!payload.sub) {
-          console.log(
-            "auth.global.ts: Token does not contain sub, forcing logout"
-          );
-          authStore.logout();
-          return navigateTo("/login");
-        }
-      } catch (error) {
-        console.error("auth.global.ts: Invalid token, forcing logout:", error);
-        authStore.logout();
-        return navigateTo("/login");
-      }
+  const { getToken, onLogout } = useApollo();
+
+  // On server-side, or if the user state is not yet loaded on client-side,
+  // we need to check for a token and fetch the user.
+  const token = await getToken();
+  if (token && !authStore.isAuthenticated) {
+    const { data, error } = await useAsyncQuery(MeQuery);
+    if (data.value?.me) {
+      authStore.setUser(data.value.me);
+    } else {
+      // Token is invalid/expired, clear it and the store
+      await onLogout();
+      authStore.setUser(null);
     }
-    if (
-      !authStore.isAuthenticated &&
-      to.path !== "/login" &&
-      to.path !== "/register" &&
-      to.path !== "/editor" // Permitir redirección a /editor tras login
-    ) {
-      console.log("auth.global.ts: Not authenticated, redirecting to /login", {
-        path: to.path,
-      });
-      return navigateTo("/login");
+  }
+
+  const requiresAuth = protectedRoutes.some(path => to.path.startsWith(path));
+  const requiresAdmin = adminRoutes.some(path => to.path.startsWith(path));
+
+  // --- Redirection Logic ---
+
+  // If the route requires authentication and the user is not logged in, redirect to login.
+  if (requiresAuth && !authStore.isAuthenticated) {
+    // Avoid redirect loop if already going to login
+    if (to.path !== '/login') {
+      return navigateTo('/login');
     }
+    return; // Already on a public page or login, do nothing.
+  }
+
+  // If the route requires admin and the user is not an admin, redirect to the home page.
+  if (requiresAdmin && !authStore.isAdmin) {
+    return navigateTo('/');
+  }
+
+  // If the user is logged in and tries to access login/register, redirect them to the editor.
+  if (authStore.isAuthenticated && (to.path === '/login' || to.path === '/register')) {
+    return navigateTo('/editor');
   }
 });

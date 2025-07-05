@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
-import { useNuxtApp } from "#app";
-import type { Protocol, CreateProtocolInput } from "~/types/protocol"; // Asume que tienes estos tipos
+import type { Protocol, CreateProtocolInput } from "~/types/protocol";
 
-import ProtocolsQuery from "~/queries/protocols.gql?raw";
-import ProtocolQuery from "~/queries/protocol.gql?raw";
-import CreateProtocolMutation from "~/queries/createProtocol.gql?raw";
+// Import GQL documents
+import ProtocolsQuery from "~/queries/protocols.gql";
+import ProtocolQuery from "~/queries/protocol.gql";
+import CreateProtocolMutation from "~/queries/createProtocol.gql";
 
 interface ProtocolState {
   protocols: Protocol[];
@@ -18,42 +18,37 @@ export const useProtocolStore = defineStore("protocol", {
   }),
   actions: {
     async fetchProtocols() {
-      const { $apollo } = useNuxtApp();
-      try {
-        const result = await $apollo.default.query({ query: ProtocolsQuery });
-        if (result.errors) {
-          throw new Error(result.errors[0]?.message || "Error fetching protocols");
-        }
-        this.protocols = result.data.protocols;
-      } catch (error: any) {
-        console.error("fetchProtocols: Error:", error);
+      const { data, error } = await useAsyncQuery(ProtocolsQuery);
+      if (error.value) {
+        console.error("fetchProtocols: Error:", error.value);
+        return;
+      }
+      if (data.value?.protocols) {
+        this.protocols = data.value.protocols;
       }
     },
 
     async fetchProtocol(id: string) {
-      const { $apollo } = useNuxtApp();
-      try {
-        const result = await $apollo.default.query({ query: ProtocolQuery, variables: { id } });
-        if (result.errors) {
-          throw new Error(result.errors[0]?.message || "Error fetching protocol");
-        }
-        this.currentProtocol = result.data.protocol;
-      } catch (error: any) {
-        console.error("Error fetching protocol:", error);
+      const { data, error } = await useAsyncQuery(ProtocolQuery, { id });
+      if (error.value) {
+        console.error("Error fetching protocol:", error.value);
+        return;
+      }
+      if (data.value?.protocol) {
+        this.currentProtocol = data.value.protocol;
       }
     },
 
     async createProtocol(input: CreateProtocolInput) {
-      const { $apollo } = useNuxtApp();
+      const { mutate } = useMutation(CreateProtocolMutation);
       try {
-        const result = await $apollo.default.mutate({
-          mutation: CreateProtocolMutation,
-          variables: { createProtocolInput: input },
-        });
-        if (result.errors) {
+        const result = await mutate({ createProtocolInput: input });
+        if (result?.errors) {
           throw new Error(result.errors[0]?.message || "Error creating protocol");
         }
-        this.protocols.push(result.data.createProtocol);
+        if (result?.data?.createProtocol) {
+          this.protocols.push(result.data.createProtocol);
+        }
       } catch (error: any) {
         console.error("Error creating protocol:", error);
         throw error;
