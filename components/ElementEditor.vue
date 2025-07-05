@@ -141,7 +141,7 @@
               >
                 <v-select
                   v-model="editableElement.dataSource"
-                  :items="['institutions', 'teachers', 'students', 'courses']"
+                  :items="['institutions', 'teachers', 'students', 'courses', 'forms', 'protocols', 'users']"
                   label="Data Source"
                   hint="Source for dynamic options (e.g., institutions, teachers)."
                   persistent-hint

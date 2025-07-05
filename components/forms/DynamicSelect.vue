@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { gql } from 'graphql-tag';
+import { useDataSourceStore } from '~/stores/dataSourceStore';
 
 const props = defineProps<{
   modelValue: any;
@@ -30,6 +30,7 @@ const emit = defineEmits(['update:modelValue']);
 const loading = ref(false);
 const items = ref<any[]>([]);
 const selectedValue = ref(props.modelValue);
+const dataSourceStore = useDataSourceStore();
 
 watch(() => props.modelValue, (newValue) => {
   selectedValue.value = newValue;
@@ -43,21 +44,11 @@ async function fetchFromDataSource() {
   if (!props.dataSource) return;
   loading.value = true;
   try {
-    const queryName = props.dataSource.charAt(0).toUpperCase() + props.dataSource.slice(1);
-    const query = gql`query Get${queryName} { ${props.dataSource} { _id name } }`;
-
-    const { data, error } = await useAsyncQuery(query);
-
-    if (error.value) {
-      throw error.value;
-    }
-
-    if (data.value && data.value[props.dataSource]) {
-      items.value = data.value[props.dataSource].map((item: any) => ({
-        label: item.name,
-        value: item._id,
-      }));
-    }
+    const formattedOptions = await dataSourceStore.fetchFormattedOptions(props.dataSource);
+    items.value = formattedOptions.split('\n').filter(line => line).map(line => {
+      const parts = line.split('|');
+      return { value: parts[0], label: parts[1] };
+    });
   } catch (error) {
     console.error(`Error fetching data for ${props.dataSource}:`, error);
   } finally {
