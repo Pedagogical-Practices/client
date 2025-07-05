@@ -27,18 +27,23 @@
               <v-btn
                 color="primary"
                 @click="saveFormToBackend"
-                prepend-icon="mdi-content-save"
+                icon="mdi-content-save"
                 class="mr-2"
-              >
-                Guardar Formulario
-              </v-btn>
+                title="Guardar Formulario"
+              ></v-btn>
               <v-btn
                 color="secondary"
                 @click="createNewForm"
-                prepend-icon="mdi-file-document-plus"
-              >
-                Nuevo Formulario
-              </v-btn>
+                icon="mdi-file-document-plus"
+                class="mr-2"
+                title="Nuevo Formulario"
+              ></v-btn>
+              <v-btn
+                color="info"
+                @click="showPreview = true"
+                icon="mdi-eye"
+                title="Previsualizar Formulario"
+              ></v-btn>
             </div>
           </v-card-title>
           <v-card-text>
@@ -185,6 +190,18 @@
         <v-btn variant="text" @click="snackbar.show = false">Cerrar</v-btn>
       </template>
     </v-snackbar>
+
+    <v-dialog v-model="showPreview" fullscreen>
+      <v-card>
+        <v-card-title class="d-flex justify-space-between align-center headline-bar">
+          <span class="text-h6 font-weight-medium">Previsualización del Formulario</span>
+          <v-btn icon="mdi-close" variant="text" @click="showPreview = false"></v-btn>
+        </v-card-title>
+        <v-card-text>
+          <FormViewer :formDefinition="{ fields: formElementStore.formElements }" />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -204,6 +221,7 @@ import {
 } from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
 import EntityAutocomplete from "~/components/EntityAutocomplete.vue"; // Import EntityAutocomplete
+import FormViewer from "~/components/FormViewer.vue"; // Import FormViewer
 import {
   VTextField,
   VTextarea,
@@ -222,6 +240,7 @@ const formStore = useFormStore();
 const authStore = useAuthStore();
 const show = ref<boolean>(false);
 const isDragOver = ref<boolean>(false);
+const showPreview = ref<boolean>(false); // Reactive variable for preview dialog
 const snackbar = ref<{
   show: boolean;
   text: string;

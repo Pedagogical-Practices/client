@@ -333,6 +333,18 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <v-dialog v-model="showPreview" fullscreen>
+    <v-card>
+      <v-card-title class="d-flex justify-space-between align-center headline-bar">
+        <span class="text-h6 font-weight-medium">Form Preview</span>
+        <v-btn icon="mdi-close" variant="text" @click="showPreview = false"></v-btn>
+      </v-card-title>
+      <v-card-text>
+        <FormViewer :formDefinition="{ fields: formElement.getFormElements() }" />
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
