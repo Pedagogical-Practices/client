@@ -127,10 +127,11 @@ const localFormData = ref<Record<string, any>>({});
 // Inicializar localFormData cuando formDefinition o modelValue cambien
 watch(() => props.formDefinition, (newVal) => {
   if (newVal?.fields) {
+    const currentModelValue = props.modelValue || {};
     localFormData.value = newVal.fields.reduce((acc, field) => {
       if (field.variableName) {
-        acc[field.variableName] = props.modelValue[field.variableName] !== undefined
-          ? props.modelValue[field.variableName]
+        acc[field.variableName] = currentModelValue[field.variableName] !== undefined
+          ? currentModelValue[field.variableName]
           : (field.value !== undefined ? field.value : '');
       }
       return acc;

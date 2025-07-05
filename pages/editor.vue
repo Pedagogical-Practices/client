@@ -198,7 +198,7 @@
           <v-btn icon="mdi-close" variant="text" @click="showPreview = false"></v-btn>
         </v-card-title>
         <v-card-text>
-          <FormViewer :formDefinition="{ fields: formElementStore.formElements }" />
+          <FormViewer :formDefinition="{ fields: formElementStore.formElements }" :modelValue="{}" />
         </v-card-text>
       </v-card>
     </v-dialog>
