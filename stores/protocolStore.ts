@@ -1,14 +1,10 @@
 import { defineStore } from "pinia";
-import { useAuthStore } from "./authStore";
+import type { Protocol, CreateProtocolInput } from "~/types/protocol";
 
-export interface Protocol {
-  _id: string;
-  courseId: string;
-  name: string;
-  module: string;
-  formId: string;
-  createdAt: string;
-}
+// Import GQL documents
+import ProtocolsQuery from "~/queries/protocols.gql";
+import ProtocolQuery from "~/queries/protocol.gql";
+import CreateProtocolMutation from "~/queries/createProtocol.gql";
 
 interface ProtocolState {
   protocols: Protocol[];
@@ -21,93 +17,38 @@ export const useProtocolStore = defineStore("protocol", {
     currentProtocol: null,
   }),
   actions: {
-    async fetchProtocols(courseId: string) {
-      try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const query = await import("~/queries/protocols.gql?raw").then(
-          (m) => m.default
-        );
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({
-            query,
-            variables: { courseId },
-          }),
-        });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(
-            data.errors[0]?.message || "Error fetching protocols"
-          );
-        }
-        this.protocols = data.data.protocols;
-      } catch (error: any) {
-        console.error("Error fetching protocols:", error);
+    async fetchProtocols() {
+      const { data, error } = await useAsyncQuery(ProtocolsQuery);
+      if (error.value) {
+        console.error("fetchProtocols: Error:", error.value);
+        return;
+      }
+      if (data.value?.protocols) {
+        this.protocols = data.value.protocols;
       }
     },
+
     async fetchProtocol(id: string) {
-      try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const query = await import("~/queries/protocol.gql?raw").then(
-          (m) => m.default
-        );
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({
-            query,
-            variables: { id },
-          }),
-        });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || "Error fetching protocol");
-        }
-        this.currentProtocol = data.data.protocol;
-      } catch (error: any) {
-        console.error("Error fetching protocol:", error);
+      const { data, error } = await useAsyncQuery(ProtocolQuery, { id });
+      if (error.value) {
+        console.error("Error fetching protocol:", error.value);
+        return;
+      }
+      if (data.value?.protocol) {
+        this.currentProtocol = data.value.protocol;
       }
     },
-    async createProtocol(input: {
-      courseId: string;
-      name: string;
-      module: string;
-      formId: string;
-    }) {
+
+    async createProtocol(input: CreateProtocolInput) {
+      const { mutate } = useMutation(CreateProtocolMutation);
       try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const mutation = await import("~/queries/createProtocol.gql?raw").then(
-          (m) => m.default
-        );
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({
-            query: mutation,
-            variables: { createProtocolInput: input },
-          }),
-        });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || "Error creating protocol");
+        const result = await mutate({ createProtocolInput: input });
+        if (result?.errors) {
+          throw new Error(result.errors[0]?.message || "Error creating protocol");
         }
-        this.protocols.push(data.data.createProtocol);
+        if (result?.data?.createProtocol) {
+          this.protocols.push(result.data.createProtocol);
+        }
       } catch (error: any) {
         console.error("Error creating protocol:", error);
         throw error;

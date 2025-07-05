@@ -14,6 +14,7 @@
             </v-btn>
           </v-card-title>
           <v-card-text>
+            <
             <ProtocolList
               :protocols="protocolStore.protocols"
               @view="viewProtocol"
@@ -23,7 +24,6 @@
       </v-col>
     </v-row>
 
-    <!-- Dialog para crear nuevo protocolo -->
     <v-dialog v-model="dialog" max-width="600px" persistent>
       <v-card>
         <v-card-title class="d-flex justify-space-between align-center">
@@ -46,24 +46,17 @@
               density="compact"
               required
             ></v-text-field>
+
             <v-select
-              v-model="newProtocol.courseId"
-              :items="courseStore.courses"
-              item-title="name"
-              item-value="_id"
-              label="Curso"
-              variant="outlined"
-              density="compact"
-              required
-            ></v-select>
-            <v-select
-              v-model="newProtocol.formId"
+              v-model="newProtocol.formIds"
               :items="formStore.forms"
               item-title="name"
               item-value="_id"
-              label="Formulario"
+              label="Formularios"
               variant="outlined"
               density="compact"
+              multiple
+              chips
               required
             ></v-select>
           </v-form>
@@ -107,24 +100,22 @@ import ProtocolList from "~/components/ProtocolList.vue";
 
 import { useFormStore } from "~/stores/formStores";
 import { useProtocolStore } from "~/stores/protocolStore";
-import { useCourseStore } from "~/stores/courseStore";
+// import { useCourseStore } from "~/stores/courseStore"; // Ya no es necesario
 
-definePageMeta({
-  middleware: ["auth"],
-});
+definePageMeta({});
 
 const router = useRouter();
 // const formBuilderStore = useFormBuilderStore();
 const formStore = useFormStore();
 const protocolStore = useProtocolStore();
-const courseStore = useCourseStore();
+// const courseStore = useCourseStore(); // Ya no es necesario
 
 const dialog = ref(false);
 const newProtocol = ref({
   name: "",
   module: "",
-  courseId: "",
-  formId: "",
+  // courseId: "", // Eliminado
+  formIds: [] as string[], // Ahora es un array de IDs
 });
 const snackbar = ref({
   show: false,
@@ -134,15 +125,15 @@ const snackbar = ref({
 });
 
 onMounted(async () => {
-  await courseStore.fetchCourses();
-  await formStore.fetchForms();
-  if (courseStore.courses.length > 0) {
-    await protocolStore.fetchProtocols(courseStore.courses[0]._id);
-  }
+  console.log("protocols/index.vue: onMounted started"); // Log de inicio
+  await formStore.fetchForms(); // Asegurarse de cargar los formularios
+  console.log("protocols/index.vue: forms fetched"); // Log después de fetchForms
+  await protocolStore.fetchProtocols(); // Ya no necesita courseId
+  console.log("protocols/index.vue: protocols fetched"); // Log después de fetchProtocols
 });
 
 const openCreateProtocolDialog = () => {
-  newProtocol.value = { name: "", module: "", courseId: "", formId: "" };
+  newProtocol.value = { name: "", module: "", formIds: [] }; // Inicializar formIds como array vacío
   dialog.value = true;
 };
 
@@ -151,16 +142,16 @@ const createProtocol = async () => {
     if (
       !newProtocol.value.name ||
       !newProtocol.value.module ||
-      !newProtocol.value.courseId ||
-      !newProtocol.value.formId
+      newProtocol.value.formIds.length === 0 // Validar que se haya seleccionado al menos un formulario
     ) {
-      throw new Error("Todos los campos son obligatorios");
+      throw new Error(
+        "Todos los campos son obligatorios y al menos un formulario debe ser seleccionado."
+      );
     }
     await protocolStore.createProtocol({
       name: newProtocol.value.name,
       module: newProtocol.value.module,
-      courseId: newProtocol.value.courseId,
-      formId: newProtocol.value.formId,
+      formIds: newProtocol.value.formIds,
     });
     snackbar.value = {
       show: true,
@@ -169,7 +160,7 @@ const createProtocol = async () => {
       timeout: 3000,
     };
     dialog.value = false;
-    await protocolStore.fetchProtocols(newProtocol.value.courseId);
+    await protocolStore.fetchProtocols(); // Refrescar la lista de protocolos
   } catch (error: any) {
     snackbar.value = {
       show: true,

@@ -1,0 +1,39 @@
+mutation CreatePractice($createPracticeInput: CreatePracticeInput!) {
+  createPractice(createPracticeInput: $createPracticeInput) {
+    _id
+    student {
+      _id
+      name
+    }
+    advisor {
+      _id
+      name
+    }
+    protocol {
+      _id
+      name
+      module
+      forms {
+        _id
+        name
+      }
+    }
+    institutionName
+    courseName
+    status
+    filledForms {
+      form {
+        _id
+        name
+      }
+      submission {
+        _id
+      }
+    }
+    createdBy {
+      _id
+      name
+    }
+    createdAt
+  }
+}

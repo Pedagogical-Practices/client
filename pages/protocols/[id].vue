@@ -45,9 +45,7 @@ import { useFormStore } from "~/stores/formStores";
 import { useProtocolStore } from "~/stores/protocolStore";
 import { useSubmissionStore } from "~/stores/submissionStore";
 
-definePageMeta({
-  middleware: ["auth"],
-});
+definePageMeta({});
 
 const route = useRoute();
 const router = useRouter();

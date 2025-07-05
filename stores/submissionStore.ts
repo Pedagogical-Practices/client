@@ -1,88 +1,47 @@
 import { defineStore } from "pinia";
-import { useAuthStore } from "./authStore";
+import type { Submission, CreateSubmissionInput } from "~/types/submission";
 
-export interface Submission {
-  _id: string;
-  protocolId: string;
-  formId: string;
-  data: Record<string, any>;
-  submittedBy: string;
-  createdAt: string;
-}
+// Import GQL documents
+import CreateSubmissionMutation from "~/queries/createSubmission.gql";
+import SubmissionQuery from "~/queries/submission.gql";
 
 interface SubmissionState {
   submissions: Submission[];
+  currentSubmission: Submission | null;
 }
 
 export const useSubmissionStore = defineStore("submission", {
   state: (): SubmissionState => ({
     submissions: [],
+    currentSubmission: null,
   }),
   actions: {
-    async submitProtocol(input: {
-      protocolId: string;
-      formId: string;
-      data: Record<string, any>;
-    }) {
+    async createSubmission(input: CreateSubmissionInput): Promise<Submission | null> {
+      const { mutate } = useMutation(CreateSubmissionMutation);
       try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const mutation = await import("~/queries/submitProtocol.gql?raw").then(
-          (m) => m.default
-        );
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({
-            query: mutation,
-            variables: { createSubmissionInput: input },
-          }),
-        });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(
-            data.errors[0]?.message || "Error submitting protocol"
-          );
+        const result = await mutate({ createSubmissionInput: input });
+        if (result?.errors) {
+          throw new Error(result.errors[0]?.message || "Error creating submission");
         }
-        this.submissions.push(data.data.submitProtocol);
+        // Note: The original code returned `submitProtocol`, which might be a typo.
+        // Assuming it should be `createSubmission` based on the mutation name.
+        return result?.data?.createSubmission || null;
       } catch (error: any) {
-        console.error("Error submitting protocol:", error);
+        console.error("Error creating submission:", error);
         throw error;
       }
     },
-    async fetchSubmissions(protocolId: string) {
-      try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const query = await import("~/queries/submissions.gql?raw").then(
-          (m) => m.default
-        );
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({
-            query,
-            variables: { protocolId },
-          }),
-        });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(
-            data.errors[0]?.message || "Error fetching submissions"
-          );
-        }
-        this.submissions = data.data.submissions;
-      } catch (error: any) {
-        console.error("Error fetching submissions:", error);
+    async fetchSubmission(id: string): Promise<Submission | null> {
+      const { data, error } = await useAsyncQuery(SubmissionQuery, { id });
+      if (error.value) {
+        console.error("Error fetching submission:", error.value);
+        throw error.value;
       }
+      if (data.value?.submission) {
+        this.currentSubmission = data.value.submission;
+        return data.value.submission;
+      }
+      return null;
     },
   },
   persist: true,

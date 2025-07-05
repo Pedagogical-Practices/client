@@ -130,16 +130,7 @@
           <v-card-title class="d-flex justify-space-between align-center">
             <span>JSON Generado del Formulario</span>
           </v-card-title>
-          <v-card-text class="pa-2">
-            <v-textarea
-              v-model="editableFormJsonString"
-              label="Salida JSON del Formulario"
-              auto-grow
-              rows="10"
-              density="compact"
-              class="json-output-textarea"
-            ></v-textarea>
-          </v-card-text>
+
           <v-card-actions>
             <v-btn
               color="secondary"
@@ -165,6 +156,8 @@
             <div v-show="show">
               <v-divider></v-divider>
               <v-card-text class="pa-2">
+                <!-- Reemplazar con el componente de editor JSON -->
+                <v-card-text class="pa-2">
                 <v-textarea
                   v-model="editableFormJsonString"
                   label="Salida JSON del Formulario"
@@ -173,6 +166,7 @@
                   density="compact"
                   class="json-output-textarea"
                 ></v-textarea>
+              </v-card-text>
               </v-card-text>
             </div>
           </v-expand-transition>
@@ -209,6 +203,7 @@ import {
   type AvailableElementDefinition,
 } from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
+import EntityAutocomplete from "~/components/EntityAutocomplete.vue"; // Import EntityAutocomplete
 import {
   VTextField,
   VTextarea,
@@ -219,9 +214,7 @@ import {
   VDatePicker,
 } from "vuetify/components";
 
-definePageMeta({
-  middleware: ["admin"],
-});
+definePageMeta({});
 
 const router = useRouter();
 const formElementStore = useFormElementStore();
@@ -249,6 +242,7 @@ const componentMap: Record<string, any> = {
   button: VBtn,
   "radio-group": VRadioGroup,
   "date-picker": VDatePicker,
+  "institution-select": EntityAutocomplete, // Add institution-select to componentMap
 };
 
 const getComponentName = (type: string): any => {
@@ -339,44 +333,50 @@ const transformedFormJson = computed(() => {
     name: formStore.formName,
     fields: formElementStore.formElements.map((el: FormElement) => {
       const outputEl: Record<string, any> = {
-        id: el.id,
-        tipo: el.type,
-        etiqueta: el.label,
-        valor: el.value,
-        nombreVariable: el.variableName,
+        id: el.id, // Keep id for internal editor use
+        type: el.type,
+        label: el.label,
+        value: el.value,
+        variableName: el.variableName,
         placeholder: el.placeholder,
-        textoAyuda: el.hint,
-        obligatoriedad: el.requirementLevel,
-        capitulo: el.chapter,
-        pregunta: el.question,
-        numeroPregunta: el.questionNumber,
-        condicionConsistencia: el.consistencyCondition,
-        mensajeInconsistencia: el.inconsistencyMessage,
-        tipoError: el.errorType,
-        descripcion: el.description,
-        reglas: el.rules,
-        nombre: el.name,
-        deshabilitado: el.disabled,
-        soloLectura: el.readonly,
-        subtipo: el.specificType,
+        hint: el.hint,
+        required: el.required, // Boolean
+        chapter: el.chapter,
+        question: el.question,
+        questionNumber: el.questionNumber,
+        consistencyCondition: el.consistencyCondition,
+        inconsistencyMessage: el.inconsistencyMessage,
+        errorType: el.errorType,
+        description: el.description,
+        requirementLevel: el.requirementLevel, // String (Required/Optional)
+        rules: el.rules,
+        name: el.name,
+        disabled: el.disabled,
+        readonly: el.readonly,
+        specificType: el.specificType,
       };
       if (el.type === "select" || el.type === "radio-group") {
-        outputEl.opciones = el.options;
+        outputEl.options = el.options;
         outputEl.multiple = el.multiple ?? false;
       }
       if (el.type === "textarea" && el.height) {
-        outputEl.altura = el.height;
+        outputEl.height = el.height;
       }
       if (el.type === "button" && el.color) {
         outputEl.color = el.color;
       }
+      // Handle specificType for EntityAutocomplete
+      if (el.type === "institution-select" && el.specificType) {
+        outputEl.specificType = el.specificType;
+      }
+      // Clean up undefined/null/empty array values, but keep false and empty strings
       Object.keys(outputEl).forEach((key) => {
         if (
           outputEl[key] === undefined ||
           outputEl[key] === null ||
           (Array.isArray(outputEl[key]) && outputEl[key].length === 0)
         ) {
-          if (outputEl[key] !== "" && outputEl[key] !== false) {
+          if (outputEl[key] !== false && outputEl[key] !== "") {
             delete outputEl[key];
           }
         }
@@ -427,8 +427,7 @@ const updateFormFromJson = async (): Promise<void> => {
     }
     const validElements = parsedJson.fields.every(
       (el: any) =>
-        el.id &&
-        el.tipo &&
+        el.type && // Now expects 'type' (English)
         [
           "text",
           "textarea",
@@ -437,7 +436,9 @@ const updateFormFromJson = async (): Promise<void> => {
           "button",
           "radio-group",
           "date-picker",
-        ].includes(el.tipo)
+          "time-picker", // Added time-picker
+          "institution-select", // Add institution-select
+        ].includes(el.type)
     );
     if (!validElements) {
       throw new Error("El JSON contiene elementos inválidos en 'fields'");
@@ -446,29 +447,33 @@ const updateFormFromJson = async (): Promise<void> => {
     formElementStore.initializeForm(
       parsedJson.fields.map(
         (el: any): FormElement => ({
-          id: el.id,
-          type: el.tipo,
-          label: el.etiqueta ?? "",
-          value: el.valor ?? "",
-          variableName: el.nombreVariable ?? "",
+          id: el.id || generateUniqueId(), // Use existing id or generate new
+          type: el.type,
+          label: el.label ?? "",
+          value: el.value ?? "",
+          variableName: el.variableName ?? "",
           placeholder: el.placeholder ?? "",
-          hint: el.textoAyuda ?? "",
-          requirementLevel: el.obligatoriedad ?? "Optional",
-          chapter: el.capitulo ?? "",
-          question: el.pregunta ?? "",
-          questionNumber: el.numeroPregunta ?? "",
-          consistencyCondition: el.condicionConsistencia ?? "",
-          inconsistencyMessage: el.mensajeInconsistencia ?? "",
-          errorType: el.tipoError ?? "Soft",
-          description: el.descripcion ?? "",
-          name: el.nombre ?? "",
-          disabled: !!el.deshabilitado,
-          readonly: !!el.soloLectura,
-          options: el.opciones ?? [],
-          specificType: el.subtipo ?? "",
-          height: el.altura ? Number(el.altura) : undefined,
+          hint: el.hint ?? "",
+          requirementLevel: el.required ? "Required" : "Optional", // Map boolean to string
+          chapter: el.chapter ?? "",
+          question: el.question ?? "",
+          questionNumber: el.questionNumber ?? "",
+          consistencyCondition: el.consistencyCondition ?? "",
+          inconsistencyMessage: el.inconsistencyMessage ?? "",
+          errorType: el.errorType ?? "Soft",
+          description: el.description ?? "",
+          name: el.name ?? "",
+          disabled: !!el.disabled,
+          readonly: !!el.readonly,
+          options:
+            el.options?.map((opt: any) => ({
+              label: opt.label ?? opt.text ?? "", // Handle both 'label' and 'text'
+              value: opt.value ?? "",
+            })) ?? [],
+          specificType: el.specificType ?? "",
+          height: el.height ? String(el.height) : undefined, // Ensure string for height
           color: el.color ?? "",
-          rules: el.reglas ?? [],
+          rules: el.rules ?? [],
           multiple: !!el.multiple,
         })
       )

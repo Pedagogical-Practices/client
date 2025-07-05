@@ -21,7 +21,11 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                <FormList :forms="filteredForms" @view-form="viewForm" />
+                <FormList
+                  :forms="filteredForms"
+                  @view-form="viewForm"
+                  @edit-form="editForm"
+                />
               </v-col>
             </v-row>
           </v-card-text>
@@ -52,9 +56,7 @@ import { useAuthStore } from "~/stores/authStore";
 import FormList from "~/components/forms/FormList.vue";
 import FormFilter from "~/components/forms/FormFilter.vue";
 
-definePageMeta({
-  middleware: ["auth"],
-});
+definePageMeta({});
 
 const router = useRouter();
 const formStore = useFormStore();
@@ -106,6 +108,10 @@ const updateFilter = (value: string) => {
 
 const viewForm = (formId: string) => {
   router.push(`/forms/${formId}`);
+};
+
+const editForm = (formId: string) => {
+  router.push(`/forms/edit/${formId}`);
 };
 
 const createNewForm = () => {

@@ -131,6 +131,25 @@
                   variant="filled"
                 ></v-text-field>
               </v-col>
+              <v-col
+                cols="12"
+                md="6"
+                v-if="
+                  editableElement.type === 'select' ||
+                  editableElement.type === 'autocomplete'
+                "
+              >
+                <v-select
+                  v-model="editableElement.dataSource"
+                  :items="['institutions', 'teachers', 'students', 'courses']"
+                  label="Data Source"
+                  hint="Source for dynamic options (e.g., institutions, teachers)."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                  clearable
+                ></v-select>
+              </v-col>
             </v-row>
           </v-window-item>
 
@@ -318,11 +337,11 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
-// import { useFormBuilderStore, type FormElement } from '~/stores/formBuilderStore';
 import {
   useFormElementStore,
   type FormElement,
 } from "~/stores/formElementStore";
+import { useDataSourceStore } from "~/stores/dataSourceStore"; // Import useDataSourceStore
 
 const formElement = useFormElementStore();
 
@@ -335,10 +354,20 @@ const rulesText = ref("");
 
 watch(
   selectedElement,
-  (newVal) => {
+  async (newVal) => {
     if (newVal) {
       editableElement.value = JSON.parse(JSON.stringify(newVal));
-      if (Array.isArray(editableElement.value?.options)) {
+      rulesText.value = Array.isArray(editableElement.value?.rules)
+        ? editableElement.value!.rules.join(",")
+        : "";
+      currentTab.value = "general";
+
+      // Prioritize dataSource for populating selectItemsText
+      if (editableElement.value?.dataSource) {
+        selectItemsText.value = await dataSourceStore.fetchFormattedOptions(
+          editableElement.value.dataSource
+        );
+      } else if (Array.isArray(editableElement.value?.options)) {
         selectItemsText.value = editableElement
           .value!.options.map((opt) => {
             if (typeof opt === "string") return opt;
@@ -348,18 +377,26 @@ watch(
       } else {
         selectItemsText.value = "";
       }
-
-      if (Array.isArray(editableElement.value?.rules)) {
-        rulesText.value = editableElement.value!.rules.join(",");
-      } else {
-        rulesText.value = "";
-      }
-      currentTab.value = "general";
     } else {
       editableElement.value = null;
     }
   },
   { deep: true, immediate: true }
+);
+
+// Watch for changes in dataSource and update selectItemsText
+watch(
+  () => editableElement.value?.dataSource,
+  async (newDataSource) => {
+    if (
+      editableElement.value?.type === "select" ||
+      editableElement.value?.type === "autocomplete"
+    ) {
+      selectItemsText.value = newDataSource
+        ? await dataSourceStore.fetchFormattedOptions(newDataSource)
+        : "";
+    }
+  }
 );
 
 const handleDialogClose = (value: boolean) => {
@@ -376,16 +413,21 @@ const saveChanges = () => {
     editableElement.value.type === "select" ||
     editableElement.value.type === "radio-group"
   ) {
-    editableElement.value.options = selectItemsText.value
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line)
-      .map((line) => {
-        const parts = line.split("|");
-        if (parts.length === 2)
-          return { value: parts[0].trim(), text: parts[1].trim() };
-        return { value: line, text: line };
-      });
+    // If dataSource is set, clear options as they are dynamically loaded
+    if (editableElement.value.dataSource) {
+      editableElement.value.options = [];
+    } else {
+      editableElement.value.options = selectItemsText.value
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line)
+        .map((line) => {
+          const parts = line.split("|");
+          if (parts.length === 2)
+            return { value: parts[0].trim(), text: parts[1].trim() };
+          return { value: line, text: line };
+        });
+    }
   }
   editableElement.value.rules = rulesText.value
     .split(",")
