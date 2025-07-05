@@ -1,0 +1,3 @@
+query ProtocolsCount {
+  protocolsCount
+}

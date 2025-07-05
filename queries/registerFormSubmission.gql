@@ -1,0 +1,14 @@
+mutation RegisterFormSubmission($formId: String!, $practiceId: String!, $submissionId: String!) {
+  registerFormSubmission(formId: $formId, practiceId: $practiceId, submissionId: $submissionId) {
+    _id
+    status
+    filledForms {
+      form {
+        _id
+      }
+      submission {
+        _id
+      }
+    }
+  }
+}

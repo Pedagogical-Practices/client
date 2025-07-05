@@ -1,18 +1,13 @@
 import { defineStore } from "pinia";
-import { useAuthStore } from "./authStore";
-import type { FormElement } from "~/stores/formElementStore";
+import type { Form } from "~/types/form";
+import { useFormElementStore } from "~/stores/formElementStore";
+import { usePracticeStore } from "~/stores/practiceStore";
 
-export interface Form {
-  _id: string;
-  name: string;
-  fields: FormElement[];
-  createdBy: {
-    id: string;
-    name?: string;
-    email?: string;
-  };
-  createdAt: string;
-}
+// Import GQL documents
+import FormsQuery from "~/queries/forms.gql";
+import FormQuery from "~/queries/form.gql";
+import SubmitProtocolMutation from '~/queries/submitProtocol.gql';
+import RegisterFormSubmissionMutation from '~/queries/registerFormSubmission.gql';
 
 interface FormState {
   forms: Form[];
@@ -28,56 +23,84 @@ export const useFormStore = defineStore("form", {
   }),
   actions: {
     async fetchForms() {
-      try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const query = await import("~/queries/forms.gql?raw").then(
-          (m) => m.default
-        );
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
-          },
-          body: JSON.stringify({ query }),
-        });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || "Error fetching forms");
-        }
-        this.forms = data.data.forms;
-      } catch (error: any) {
-        console.error("Error fetching forms:", error);
+      const { data, error } = await useAsyncQuery(FormsQuery);
+      if (error.value) {
+        console.error("Error fetching forms:", error.value);
+        return;
+      }
+      if (data.value?.forms) {
+        this.forms = data.value.forms;
       }
     },
+
     async fetchForm(id: string) {
+      const { data, error } = await useAsyncQuery(FormQuery, { id });
+      if (error.value) {
+        console.error("Error fetching form:", error.value);
+        return;
+      }
+      if (data.value?.form) {
+        this.currentForm = data.value.form;
+      }
+    },
+
+    async fetchFormById(id: string) {
+      const { data, error } = await useAsyncQuery(FormQuery, { id });
+      if (error.value) {
+        console.error("Error fetching form by id:", error.value);
+        throw error.value;
+      }
+      if (data.value?.form) {
+        const form = data.value.form;
+        this.formName = form.name;
+        const formElementStore = useFormElementStore();
+        formElementStore.initializeForm(form.fields);
+      }
+    },
+
+    async submitForm(practiceId: string, formId: string, formData: Record<string, any>) {
+      const practiceStore = usePracticeStore();
+      
+      if (!practiceStore.currentPractice?.protocol?._id) {
+        throw new Error('Protocol ID not found for current practice.');
+      }
+      const protocolId = practiceStore.currentPractice.protocol._id;
+
+      // Get the mutation functions
+      const { mutate: submitProtocol } = useMutation(SubmitProtocolMutation);
+      const { mutate: registerSubmission } = useMutation(RegisterFormSubmissionMutation);
+
       try {
-        const {
-          public: { GQL_HOST },
-        } = useRuntimeConfig();
-        const query = await import("~/queries/form.gql?raw").then(
-          (m) => m.default
-        );
-        const response = await fetch(GQL_HOST, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${useAuthStore().token}`,
+        // Step 1: Create the Submission
+        const submitResult = await submitProtocol({
+          createSubmissionInput: {
+            formId,
+            protocolId,
+            data: formData,
           },
-          body: JSON.stringify({
-            query,
-            variables: { id },
-          }),
         });
-        const data = await response.json();
-        if (data.errors) {
-          throw new Error(data.errors[0]?.message || "Error fetching form");
+        if (submitResult?.errors) {
+          throw new Error(submitResult.errors[0]?.message || 'Error submitting form data');
         }
-        this.currentForm = data.data.form;
+        const submissionId = submitResult?.data.submitProtocol._id;
+        if (!submissionId) {
+          throw new Error('Failed to get submission ID from the server.');
+        }
+
+        // Step 2: Register the Submission in the Practice
+        const registerResult = await registerSubmission({
+          formId,
+          practiceId,
+          submissionId,
+        });
+        if (registerResult?.errors) {
+          throw new Error(registerResult.errors[0]?.message || 'Error registering form submission with practice');
+        }
+
+        console.log('Formulario guardado y registrado exitosamente.');
       } catch (error: any) {
-        console.error("Error fetching form:", error);
+        console.error('Error al guardar el formulario:', error);
+        throw error;
       }
     },
   },

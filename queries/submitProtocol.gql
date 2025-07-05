@@ -1,10 +1,10 @@
 mutation SubmitProtocol($createSubmissionInput: CreateSubmissionInput!) {
   submitProtocol(createSubmissionInput: $createSubmissionInput) {
     _id
-    protocolId
     formId
+    protocolId
     data
-    submittedBy
     createdAt
+    submittedBy
   }
 }

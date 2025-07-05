@@ -1,33 +1,30 @@
-export interface User {
-  sub: string;
+export const UserRoles = {
+  ADMIN: 'admin',
+  STUDENT: 'student',
+  TEACHER_DIRECTIVE: 'teacher_directive',
+  ADMINISTRATIVE: 'administrative',
+  FAMILY: 'family',
+  COORDINATOR: 'coordinator',
+};
+
+export interface UserDto {
+  _id: string;
   name: string;
   email: string;
   role: string;
 }
 
-export interface CreateUserResponse {
-  createUser: {
-    token: string;
-    user: User;
-  };
+export interface CreateUserInput {
+  name: string;
+  email: string;
+  password?: string; // Password might be optional if admin creates user without setting it initially
+  role: string;
 }
 
-export interface LoginResponse {
-  login: {
-    token: string;
-    user: User;
-  };
-}
-
-export interface UpdateUserResponse {
-  updateUser: User;
-}
-
-export interface MeResponse {
-  me: User | null;
-}
-
-export interface GraphQLResponse<T> {
-  data: T;
-  errors?: Array<{ message: string }>;
+export interface UpdateUserInput {
+  _id: string;
+  name?: string;
+  email?: string;
+  password?: string;
+  role?: string;
 }

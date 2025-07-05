@@ -1,0 +1,9 @@
+query Submission($id: String!) {
+  submission(id: $id) {
+    _id
+    formId
+    data
+    submittedBy
+    createdAt
+  }
+}

@@ -5,6 +5,17 @@
     :items-per-page="10"
     class="elevation-1"
   >
+    <template v-slot:item.forms="{ item }">
+      <v-chip
+        v-for="form in item.forms"
+        :key="form._id"
+        class="ma-1"
+        color="info"
+        size="small"
+      >
+        {{ form.name }}
+      </v-chip>
+    </template>
     <template v-slot:item.actions="{ item }">
       <v-btn
         size="small"
@@ -20,14 +31,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import type { Protocol } from "~/stores/protocolStore"; // Importar la interfaz Protocol
 
 defineProps<{
-  protocols: Array<{
-    _id: string;
-    name: string;
-    module: string;
-    formId: string;
-  }>;
+  protocols: Protocol[]; // Usar la interfaz Protocol directamente
 }>();
 
 defineEmits(["view"]);
@@ -35,6 +42,7 @@ defineEmits(["view"]);
 const headers = ref([
   { title: "Nombre", key: "name" },
   { title: "Módulo", key: "module" },
+  { title: "Formularios", key: "forms" }, // Nueva columna para mostrar los formularios
   { title: "Acciones", key: "actions", sortable: false },
 ]);
 </script>

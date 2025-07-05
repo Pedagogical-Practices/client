@@ -116,9 +116,7 @@ import { useFormStore } from "~/stores/formStores";
 import { useAuthStore } from "~/stores/authStore";
 import ProtocolList from "~/components/ProtocolList.vue";
 
-definePageMeta({
-  middleware: ["auth"],
-});
+definePageMeta({});
 
 const route = useRoute();
 const router = useRouter();
