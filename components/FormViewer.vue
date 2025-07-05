@@ -34,22 +34,7 @@
             ></v-date-picker>
           </v-menu>
         </template>
-        <template v-else-if="field.dataSource">
-          <EntityAutocomplete
-            v-model="localFormData[field.variableName]"
-            :dataSource="field.dataSource"
-            :label="field.label"
-            :required="field.required"
-            :disabled="field.disabled"
-            :readonly="field.readonly"
-            :hint="field.hint"
-            :persistent-hint="true"
-            :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
-            variant="outlined"
-            density="compact"
-          ></EntityAutocomplete>
-        </template>
-        <template v-else-if="field.type === 'dynamic-select'">
+        <template v-else-if="field.type === 'select' && field.dataSource">
           <DynamicSelect
             v-model="localFormData[field.variableName]"
             :dataSource="field.dataSource"
@@ -64,6 +49,21 @@
             :persistent-hint="true"
             :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
           ></DynamicSelect>
+        </template>
+        <template v-else-if="field.dataSource">
+          <EntityAutocomplete
+            v-model="localFormData[field.variableName]"
+            :dataSource="field.dataSource"
+            :label="field.label"
+            :required="field.required"
+            :disabled="field.disabled"
+            :readonly="field.readonly"
+            :hint="field.hint"
+            :persistent-hint="true"
+            :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
+            variant="outlined"
+            density="compact"
+          ></EntityAutocomplete>
         </template>
         <component
           v-else

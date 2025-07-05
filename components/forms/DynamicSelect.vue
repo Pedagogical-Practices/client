@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { useAuthStore } from '~/stores/authStore';
+import { gql } from 'graphql-tag';
 
 const props = defineProps<{
   modelValue: any;
@@ -30,7 +30,6 @@ const emit = defineEmits(['update:modelValue']);
 const loading = ref(false);
 const items = ref<any[]>([]);
 const selectedValue = ref(props.modelValue);
-const authStore = useAuthStore();
 
 watch(() => props.modelValue, (newValue) => {
   selectedValue.value = newValue;
@@ -44,18 +43,23 @@ async function fetchFromDataSource() {
   if (!props.dataSource) return;
   loading.value = true;
   try {
-    const response = await fetch(props.dataSource, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+    const queryName = props.dataSource.charAt(0).toUpperCase() + props.dataSource.slice(1);
+    const query = gql`query Get${queryName} { ${props.dataSource} { _id name } }`;
+
+    const { data, error } = await useAsyncQuery(query);
+
+    if (error.value) {
+      throw error.value;
     }
-    const data = await response.json();
-    items.value = data;
+
+    if (data.value && data.value[props.dataSource]) {
+      items.value = data.value[props.dataSource].map((item: any) => ({
+        label: item.name,
+        value: item._id,
+      }));
+    }
   } catch (error) {
-    console.error('Error fetching from data source:', error);
+    console.error(`Error fetching data for ${props.dataSource}:`, error);
   } finally {
     loading.value = false;
   }

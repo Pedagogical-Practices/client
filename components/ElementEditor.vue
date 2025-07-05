@@ -337,17 +337,17 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
-import {
-  useFormElementStore,
-  type FormElement,
-} from "~/stores/formElementStore";
-import { useDataSourceStore } from "~/stores/dataSourceStore"; // Import useDataSourceStore
+import { useFormElementStore } from "~/stores/formElementStore";
+import { useDataSourceStore } from "~/stores/dataSourceStore";
+import FormViewer from "~/components/FormViewer.vue";
 
 const formElement = useFormElementStore();
+const dataSourceStore = useDataSourceStore(); // Instantiate dataSourceStore
 
 const selectedElement = computed(() => formElement.getSelectedElement);
-const editableElement = ref<FormElement | null>(null);
+const editableElement = ref<FormData | null>(null);
 const currentTab = ref("general");
+const showPreview = ref(false); // Reactive variable for preview dialog
 
 const selectItemsText = ref("");
 const rulesText = ref("");

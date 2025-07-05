@@ -119,6 +119,8 @@ export const availableElements: AvailableElementDefinition[] = [
       errorType: "Soft",
       description: "",
       requirementLevel: "Optional",
+      dataSource: "",
+      multiple: false,
     },
   },
   {

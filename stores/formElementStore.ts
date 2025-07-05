@@ -1,39 +1,5 @@
 import { defineStore } from "pinia";
-
-export interface FormElement {
-  id: string;
-  type: string;
-  label: string;
-  value?: any;
-  placeholder?: string;
-  hint?: string;
-  required?: boolean;
-  disabled?: boolean;
-  readonly?: boolean;
-  name?: string;
-  specificType?: string;
-  height?: string | number;
-  width?: string | number;
-  color?: string;
-  options?: string[] | { text: string; value: any }[];
-  rules?: string[];
-  variableName?: string;
-  chapter?: string;
-  question?: string;
-  questionNumber?: string;
-  consistencyCondition?: string;
-  inconsistencyMessage?: string;
-  errorType?: "Soft" | "Hard" | string;
-  description?: string;
-  requirementLevel?: "Required" | "Optional" | "Conditional" | string;
-  multiple?: boolean;
-  dataSource?: string;
-}
-
-interface FormElementState {
-  formElements: FormElement[];
-  selectedElementId: string | null;
-}
+import type { FormElement } from "~/types/form";
 
 export const useFormElementStore = defineStore("formElement", {
   state: (): FormElementState => ({
@@ -49,14 +15,16 @@ export const useFormElementStore = defineStore("formElement", {
       this.formElements.push(element);
     },
     removeElement(elementId: string) {
-      this.formElements = this.formElements.filter((el) => el.id !== elementId);
+      this.formElements = this.formElements.filter(
+        (el: any) => el.id !== elementId
+      );
       if (this.selectedElementId === elementId) {
         this.selectedElementId = null;
       }
     },
     updateElement(updatedElement: FormElement) {
       const index = this.formElements.findIndex(
-        (el) => el.id === updatedElement.id
+        (el: any) => el.id === updatedElement.id
       );
       if (index !== -1) {
         this.formElements[index] = updatedElement;
@@ -74,11 +42,13 @@ export const useFormElementStore = defineStore("formElement", {
     getElement:
       (state) =>
       (elementId: string): FormElement | undefined =>
-        state.formElements.find((el) => el.id === elementId),
+        state.formElements.find((el: any) => el.id === elementId),
     getFormElements: (state): FormElement[] => state.formElements,
     getSelectedElement: (state): FormElement | undefined =>
       state.selectedElementId
-        ? state.formElements.find((el) => el.id === state.selectedElementId)
+        ? state.formElements.find(
+            (el: any) => el.id === state.selectedElementId
+          )
         : undefined,
   },
   persist: true,
