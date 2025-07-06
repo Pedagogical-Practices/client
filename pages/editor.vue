@@ -62,7 +62,7 @@
             >
               <ul>
                 <li
-                  v-for="element in formElementStore.formElements"
+                  v-for="(element, index) in formElementStore.formElements"
                   :key="element.id"
                   class="form-element-item pa-3"
                   :class="{
@@ -105,22 +105,40 @@
                         />
                       </v-col>
                       <v-col cols="1">
-                        <div class="element-actions">
+                        <div class="element-actions d-flex flex-column">
                           <v-btn
-                            size="small"
+                            size="x-small"
+                            variant="text"
+                            color="grey-darken-1"
+                            @click.stop="formElementStore.moveElementUp(element.id)"
+                            title="Move Up"
+                            icon="mdi-arrow-up-bold-outline"
+                            :disabled="index === 0"
+                          ></v-btn>
+                          <v-btn
+                            size="x-small"
                             variant="text"
                             color="primary"
                             @click.stop="selectElementForEditing(element.id)"
-                            title="Editar Elemento"
+                            title="Edit Element"
                             icon="mdi-pencil-outline"
                           ></v-btn>
                           <v-btn
-                            size="small"
+                            size="x-small"
                             variant="text"
                             color="error"
                             @click.stop="removeElement(element.id)"
-                            title="Eliminar Elemento"
+                            title="Delete Element"
                             icon="mdi-delete-outline"
+                          ></v-btn>
+                           <v-btn
+                            size="x-small"
+                            variant="text"
+                            color="grey-darken-1"
+                            @click.stop="formElementStore.moveElementDown(element.id)"
+                            title="Move Down"
+                            icon="mdi-arrow-down-bold-outline"
+                            :disabled="index === formElementStore.formElements.length - 1"
                           ></v-btn>
                         </div>
                       </v-col>

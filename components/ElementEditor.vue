@@ -38,6 +38,18 @@
           <v-window-item value="general" class="tab-pane">
             <v-row dense>
               <v-col cols="12" md="6">
+                <v-select
+                  v-model="editableElement.type"
+                  :items="elementTypes"
+                  label="Component Type"
+                  hint="Change the base type of the element."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                  @update:model-value="handleTypeChange"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="6">
                 <v-text-field
                   v-model="editableElement.label"
                   label="Label"
@@ -352,17 +364,26 @@ import { ref, watch, computed } from "vue";
 import { useFormElementStore } from "~/stores/formElementStore";
 import { useDataSourceStore } from "~/stores/dataSourceStore";
 import FormViewer from "~/components/FormViewer.vue";
+import { availableElements } from "./formElementDefinitions";
+import type { FormElement } from "~/types/form";
 
 const formElement = useFormElementStore();
-const dataSourceStore = useDataSourceStore(); // Instantiate dataSourceStore
+const dataSourceStore = useDataSourceStore();
 
 const selectedElement = computed(() => formElement.getSelectedElement);
-const editableElement = ref<FormData | null>(null);
+const editableElement = ref<FormElement | null>(null);
 const currentTab = ref("general");
-const showPreview = ref(false); // Reactive variable for preview dialog
+const showPreview = ref(false);
 
 const selectItemsText = ref("");
 const rulesText = ref("");
+
+const elementTypes = computed(() =>
+  availableElements.map((el) => ({
+    title: el.displayName,
+    value: el.type,
+  }))
+);
 
 watch(
   selectedElement,
@@ -374,7 +395,6 @@ watch(
         : "";
       currentTab.value = "general";
 
-      // Prioritize dataSource for populating selectItemsText
       if (editableElement.value?.dataSource) {
         selectItemsText.value = await dataSourceStore.fetchFormattedOptions(
           editableElement.value.dataSource
@@ -383,7 +403,8 @@ watch(
         selectItemsText.value = editableElement
           .value!.options.map((opt) => {
             if (typeof opt === "string") return opt;
-            return `${opt.value}|${opt.text}`;
+            // Correctly handle both {text, value} and {label, value}
+            return `${opt.value}|${opt.label || opt.text}`;
           })
           .join("\n");
       } else {
@@ -396,7 +417,6 @@ watch(
   { deep: true, immediate: true }
 );
 
-// Watch for changes in dataSource and update selectItemsText
 watch(
   () => editableElement.value?.dataSource,
   async (newDataSource) => {
@@ -411,9 +431,49 @@ watch(
   }
 );
 
+const handleTypeChange = (newType: string) => {
+  if (!editableElement.value || editableElement.value.type === newType) return;
+
+  const newElementDef = availableElements.find((el) => el.type === newType);
+  if (!newElementDef) return;
+
+  const oldElement = editableElement.value;
+  const newDefaultConfig = JSON.parse(JSON.stringify(newElementDef.defaultConfig));
+
+  // Preserve common properties
+  const preservedProps = {
+    id: oldElement.id,
+    label: oldElement.label,
+    variableName: oldElement.variableName,
+    hint: oldElement.hint,
+    required: oldElement.required,
+    disabled: oldElement.disabled,
+    readonly: oldElement.readonly,
+    rules: oldElement.rules,
+    chapter: oldElement.chapter,
+    question: oldElement.question,
+    questionNumber: oldElement.questionNumber,
+    description: oldElement.description,
+    requirementLevel: oldElement.requirementLevel,
+  };
+
+  // Create the new element state by merging defaults and preserved props
+  editableElement.value = {
+    ...newDefaultConfig,
+    ...preservedProps,
+    type: newType, // Ensure the new type is set
+  };
+
+  // Reset specific text fields
+  rulesText.value = Array.isArray(editableElement.value.rules) ? editableElement.value.rules.join(",") : "";
+  selectItemsText.value = "";
+};
+
+
 const handleDialogClose = (value: boolean) => {
   if (!value) closeEditor();
 };
+
 const closeEditor = () => {
   formElement.setSelectedElement(null);
   editableElement.value = null;
@@ -425,7 +485,6 @@ const saveChanges = () => {
     editableElement.value.type === "select" ||
     editableElement.value.type === "radio-group"
   ) {
-    // If dataSource is set, clear options as they are dynamically loaded
     if (editableElement.value.dataSource) {
       editableElement.value.options = [];
     } else {
@@ -436,8 +495,8 @@ const saveChanges = () => {
         .map((line) => {
           const parts = line.split("|");
           if (parts.length === 2)
-            return { value: parts[0].trim(), text: parts[1].trim() };
-          return { value: line, text: line };
+            return { value: parts[0].trim(), label: parts[1].trim() };
+          return { value: line, label: line };
         });
     }
   }
@@ -448,6 +507,7 @@ const saveChanges = () => {
   formElement.updateElement(JSON.parse(JSON.stringify(editableElement.value)));
 };
 </script>
+
 
 <style scoped>
 .element-editor-card {

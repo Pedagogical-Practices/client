@@ -50,6 +50,22 @@ export const useFormElementStore = defineStore("formElement", {
       this.formElements = elements;
       this.selectedElementId = null;
     },
+    moveElementUp(elementId: string) {
+      const index = this.formElements.findIndex((el) => el.id === elementId);
+      if (index > 0) {
+        const element = this.formElements[index];
+        this.formElements.splice(index, 1);
+        this.formElements.splice(index - 1, 0, element);
+      }
+    },
+    moveElementDown(elementId: string) {
+      const index = this.formElements.findIndex((el) => el.id === elementId);
+      if (index !== -1 && index < this.formElements.length - 1) {
+        const element = this.formElements[index];
+        this.formElements.splice(index, 1);
+        this.formElements.splice(index + 1, 0, element);
+      }
+    },
   },
   getters: {
     getElement:
