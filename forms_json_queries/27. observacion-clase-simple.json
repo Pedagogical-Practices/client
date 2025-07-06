@@ -87,7 +87,7 @@
       "value": "",
       "variableName": "fecha",
       "placeholder": "YYYY-MM-DD",
-      "hint": "",
+      "hint": "Fecha de la observación",
       "required": true,
       "chapter": "Identificación",
       "question": "",

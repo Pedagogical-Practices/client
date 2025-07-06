@@ -113,13 +113,13 @@
       "question": "",
       "questionNumber": "",
       "consistencyCondition": "",
-      "inconsistencyMessage": "",
-      "errorType": "Soft",
-      "description": "",
+      "mensajeInconsistencia": "",
+      "tipoError": "Soft",
+      "descripcion": "",
       "name": "",
       "disabled": false,
-      "readonly": false,
-      "specificType": "text"
+      "soloLectura": false,
+      "subtipo": "text"
     },
     {
       "type": "text",

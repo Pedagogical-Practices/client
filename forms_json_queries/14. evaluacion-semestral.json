@@ -183,7 +183,7 @@
       "value": "",
       "variableName": "valoracionCuantitativa",
       "placeholder": "Ingrese un valor de 0 a 5",
-      "hint": "",
+      "hint": "Asigne una calificación general de 0 a 5",
       "required": true,
       "chapter": "Valoración Cuantitativa",
       "question": "",
