@@ -8,6 +8,7 @@ import FormsQuery from "~/queries/forms.gql";
 import FormQuery from "~/queries/form.gql";
 import SubmitProtocolMutation from '~/queries/submitProtocol.gql';
 import RegisterFormSubmissionMutation from '~/queries/registerFormSubmission.gql';
+import RemoveFormMutation from '~/queries/removeForm.gql';
 
 interface FormState {
   forms: Form[];
@@ -54,7 +55,14 @@ export const useFormStore = defineStore("form", {
         const form = data.value.form;
         this.formName = form.name;
         const formElementStore = useFormElementStore();
-        formElementStore.initializeForm(form.fields);
+
+        // Ensure every field has a unique client-side ID for reactivity.
+        const fieldsWithIds = form.fields.map(field => ({
+          ...field,
+          id: field.id || (Date.now().toString(36) + Math.random().toString(36).substring(2, 9)),
+        }));
+
+        formElementStore.initializeForm(fieldsWithIds);
       }
     },
 
@@ -100,6 +108,21 @@ export const useFormStore = defineStore("form", {
         console.log('Formulario guardado y registrado exitosamente.');
       } catch (error: any) {
         console.error('Error al guardar el formulario:', error);
+        throw error;
+      }
+    },
+
+    async deleteForm(id: string) {
+      const { mutate } = useMutation(RemoveFormMutation);
+      try {
+        const result = await mutate({ id: id });
+        if (result?.errors) {
+          throw new Error(result.errors[0]?.message || 'Error deleting form');
+        }
+        // Remove the deleted form from the store's forms array
+        this.forms = this.forms.filter(form => form._id !== id);
+      } catch (error: any) {
+        console.error('Error deleting form:', error);
         throw error;
       }
     },

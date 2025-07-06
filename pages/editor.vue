@@ -222,6 +222,8 @@ import {
 import ElementEditor from "~/components/ElementEditor.vue";
 import EntityAutocomplete from "~/components/EntityAutocomplete.vue"; // Import EntityAutocomplete
 import FormViewer from "~/components/FormViewer.vue"; // Import FormViewer
+import { useMutation } from "@vue/apollo-composable"; // Import useMutation
+import CreateFormMutation from "~/queries/createForm.gql"; // Import CreateFormMutation
 import {
   VTextField,
   VTextarea,
@@ -516,7 +518,7 @@ const updateFormFromJson = async (): Promise<void> => {
 
 const saveFormToBackend = async (): Promise<void> => {
   try {
-    if (!authStore.token) {
+    if (!authStore.isAuthenticated) {
       throw new Error(
         "No se encontró el token de autenticación. Por favor inicia sesión."
       );
@@ -524,70 +526,53 @@ const saveFormToBackend = async (): Promise<void> => {
     if (!formStore.formName) {
       throw new Error("El nombre del formulario es obligatorio.");
     }
-    const {
-      public: { GQL_HOST },
-    } = useRuntimeConfig();
-    if (!GQL_HOST) {
-      throw new Error("GQL_HOST no está definido en la configuración");
-    }
-    const query = await import("~/queries/createForm.gql?raw").then(
-      (m) => m.default
-    );
-    const response = await fetch(GQL_HOST, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authStore.token}`,
+
+    const { mutate } = useMutation(CreateFormMutation);
+
+    const result = await mutate({
+      createFormInput: {
+        name: formStore.formName,
+        fields: formElementStore.formElements.map(
+          (element: FormElement) => ({
+            type: element.type,
+            label: element.label ?? "",
+            value:
+              element.value !== undefined && element.value !== null
+                ? String(element.value)
+                : null,
+            variableName: element.variableName ?? "",
+            placeholder: element.placeholder ?? "",
+            hint: element.hint ?? "",
+            height: element.height ? String(element.height) : null,
+            required: !!element.required,
+            chapter: element.chapter ?? null,
+            question: element.question ?? null,
+            questionNumber: element.questionNumber ?? null,
+            consistencyCondition: element.consistencyCondition ?? null,
+            inconsistencyMessage: element.inconsistencyMessage ?? null,
+            errorType: element.errorType ?? null,
+            description: element.description ?? null,
+            requirementLevel: element.requirementLevel ?? "Optional",
+            options:
+              element.options?.map((opt: any) =>
+                typeof opt === "string"
+                  ? { value: opt, label: opt }
+                  : { value: opt.value, label: opt.text ?? opt.value }
+              ) ?? [],
+            disabled: !!element.disabled,
+            readonly: !!element.readonly,
+            name: element.name ?? null,
+            specificType: element.specificType ?? null,
+            color: element.color ?? null,
+            rules: element.rules ?? [],
+            multiple: !!element.multiple,
+          })
+        ),
       },
-      body: JSON.stringify({
-        query,
-        variables: {
-          createFormInput: {
-            name: formStore.formName,
-            fields: formElementStore.formElements.map(
-              (element: FormElement) => ({
-                type: element.type,
-                label: element.label ?? "",
-                value:
-                  element.value !== undefined && element.value !== null
-                    ? String(element.value)
-                    : null,
-                variableName: element.variableName ?? "",
-                placeholder: element.placeholder ?? "",
-                hint: element.hint ?? "",
-                height: element.height ? String(element.height) : null,
-                required: !!element.required,
-                chapter: element.chapter ?? null,
-                question: element.question ?? null,
-                questionNumber: element.questionNumber ?? null,
-                consistencyCondition: element.consistencyCondition ?? null,
-                inconsistencyMessage: element.inconsistencyMessage ?? null,
-                errorType: element.errorType ?? null,
-                description: element.description ?? null,
-                requirementLevel: element.requirementLevel ?? "Optional",
-                options:
-                  element.options?.map((opt: any) =>
-                    typeof opt === "string"
-                      ? { value: opt, label: opt }
-                      : { value: opt.value, label: opt.text ?? opt.value }
-                  ) ?? [],
-                disabled: !!element.disabled,
-                readonly: !!element.readonly,
-                name: element.name ?? null,
-                specificType: element.specificType ?? null,
-                color: element.color ?? null,
-                rules: element.rules ?? [],
-                multiple: !!element.multiple,
-              })
-            ),
-          },
-        },
-      }),
     });
 
-    const data = await response.json();
-    if (data.errors) {
-      throw new Error(data.errors[0]?.message ?? "Error en la mutación");
+    if (result?.errors) {
+      throw new Error(result.errors[0]?.message ?? "Error en la mutación");
     }
 
     formElementStore.initializeForm([]);

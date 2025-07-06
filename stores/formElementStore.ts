@@ -23,11 +23,24 @@ export const useFormElementStore = defineStore("formElement", {
       }
     },
     updateElement(updatedElement: FormElement) {
+      console.log('Attempting to update element with ID:', updatedElement.id);
+      console.log('Data received for update:', JSON.parse(JSON.stringify(updatedElement)));
+
       const index = this.formElements.findIndex(
-        (el: any) => el.id === updatedElement.id
+        (el) => el.id === updatedElement.id
       );
+
       if (index !== -1) {
-        this.formElements[index] = updatedElement;
+        console.log('Found element at index:', index);
+        console.log('State BEFORE update:', JSON.parse(JSON.stringify(this.formElements[index])));
+        
+        // Use Object.assign to merge properties into the existing object
+        // This preserves the object reference, helping Vue's reactivity.
+        Object.assign(this.formElements[index], updatedElement);
+        
+        console.log('State AFTER update:', JSON.parse(JSON.stringify(this.formElements[index])));
+      } else {
+        console.error('Update failed: Element with ID', updatedElement.id, 'not found in store.');
       }
     },
     setSelectedElement(elementId: string | null) {

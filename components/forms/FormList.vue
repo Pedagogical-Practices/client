@@ -22,6 +22,14 @@
         title="Editar Formulario"
         icon="mdi-pencil"
       ></v-btn>
+      <v-btn
+        size="small"
+        variant="text"
+        color="error"
+        @click.stop="$emit('delete-form', item._id)"
+        title="Eliminar Formulario"
+        icon="mdi-delete"
+      ></v-btn>
     </template>
   </v-data-table>
 </template>
@@ -38,6 +46,7 @@ defineProps<{
 const emit = defineEmits<{
   (e: "view-form", formId: string): void;
   (e: "edit-form", formId: string): void;
+  (e: "delete-form", formId: string): void;
 }>();
 
 const headers = ref([

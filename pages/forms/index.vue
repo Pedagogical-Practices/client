@@ -25,6 +25,7 @@
                   :forms="filteredForms"
                   @view-form="viewForm"
                   @edit-form="editForm"
+                  @delete-form="confirmDeleteForm"
                 />
               </v-col>
             </v-row>
@@ -43,6 +44,18 @@
         <v-btn variant="text" @click="snackbar.show = false">Cerrar</v-btn>
       </template>
     </v-snackbar>
+
+    <v-dialog v-model="showDeleteConfirm" max-width="500">
+      <v-card>
+        <v-card-title class="headline">Confirmar Eliminación</v-card-title>
+        <v-card-text>¿Estás seguro de que quieres eliminar este formulario? Esta acción no se puede deshacer.</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="grey-darken-1" variant="text" @click="showDeleteConfirm = false">Cancelar</v-btn>
+          <v-btn color="error" variant="text" @click="deleteForm">Eliminar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -71,6 +84,9 @@ const snackbar = ref({
   timeout: 3000,
 });
 
+const showDeleteConfirm = ref(false);
+const formToDeleteId = ref<string | null>(null);
+
 onMounted(async () => {
   try {
     if (!authStore.isAuthenticated) {
@@ -96,10 +112,43 @@ onMounted(async () => {
   }
 });
 
+const confirmDeleteForm = (formId: string) => {
+  formToDeleteId.value = formId;
+  showDeleteConfirm.value = true;
+};
+
+const deleteForm = async () => {
+  if (!formToDeleteId.value) return;
+  try {
+    await formStore.deleteForm(formToDeleteId.value);
+    snackbar.value = {
+      show: true,
+      text: "¡Formulario eliminado exitosamente!",
+      color: "success",
+      timeout: 3000,
+    };
+    showDeleteConfirm.value = false;
+    formToDeleteId.value = null;
+  } catch (error: any) {
+    console.error("Error al eliminar formulario:", error);
+    snackbar.value = {
+      show: true,
+      text: `Error al eliminar: ${error.message}`,
+      color: "error",
+      timeout: 3000,
+    };
+  }
+};
+
 const filteredForms = computed(() => {
-  return formStore.forms.filter((form) =>
+  const forms = formStore.forms.filter((form) =>
     form.name.toLowerCase().includes(filter.value.toLowerCase())
   );
+  return forms.sort((a, b) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+    return dateB.getTime() - dateA.getTime();
+  });
 });
 
 const updateFilter = (value: string) => {
