@@ -139,5 +139,7 @@ export const useFormStore = defineStore("form", {
       }
     },
   },
-  persist: true,
+  persist: {
+    paths: ['forms', 'currentForm', 'formName'], // Only persist these properties
+  },
 });

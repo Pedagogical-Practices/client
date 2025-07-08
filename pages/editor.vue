@@ -247,7 +247,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import {
   useFormElementStore,
   type FormElement,
@@ -278,6 +278,7 @@ import {
 definePageMeta({});
 
 const router = useRouter();
+const route = useRoute(); // Added useRoute
 const formElementStore = useFormElementStore();
 const formStore = useFormStore();
 const authStore = useAuthStore();
@@ -296,6 +297,32 @@ const snackbar = ref<{
   timeout: 3000,
 });
 
+// Watch for changes in route.params.id to load the form
+watch(() => route.params.id, async (newId) => {
+  if (newId) {
+    try {
+      await formStore.fetchFormById(newId as string);
+    } catch (error: any) {
+      console.error("Error loading form by ID, resetting to new form:", error);
+      // If form not found or error, reset to create new form
+      formStore.clearEditingFormId();
+      formElementStore.initializeForm([]);
+      formStore.formName = "";
+      snackbar.value = {
+        show: true,
+        text: `Error al cargar el formulario: ${error.message || 'Formulario no encontrado'}. Creando nuevo formulario.`,
+        color: "error",
+        timeout: 5000,
+      };
+    }
+  } else {
+    // If no ID in route, ensure it's a new form
+    formStore.clearEditingFormId();
+    formElementStore.initializeForm([]);
+    formStore.formName = "";
+  }
+}, { immediate: true }); // Run immediately on component mount
+
 import DynamicSelect from "~/components/forms/DynamicSelect.vue";
 
 const componentMap: Record<string, any> = {
@@ -309,8 +336,6 @@ const componentMap: Record<string, any> = {
 };
 
 const getComponentName = (element: FormElement): any => {
-  console.log("getComponentName: Received element:", element);
-  console.log(`getComponentName: Element type: ${element.type}, dataSource: ${element.dataSource}, dataSource.length: ${element.dataSource?.length}`);
   if (element.type === "select" && element.dataSource && element.dataSource.length > 0) {
     return DynamicSelect;
   }
@@ -513,11 +538,9 @@ const updateFormFromJson = async (): Promise<void> => {
       throw new Error("El JSON contiene elementos inválidos en 'fields'");
     }
     formStore.formName = parsedJson.name;
-    console.log("JSON parseado para actualización:", parsedJson);
     formElementStore.initializeForm(
       parsedJson.fields.map(
         (el: any): FormElement => {
-          console.log(`Procesando elemento JSON: ${el.id || 'nuevo'}, type: ${el.type}, dataSource: ${el.dataSource}`);
           return {
             id: el.id || generateUniqueId(), // Use existing id or generate new
             type: el.type,
@@ -552,7 +575,6 @@ const updateFormFromJson = async (): Promise<void> => {
         }
       )
     );
-    console.log("Elementos de formulario en la store después de initializeForm:", formElementStore.formElements);
     snackbar.value = {
       show: true,
       text: "¡Formulario actualizado desde JSON!",
@@ -627,21 +649,25 @@ const saveFormToBackend = async (): Promise<void> => {
     );
 
     if (formStore.editingFormId) {
-      // Update existing form
+      console.log("Attempting to UPDATE form. editingFormId:", formStore.editingFormId);
+      const updateInput = {
+        id: formStore.editingFormId,
+        name: formStore.formName,
+        fields: formFields,
+      };
+      console.log("Update input:", updateInput);
       result = await updateForm({
-        updateFormInput: {
-          id: formStore.editingFormId,
-          name: formStore.formName,
-          fields: formFields,
-        },
+        updateFormInput: updateInput,
       });
     } else {
-      // Create new form
+      console.log("Attempting to CREATE new form.");
+      const createInput = {
+        name: formStore.formName,
+        fields: formFields,
+      };
+      console.log("Create input:", createInput);
       result = await createForm({
-        createFormInput: {
-          name: formStore.formName,
-          fields: formFields,
-        },
+        createFormInput: createInput,
       });
     }
 
@@ -653,6 +679,9 @@ const saveFormToBackend = async (): Promise<void> => {
     if (!formStore.editingFormId && result?.data?.createForm?._id) {
       formStore.editingFormId = result.data.createForm._id;
     }
+
+    // Clear editingFormId after successful save (create or update)
+    formStore.clearEditingFormId();
 
     formElementStore.initializeForm([]);
     formStore.formName = "";
