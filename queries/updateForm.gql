@@ -1,18 +1,15 @@
-query Forms {
-  forms {
+mutation UpdateForm($updateFormInput: UpdateFormInput!) {
+  updateForm(updateFormInput: $updateFormInput) {
     _id
     name
-    createdBy {
-      name
-      email
-    }
-    createdAt
     fields {
       type
       label
       value
+      variableName
       placeholder
       hint
+      height
       required
       chapter
       question
@@ -22,20 +19,26 @@ query Forms {
       errorType
       description
       requirementLevel
-      rules
-      name
-      disabled
-      readonly
-      specificType
-      dataSource
-      multiple
       options {
         label
         value
       }
-      height
+      disabled
+      readonly
+      name
+      specificType
       color
-      variableName
+      rules
+      multiple
+      dataSource
     }
+    createdBy {
+      _id
+      name
+      email
+      role
+    }
+    createdAt
+    updatedAt
   }
 }

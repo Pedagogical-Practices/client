@@ -81,8 +81,12 @@
                       </v-col>
                       <v-col cols="10">
                         <component
-                          :is="getComponentName(element.type)"
-                          v-model="element.value"
+                          :is="getComponentName(element)"
+                          :model-value="element.value"
+                          @update:model-value="
+                            (newValue) =>
+                              handleValueUpdate(element.id, newValue)
+                          "
                           :label="element.label"
                           :placeholder="element.placeholder"
                           :hint="element.hint"
@@ -100,6 +104,7 @@
                               : []
                           "
                           :multiple="element.multiple"
+                          :dataSource="element.dataSource"
                           class="component-preview"
                           variant="outlined"
                         />
@@ -110,7 +115,9 @@
                             size="x-small"
                             variant="text"
                             color="grey-darken-1"
-                            @click.stop="formElementStore.moveElementUp(element.id)"
+                            @click.stop="
+                              formElementStore.moveElementUp(element.id)
+                            "
                             title="Move Up"
                             icon="mdi-arrow-up-bold-outline"
                             :disabled="index === 0"
@@ -131,14 +138,18 @@
                             title="Delete Element"
                             icon="mdi-delete-outline"
                           ></v-btn>
-                           <v-btn
+                          <v-btn
                             size="x-small"
                             variant="text"
                             color="grey-darken-1"
-                            @click.stop="formElementStore.moveElementDown(element.id)"
+                            @click.stop="
+                              formElementStore.moveElementDown(element.id)
+                            "
                             title="Move Down"
                             icon="mdi-arrow-down-bold-outline"
-                            :disabled="index === formElementStore.formElements.length - 1"
+                            :disabled="
+                              index === formElementStore.formElements.length - 1
+                            "
                           ></v-btn>
                         </div>
                       </v-col>
@@ -181,15 +192,15 @@
               <v-card-text class="pa-2">
                 <!-- Reemplazar con el componente de editor JSON -->
                 <v-card-text class="pa-2">
-                <v-textarea
-                  v-model="editableFormJsonString"
-                  label="Salida JSON del Formulario"
-                  auto-grow
-                  rows="10"
-                  density="compact"
-                  class="json-output-textarea"
-                ></v-textarea>
-              </v-card-text>
+                  <v-textarea
+                    v-model="editableFormJsonString"
+                    label="Salida JSON del Formulario"
+                    auto-grow
+                    rows="10"
+                    density="compact"
+                    class="json-output-textarea"
+                  ></v-textarea>
+                </v-card-text>
               </v-card-text>
             </div>
           </v-expand-transition>
@@ -211,12 +222,23 @@
 
     <v-dialog v-model="showPreview" fullscreen>
       <v-card>
-        <v-card-title class="d-flex justify-space-between align-center headline-bar">
-          <span class="text-h6 font-weight-medium">Previsualización del Formulario</span>
-          <v-btn icon="mdi-close" variant="text" @click="showPreview = false"></v-btn>
+        <v-card-title
+          class="d-flex justify-space-between align-center headline-bar"
+        >
+          <span class="text-h6 font-weight-medium"
+            >Previsualización del Formulario</span
+          >
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            @click="showPreview = false"
+          ></v-btn>
         </v-card-title>
         <v-card-text>
-          <FormViewer :formDefinition="{ fields: formElementStore.formElements }" :modelValue="{}" />
+          <FormViewer
+            :formDefinition="{ fields: formElementStore.formElements }"
+            :modelValue="{}"
+          />
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -241,7 +263,8 @@ import ElementEditor from "~/components/ElementEditor.vue";
 import EntityAutocomplete from "~/components/EntityAutocomplete.vue"; // Import EntityAutocomplete
 import FormViewer from "~/components/FormViewer.vue"; // Import FormViewer
 import { useMutation } from "@vue/apollo-composable"; // Import useMutation
-import CreateFormMutation from "~/queries/createForm.gql"; // Import CreateFormMutation
+import CreateFormMutation from "~/queries/createForm.gql";
+import UpdateFormMutation from "~/queries/updateForm.gql"; // Import CreateFormMutation
 import {
   VTextField,
   VTextarea,
@@ -273,6 +296,8 @@ const snackbar = ref<{
   timeout: 3000,
 });
 
+import DynamicSelect from "~/components/forms/DynamicSelect.vue";
+
 const componentMap: Record<string, any> = {
   text: VTextField,
   textarea: VTextarea,
@@ -281,11 +306,15 @@ const componentMap: Record<string, any> = {
   button: VBtn,
   "radio-group": VRadioGroup,
   "date-picker": VDatePicker,
-  "institution-select": EntityAutocomplete, // Add institution-select to componentMap
 };
 
-const getComponentName = (type: string): any => {
-  return componentMap[type] || VTextField;
+const getComponentName = (element: FormElement): any => {
+  console.log("getComponentName: Received element:", element);
+  console.log(`getComponentName: Element type: ${element.type}, dataSource: ${element.dataSource}, dataSource.length: ${element.dataSource?.length}`);
+  if (element.type === "select" && element.dataSource && element.dataSource.length > 0) {
+    return DynamicSelect;
+  }
+  return componentMap[element.type] || VTextField;
 };
 
 const getElementIcon = (type: string): string => {
@@ -304,6 +333,10 @@ const removeElement = (elementId: string): void => {
   if (formElementStore.selectedElementId === elementId) {
     formElementStore.setSelectedElement(null);
   }
+};
+
+const handleValueUpdate = (elementId: string, newValue: any) => {
+  formElementStore.updateElementValue({ elementId, value: newValue });
 };
 
 const handleDragOver = (event: DragEvent): void => {
@@ -353,6 +386,7 @@ const generateUniqueId = (): string =>
 const createNewForm = (): void => {
   formElementStore.initializeForm([]);
   formStore.formName = "";
+  formStore.clearEditingFormId(); // Clear the editing ID
   formElementStore.setSelectedElement(null);
   editableFormJsonString.value = JSON.stringify(
     { name: "", fields: [] },
@@ -393,6 +427,7 @@ const transformedFormJson = computed(() => {
         disabled: el.disabled,
         readonly: el.readonly,
         specificType: el.specificType,
+        dataSource: el.dataSource, // Add dataSource to the output
       };
       if (el.type === "select" || el.type === "radio-group") {
         outputEl.options = el.options;
@@ -403,10 +438,6 @@ const transformedFormJson = computed(() => {
       }
       if (el.type === "button" && el.color) {
         outputEl.color = el.color;
-      }
-      // Handle specificType for EntityAutocomplete
-      if (el.type === "institution-select" && el.specificType) {
-        outputEl.specificType = el.specificType;
       }
       // Clean up undefined/null/empty array values, but keep false and empty strings
       Object.keys(outputEl).forEach((key) => {
@@ -476,47 +507,52 @@ const updateFormFromJson = async (): Promise<void> => {
           "radio-group",
           "date-picker",
           "time-picker", // Added time-picker
-          "institution-select", // Add institution-select
         ].includes(el.type)
     );
     if (!validElements) {
       throw new Error("El JSON contiene elementos inválidos en 'fields'");
     }
     formStore.formName = parsedJson.name;
+    console.log("JSON parseado para actualización:", parsedJson);
     formElementStore.initializeForm(
       parsedJson.fields.map(
-        (el: any): FormElement => ({
-          id: el.id || generateUniqueId(), // Use existing id or generate new
-          type: el.type,
-          label: el.label ?? "",
-          value: el.value ?? "",
-          variableName: el.variableName ?? "",
-          placeholder: el.placeholder ?? "",
-          hint: el.hint ?? "",
-          requirementLevel: el.required ? "Required" : "Optional", // Map boolean to string
-          chapter: el.chapter ?? "",
-          question: el.question ?? "",
-          questionNumber: el.questionNumber ?? "",
-          consistencyCondition: el.consistencyCondition ?? "",
-          inconsistencyMessage: el.inconsistencyMessage ?? "",
-          errorType: el.errorType ?? "Soft",
-          description: el.description ?? "",
-          name: el.name ?? "",
-          disabled: !!el.disabled,
-          readonly: !!el.readonly,
-          options:
-            el.options?.map((opt: any) => ({
-              label: opt.label ?? opt.text ?? "", // Handle both 'label' and 'text'
-              value: opt.value ?? "",
-            })) ?? [],
-          specificType: el.specificType ?? "",
-          height: el.height ? String(el.height) : undefined, // Ensure string for height
-          color: el.color ?? "",
-          rules: el.rules ?? [],
-          multiple: !!el.multiple,
-        })
+        (el: any): FormElement => {
+          console.log(`Procesando elemento JSON: ${el.id || 'nuevo'}, type: ${el.type}, dataSource: ${el.dataSource}`);
+          return {
+            id: el.id || generateUniqueId(), // Use existing id or generate new
+            type: el.type,
+            label: el.label ?? "",
+            value: el.value ?? "",
+            variableName: el.variableName ?? "",
+            placeholder: el.placeholder ?? "",
+            hint: el.hint ?? "",
+            requirementLevel: el.required ? "Required" : "Optional", // Map boolean to string
+            chapter: el.chapter ?? "",
+            question: el.question ?? "",
+            questionNumber: el.questionNumber ?? "",
+            consistencyCondition: el.consistencyCondition ?? "",
+            inconsistencyMessage: el.inconsistencyMessage ?? "",
+            errorType: el.errorType ?? "Soft",
+            description: el.description ?? "",
+            name: el.name ?? "",
+            disabled: !!el.disabled,
+            readonly: !!el.readonly,
+            options:
+              el.options?.map((opt: any) => ({
+                label: opt.label ?? opt.text ?? "", // Handle both 'label' and 'text'
+                value: opt.value ?? "",
+              })) ?? [],
+            specificType: el.specificType ?? "",
+            height: el.height ? String(el.height) : undefined, // Ensure string for height
+            color: el.color ?? "",
+            rules: el.rules ?? [],
+            multiple: !!el.multiple,
+            dataSource: el.dataSource !== undefined ? el.dataSource : null, // Ensure dataSource is always present, even if null
+          };
+        }
       )
     );
+    console.log("Elementos de formulario en la store después de initializeForm:", formElementStore.formElements);
     snackbar.value = {
       show: true,
       text: "¡Formulario actualizado desde JSON!",
@@ -545,52 +581,77 @@ const saveFormToBackend = async (): Promise<void> => {
       throw new Error("El nombre del formulario es obligatorio.");
     }
 
-    const { mutate } = useMutation(CreateFormMutation);
+    const { mutate: createForm } = useMutation(CreateFormMutation);
+    const { mutate: updateForm } = useMutation(UpdateFormMutation);
 
-    const result = await mutate({
-      createFormInput: {
-        name: formStore.formName,
-        fields: formElementStore.formElements.map(
-          (element: FormElement) => ({
-            type: element.type,
-            label: element.label ?? "",
-            value:
-              element.value !== undefined && element.value !== null
-                ? String(element.value)
-                : null,
-            variableName: element.variableName ?? "",
-            placeholder: element.placeholder ?? "",
-            hint: element.hint ?? "",
-            height: element.height ? String(element.height) : null,
-            required: !!element.required,
-            chapter: element.chapter ?? null,
-            question: element.question ?? null,
-            questionNumber: element.questionNumber ?? null,
-            consistencyCondition: element.consistencyCondition ?? null,
-            inconsistencyMessage: element.inconsistencyMessage ?? null,
-            errorType: element.errorType ?? null,
-            description: element.description ?? null,
-            requirementLevel: element.requirementLevel ?? "Optional",
-            options:
-              element.options?.map((opt: any) =>
-                typeof opt === "string"
-                  ? { value: opt, label: opt }
-                  : { value: opt.value, label: opt.text ?? opt.value }
-              ) ?? [],
-            disabled: !!element.disabled,
-            readonly: !!element.readonly,
-            name: element.name ?? null,
-            specificType: element.specificType ?? null,
-            color: element.color ?? null,
-            rules: element.rules ?? [],
-            multiple: !!element.multiple,
-          })
-        ),
-      },
+    let result;
+    console.log("Guardando formulario con los siguientes datos:", {
+      fields: formElementStore.formElements,
     });
+    const formFields = formElementStore.formElements.map(
+      (element: FormElement) => ({
+        type: element.type,
+        label: element.label ?? "",
+        value:
+          element.value !== undefined && element.value !== null
+            ? String(element.value)
+            : null,
+        variableName: element.variableName ?? "",
+        placeholder: element.placeholder ?? "",
+        hint: element.hint ?? "",
+        height: element.height ? String(element.height) : null,
+        required: !!element.required,
+        chapter: element.chapter ?? null,
+        question: element.question ?? null,
+        questionNumber: element.questionNumber ?? null,
+        consistencyCondition: element.consistencyCondition ?? null,
+        inconsistencyMessage: element.inconsistencyMessage ?? null,
+        errorType: element.errorType ?? null,
+        description: element.description ?? null,
+        requirementLevel: element.requirementLevel ?? "Optional",
+        options:
+          element.options?.map((opt: any) =>
+            typeof opt === "string"
+              ? { value: opt, label: opt }
+              : { value: opt.value, label: opt.text ?? opt.value }
+          ) ?? [],
+        disabled: !!element.disabled,
+        readonly: !!element.readonly,
+        name: element.name ?? null,
+        specificType: element.specificType ?? null,
+        color: element.color ?? null,
+        rules: element.rules ?? [],
+        multiple: !!element.multiple,
+        dataSource: element.dataSource ?? null,
+      })
+    );
+
+    if (formStore.editingFormId) {
+      // Update existing form
+      result = await updateForm({
+        updateFormInput: {
+          id: formStore.editingFormId,
+          name: formStore.formName,
+          fields: formFields,
+        },
+      });
+    } else {
+      // Create new form
+      result = await createForm({
+        createFormInput: {
+          name: formStore.formName,
+          fields: formFields,
+        },
+      });
+    }
 
     if (result?.errors) {
       throw new Error(result.errors[0]?.message ?? "Error en la mutación");
+    }
+
+    // If a new form was created, store its ID
+    if (!formStore.editingFormId && result?.data?.createForm?._id) {
+      formStore.editingFormId = result.data.createForm._id;
     }
 
     formElementStore.initializeForm([]);

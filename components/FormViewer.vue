@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row v-for="(field, index) in formDefinition.fields" :key="index">
+    <v-row v-for="(field, index) in formDefinition.fields" :key="field.id">
       <v-col cols="12">
         <template v-if="field.type === 'date-picker'">
           <v-text-field

@@ -19,6 +19,18 @@ query Form($id: String!) {
       errorType
       description
       requirementLevel
+      dataSource
+      multiple
+      options {
+        label
+        value
+      }
+      color
+      name
+      disabled
+      readonly
+      specificType
+      rules
     }
     createdBy {
       name

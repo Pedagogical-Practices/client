@@ -212,34 +212,7 @@ export const availableElements: AvailableElementDefinition[] = [
       requirementLevel: "Optional",
     },
   },
-  {
-    type: "institution-select",
-    displayName: "Selección de Institución",
-    icon: "mdi-bank",
-    defaultConfig: {
-      type: "institution-select",
-      label: "Seleccionar Institución",
-      value: "", // Will store the selected institution's ID
-      variableName: "institutionId",
-      hint: "Selecciona una institución de la lista.",
-      required: false,
-      disabled: false,
-      readonly: false,
-      name: "",
-      height: undefined,
-      width: undefined,
-      rules: [],
-      chapter: "",
-      question: "",
-      questionNumber: "",
-      consistencyCondition: "",
-      inconsistencyMessage: "",
-      errorType: "Soft",
-      description: "",
-      requirementLevel: "Optional",
-      specificType: "institution", // To indicate it's for institutions
-    },
-  },
+  
   {
     type: "dynamic-select",
     displayName: "Dynamic Select",

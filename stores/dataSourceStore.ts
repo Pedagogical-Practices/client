@@ -6,6 +6,7 @@ export const useDataSourceStore = defineStore('dataSource', () => {
   const { client } = useApolloClient();
 
   const fetchFormattedOptions = async (dataSource: string): Promise<string> => {
+    console.log('dataSourceStore: fetchFormattedOptions called with', dataSource);
     if (!dataSource) return '';
 
     let query;
@@ -20,11 +21,15 @@ export const useDataSourceStore = defineStore('dataSource', () => {
     }
 
     try {
+      console.log('dataSourceStore: Executing query', query);
       const { data, errors } = await client.query({ query });
 
       if (errors) {
+        console.error('dataSourceStore: GraphQL errors', errors);
         throw new Error(errors.map(e => e.message).join(', '));
       }
+
+      console.log('dataSourceStore: Data received', data);
 
       if (data && data[dataKey]) {
         let items = data[dataKey];
@@ -33,13 +38,16 @@ export const useDataSourceStore = defineStore('dataSource', () => {
         } else if (dataSource === 'students') {
           items = items.filter((user: any) => user.role === 'student');
         }
-        return items.map((item: any) => `${item._id}|${item.name}`).join('\n');
+        const formatted = items.map((item: any) => `${item._id}|${item.name}`).join('\n');
+        console.log('dataSourceStore: Formatted options', formatted);
+        return formatted;
       }
 
     } catch (err) {
       console.error(`Error fetching data for ${dataSource}:`, err);
     }
 
+    console.log('dataSourceStore: Returning empty string');
     return '';
   };
 

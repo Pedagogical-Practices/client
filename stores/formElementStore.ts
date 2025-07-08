@@ -66,6 +66,12 @@ export const useFormElementStore = defineStore("formElement", {
         this.formElements.splice(index + 1, 0, element);
       }
     },
+    updateElementValue({ elementId, value }: { elementId: string, value: any }) {
+      const element = this.formElements.find(el => el.id === elementId);
+      if (element) {
+        element.value = value;
+      }
+    },
   },
   getters: {
     getElement:
@@ -80,5 +86,4 @@ export const useFormElementStore = defineStore("formElement", {
           )
         : undefined,
   },
-  persist: true,
-});
+  });

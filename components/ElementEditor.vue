@@ -16,6 +16,7 @@
         <span class="text-h6 font-weight-medium"
           >Edit: {{ editableElement.label || editableElement.type }}</span
         >
+
         <v-btn
           icon="mdi-close"
           variant="text"
@@ -153,7 +154,15 @@
               >
                 <v-select
                   v-model="editableElement.dataSource"
-                  :items="['institutions', 'teachers', 'students', 'courses', 'forms', 'protocols', 'users']"
+                  :items="[
+                    'institutions',
+                    'teachers',
+                    'students',
+                    'courses',
+                    'forms',
+                    'protocols',
+                    'users',
+                  ]"
                   label="Data Source"
                   hint="Source for dynamic options (e.g., institutions, teachers)."
                   persistent-hint
@@ -164,7 +173,7 @@
               </v-col>
             </v-row>
           </v-window-item>
-
+          {{ editableElement }} - {{ selectedElement }}
           <v-window-item value="behavior" class="tab-pane">
             <v-row dense>
               <v-col cols="12" sm="4">
@@ -348,19 +357,27 @@
 
   <v-dialog v-model="showPreview" fullscreen>
     <v-card>
-      <v-card-title class="d-flex justify-space-between align-center headline-bar">
+      <v-card-title
+        class="d-flex justify-space-between align-center headline-bar"
+      >
         <span class="text-h6 font-weight-medium">Form Preview</span>
-        <v-btn icon="mdi-close" variant="text" @click="showPreview = false"></v-btn>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          @click="showPreview = false"
+        ></v-btn>
       </v-card-title>
       <v-card-text>
-        <FormViewer :formDefinition="{ fields: formElement.getFormElements() }" />
+        <FormViewer
+          :formDefinition="{ fields: formElement.getFormElements() }"
+        />
       </v-card-text>
     </v-card>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, toRaw, reactive } from "vue";
 import { useFormElementStore } from "~/stores/formElementStore";
 import { useDataSourceStore } from "~/stores/dataSourceStore";
 import FormViewer from "~/components/FormViewer.vue";
@@ -389,7 +406,20 @@ watch(
   selectedElement,
   async (newVal) => {
     if (newVal) {
-      editableElement.value = JSON.parse(JSON.stringify(newVal));
+      editableElement.value = reactive(toRaw(newVal));
+      // Aseguramos que dataSource sea un string simple para el v-select
+      if (typeof editableElement.value.dataSource !== 'string') {
+        editableElement.value.dataSource = String(editableElement.value.dataSource || '');
+      }
+      console.log("ElementEditor: selectedElement newVal", newVal);
+      console.log(
+        "ElementEditor: editableElement.value after copy",
+        editableElement.value
+      );
+      console.log(
+        "ElementEditor: dataSource value",
+        editableElement.value?.dataSource
+      );
       rulesText.value = Array.isArray(editableElement.value?.rules)
         ? editableElement.value!.rules.join(",")
         : "";
@@ -438,7 +468,9 @@ const handleTypeChange = (newType: string) => {
   if (!newElementDef) return;
 
   const oldElement = editableElement.value;
-  const newDefaultConfig = JSON.parse(JSON.stringify(newElementDef.defaultConfig));
+  const newDefaultConfig = JSON.parse(
+    JSON.stringify(newElementDef.defaultConfig)
+  );
 
   // Preserve common properties
   const preservedProps = {
@@ -462,13 +494,21 @@ const handleTypeChange = (newType: string) => {
     ...newDefaultConfig,
     ...preservedProps,
     type: newType, // Ensure the new type is set
+    // Ensure dataSource is preserved or initialized for select/dynamic-select types
+    dataSource:
+      newType === "select" ||
+      newType === "dynamic-select" ||
+      newType === "autocomplete"
+        ? oldElement.dataSource || ""
+        : undefined,
   };
 
   // Reset specific text fields
-  rulesText.value = Array.isArray(editableElement.value.rules) ? editableElement.value.rules.join(",") : "";
+  rulesText.value = Array.isArray(editableElement.value.rules)
+    ? editableElement.value.rules.join(",")
+    : "";
   selectItemsText.value = "";
 };
-
 
 const handleDialogClose = (value: boolean) => {
   if (!value) closeEditor();
@@ -481,6 +521,10 @@ const closeEditor = () => {
 
 const saveChanges = () => {
   if (!editableElement.value) return;
+  console.log(
+    "ElementEditor: Saving changes. editableElement.value BEFORE stringify:",
+    JSON.parse(JSON.stringify(editableElement.value))
+  );
   if (
     editableElement.value.type === "select" ||
     editableElement.value.type === "radio-group"
@@ -507,7 +551,6 @@ const saveChanges = () => {
   formElement.updateElement(JSON.parse(JSON.stringify(editableElement.value)));
 };
 </script>
-
 
 <style scoped>
 .element-editor-card {

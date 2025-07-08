@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import type { Form } from "~/types/form";
 import { useFormElementStore } from "~/stores/formElementStore";
 import { usePracticeStore } from "~/stores/practiceStore";
+import { useApolloClient } from '#imports';
 
 // Import GQL documents
 import FormsQuery from "~/queries/forms.gql";
@@ -14,6 +15,7 @@ interface FormState {
   forms: Form[];
   currentForm: Form | null;
   formName: string;
+  editingFormId: string | null;
 }
 
 export const useFormStore = defineStore("form", {
@@ -21,49 +23,59 @@ export const useFormStore = defineStore("form", {
     forms: [],
     currentForm: null,
     formName: "",
+    editingFormId: null,
   }),
   actions: {
     async fetchForms() {
-      const { data, error } = await useAsyncQuery(FormsQuery);
-      if (error.value) {
-        console.error("Error fetching forms:", error.value);
-        return;
-      }
-      if (data.value?.forms) {
-        this.forms = data.value.forms;
+      const { client } = useApolloClient();
+      try {
+        const { data } = await client.query({ query: FormsQuery });
+        if (data?.forms) {
+          this.forms = data.forms;
+        }
+      } catch (error: any) {
+        console.error("Error fetching forms:", error);
       }
     },
 
     async fetchForm(id: string) {
-      const { data, error } = await useAsyncQuery(FormQuery, { id });
-      if (error.value) {
-        console.error("Error fetching form:", error.value);
-        return;
-      }
-      if (data.value?.form) {
-        this.currentForm = data.value.form;
+      const { client } = useApolloClient();
+      try {
+        const { data } = await client.query({ query: FormQuery, variables: { id } });
+        if (data?.form) {
+          this.currentForm = data.form;
+        }
+      } catch (error: any) {
+        console.error("Error fetching form:", error);
       }
     },
 
     async fetchFormById(id: string) {
-      const { data, error } = await useAsyncQuery(FormQuery, { id });
-      if (error.value) {
-        console.error("Error fetching form by id:", error.value);
-        throw error.value;
-      }
-      if (data.value?.form) {
-        const form = data.value.form;
-        this.formName = form.name;
-        const formElementStore = useFormElementStore();
+      const { client } = useApolloClient();
+      try {
+        const { data } = await client.query({ query: FormQuery, variables: { id } });
+        if (data?.form) {
+          const form = data.form;
+          this.formName = form.name;
+          const formElementStore = useFormElementStore();
 
-        // Ensure every field has a unique client-side ID for reactivity.
-        const fieldsWithIds = form.fields.map(field => ({
-          ...field,
-          id: field.id || (Date.now().toString(36) + Math.random().toString(36).substring(2, 9)),
-        }));
+          // Ensure every field has a unique client-side ID for reactivity.
+          const fieldsWithIds = form.fields.map(field => ({
+            ...field,
+            id: field.id || (Date.now().toString(36) + Math.random().toString(36).substring(2, 9)),
+          }));
 
-        formElementStore.initializeForm(fieldsWithIds);
+          formElementStore.initializeForm(fieldsWithIds);
+          this.editingFormId = form._id;
+        }
+      } catch (error: any) {
+        console.error("Error fetching form by id:", error);
+        throw error;
       }
+    },
+
+    clearEditingFormId() {
+      this.editingFormId = null;
     },
 
     async submitForm(practiceId: string, formId: string, formData: Record<string, any>) {
