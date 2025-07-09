@@ -27,18 +27,23 @@
               <v-btn
                 color="primary"
                 @click="saveFormToBackend"
-                prepend-icon="mdi-content-save"
+                icon="mdi-content-save"
                 class="mr-2"
-              >
-                Guardar Formulario
-              </v-btn>
+                title="Guardar Formulario"
+              ></v-btn>
               <v-btn
                 color="secondary"
                 @click="createNewForm"
-                prepend-icon="mdi-file-document-plus"
-              >
-                Nuevo Formulario
-              </v-btn>
+                icon="mdi-file-document-plus"
+                class="mr-2"
+                title="Nuevo Formulario"
+              ></v-btn>
+              <v-btn
+                color="info"
+                @click="showPreview = true"
+                icon="mdi-eye"
+                title="Previsualizar Formulario"
+              ></v-btn>
             </div>
           </v-card-title>
           <v-card-text>
@@ -57,7 +62,7 @@
             >
               <ul>
                 <li
-                  v-for="element in formElementStore.formElements"
+                  v-for="(element, index) in formElementStore.formElements"
                   :key="element.id"
                   class="form-element-item pa-3"
                   :class="{
@@ -76,8 +81,12 @@
                       </v-col>
                       <v-col cols="10">
                         <component
-                          :is="getComponentName(element.type)"
-                          v-model="element.value"
+                          :is="getComponentName(element)"
+                          :model-value="element.value"
+                          @update:model-value="
+                            (newValue) =>
+                              handleValueUpdate(element.id, newValue)
+                          "
                           :label="element.label"
                           :placeholder="element.placeholder"
                           :hint="element.hint"
@@ -95,27 +104,52 @@
                               : []
                           "
                           :multiple="element.multiple"
+                          :dataSource="element.dataSource"
                           class="component-preview"
                           variant="outlined"
                         />
                       </v-col>
                       <v-col cols="1">
-                        <div class="element-actions">
+                        <div class="element-actions d-flex flex-column">
                           <v-btn
-                            size="small"
+                            size="x-small"
+                            variant="text"
+                            color="grey-darken-1"
+                            @click.stop="
+                              formElementStore.moveElementUp(element.id)
+                            "
+                            title="Move Up"
+                            icon="mdi-arrow-up-bold-outline"
+                            :disabled="index === 0"
+                          ></v-btn>
+                          <v-btn
+                            size="x-small"
                             variant="text"
                             color="primary"
                             @click.stop="selectElementForEditing(element.id)"
-                            title="Editar Elemento"
+                            title="Edit Element"
                             icon="mdi-pencil-outline"
                           ></v-btn>
                           <v-btn
-                            size="small"
+                            size="x-small"
                             variant="text"
                             color="error"
                             @click.stop="removeElement(element.id)"
-                            title="Eliminar Elemento"
+                            title="Delete Element"
                             icon="mdi-delete-outline"
+                          ></v-btn>
+                          <v-btn
+                            size="x-small"
+                            variant="text"
+                            color="grey-darken-1"
+                            @click.stop="
+                              formElementStore.moveElementDown(element.id)
+                            "
+                            title="Move Down"
+                            icon="mdi-arrow-down-bold-outline"
+                            :disabled="
+                              index === formElementStore.formElements.length - 1
+                            "
                           ></v-btn>
                         </div>
                       </v-col>
@@ -158,15 +192,15 @@
               <v-card-text class="pa-2">
                 <!-- Reemplazar con el componente de editor JSON -->
                 <v-card-text class="pa-2">
-                <v-textarea
-                  v-model="editableFormJsonString"
-                  label="Salida JSON del Formulario"
-                  auto-grow
-                  rows="10"
-                  density="compact"
-                  class="json-output-textarea"
-                ></v-textarea>
-              </v-card-text>
+                  <v-textarea
+                    v-model="editableFormJsonString"
+                    label="Salida JSON del Formulario"
+                    auto-grow
+                    rows="10"
+                    density="compact"
+                    class="json-output-textarea"
+                  ></v-textarea>
+                </v-card-text>
               </v-card-text>
             </div>
           </v-expand-transition>
@@ -185,12 +219,35 @@
         <v-btn variant="text" @click="snackbar.show = false">Cerrar</v-btn>
       </template>
     </v-snackbar>
+
+    <v-dialog v-model="showPreview" fullscreen>
+      <v-card>
+        <v-card-title
+          class="d-flex justify-space-between align-center headline-bar"
+        >
+          <span class="text-h6 font-weight-medium"
+            >Previsualización del Formulario</span
+          >
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            @click="showPreview = false"
+          ></v-btn>
+        </v-card-title>
+        <v-card-text>
+          <FormViewer
+            :formDefinition="{ fields: formElementStore.formElements }"
+            :modelValue="{}"
+          />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import {
   useFormElementStore,
   type FormElement,
@@ -204,6 +261,10 @@ import {
 } from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
 import EntityAutocomplete from "~/components/EntityAutocomplete.vue"; // Import EntityAutocomplete
+import FormViewer from "~/components/FormViewer.vue"; // Import FormViewer
+import { useMutation } from "@vue/apollo-composable"; // Import useMutation
+import CreateFormMutation from "~/queries/createForm.gql";
+import UpdateFormMutation from "~/queries/updateForm.gql"; // Import CreateFormMutation
 import {
   VTextField,
   VTextarea,
@@ -217,11 +278,13 @@ import {
 definePageMeta({});
 
 const router = useRouter();
+const route = useRoute(); // Added useRoute
 const formElementStore = useFormElementStore();
 const formStore = useFormStore();
 const authStore = useAuthStore();
 const show = ref<boolean>(false);
 const isDragOver = ref<boolean>(false);
+const showPreview = ref<boolean>(false); // Reactive variable for preview dialog
 const snackbar = ref<{
   show: boolean;
   text: string;
@@ -234,6 +297,34 @@ const snackbar = ref<{
   timeout: 3000,
 });
 
+// Watch for changes in route.params.id to load the form
+watch(() => route.params.id, async (newId) => {
+  if (newId) {
+    try {
+      await formStore.fetchFormById(newId as string);
+    } catch (error: any) {
+      console.error("Error loading form by ID, resetting to new form:", error);
+      // If form not found or error, reset to create new form
+      formStore.clearEditingFormId();
+      formElementStore.initializeForm([]);
+      formStore.formName = "";
+      snackbar.value = {
+        show: true,
+        text: `Error al cargar el formulario: ${error.message || 'Formulario no encontrado'}. Creando nuevo formulario.`,
+        color: "error",
+        timeout: 5000,
+      };
+    }
+  } else {
+    // If no ID in route, ensure it's a new form
+    formStore.clearEditingFormId();
+    formElementStore.initializeForm([]);
+    formStore.formName = "";
+  }
+}, { immediate: true }); // Run immediately on component mount
+
+import DynamicSelect from "~/components/forms/DynamicSelect.vue";
+
 const componentMap: Record<string, any> = {
   text: VTextField,
   textarea: VTextarea,
@@ -242,11 +333,13 @@ const componentMap: Record<string, any> = {
   button: VBtn,
   "radio-group": VRadioGroup,
   "date-picker": VDatePicker,
-  "institution-select": EntityAutocomplete, // Add institution-select to componentMap
 };
 
-const getComponentName = (type: string): any => {
-  return componentMap[type] || VTextField;
+const getComponentName = (element: FormElement): any => {
+  if (element.type === "select" && element.dataSource && element.dataSource.length > 0) {
+    return DynamicSelect;
+  }
+  return componentMap[element.type] || VTextField;
 };
 
 const getElementIcon = (type: string): string => {
@@ -265,6 +358,10 @@ const removeElement = (elementId: string): void => {
   if (formElementStore.selectedElementId === elementId) {
     formElementStore.setSelectedElement(null);
   }
+};
+
+const handleValueUpdate = (elementId: string, newValue: any) => {
+  formElementStore.updateElementValue({ elementId, value: newValue });
 };
 
 const handleDragOver = (event: DragEvent): void => {
@@ -314,6 +411,7 @@ const generateUniqueId = (): string =>
 const createNewForm = (): void => {
   formElementStore.initializeForm([]);
   formStore.formName = "";
+  formStore.clearEditingFormId(); // Clear the editing ID
   formElementStore.setSelectedElement(null);
   editableFormJsonString.value = JSON.stringify(
     { name: "", fields: [] },
@@ -354,6 +452,7 @@ const transformedFormJson = computed(() => {
         disabled: el.disabled,
         readonly: el.readonly,
         specificType: el.specificType,
+        dataSource: el.dataSource, // Add dataSource to the output
       };
       if (el.type === "select" || el.type === "radio-group") {
         outputEl.options = el.options;
@@ -364,10 +463,6 @@ const transformedFormJson = computed(() => {
       }
       if (el.type === "button" && el.color) {
         outputEl.color = el.color;
-      }
-      // Handle specificType for EntityAutocomplete
-      if (el.type === "institution-select" && el.specificType) {
-        outputEl.specificType = el.specificType;
       }
       // Clean up undefined/null/empty array values, but keep false and empty strings
       Object.keys(outputEl).forEach((key) => {
@@ -437,7 +532,6 @@ const updateFormFromJson = async (): Promise<void> => {
           "radio-group",
           "date-picker",
           "time-picker", // Added time-picker
-          "institution-select", // Add institution-select
         ].includes(el.type)
     );
     if (!validElements) {
@@ -446,36 +540,39 @@ const updateFormFromJson = async (): Promise<void> => {
     formStore.formName = parsedJson.name;
     formElementStore.initializeForm(
       parsedJson.fields.map(
-        (el: any): FormElement => ({
-          id: el.id || generateUniqueId(), // Use existing id or generate new
-          type: el.type,
-          label: el.label ?? "",
-          value: el.value ?? "",
-          variableName: el.variableName ?? "",
-          placeholder: el.placeholder ?? "",
-          hint: el.hint ?? "",
-          requirementLevel: el.required ? "Required" : "Optional", // Map boolean to string
-          chapter: el.chapter ?? "",
-          question: el.question ?? "",
-          questionNumber: el.questionNumber ?? "",
-          consistencyCondition: el.consistencyCondition ?? "",
-          inconsistencyMessage: el.inconsistencyMessage ?? "",
-          errorType: el.errorType ?? "Soft",
-          description: el.description ?? "",
-          name: el.name ?? "",
-          disabled: !!el.disabled,
-          readonly: !!el.readonly,
-          options:
-            el.options?.map((opt: any) => ({
-              label: opt.label ?? opt.text ?? "", // Handle both 'label' and 'text'
-              value: opt.value ?? "",
-            })) ?? [],
-          specificType: el.specificType ?? "",
-          height: el.height ? String(el.height) : undefined, // Ensure string for height
-          color: el.color ?? "",
-          rules: el.rules ?? [],
-          multiple: !!el.multiple,
-        })
+        (el: any): FormElement => {
+          return {
+            id: el.id || generateUniqueId(), // Use existing id or generate new
+            type: el.type,
+            label: el.label ?? "",
+            value: el.value ?? "",
+            variableName: el.variableName ?? "",
+            placeholder: el.placeholder ?? "",
+            hint: el.hint ?? "",
+            requirementLevel: el.required ? "Required" : "Optional", // Map boolean to string
+            chapter: el.chapter ?? "",
+            question: el.question ?? "",
+            questionNumber: el.questionNumber ?? "",
+            consistencyCondition: el.consistencyCondition ?? "",
+            inconsistencyMessage: el.inconsistencyMessage ?? "",
+            errorType: el.errorType ?? "Soft",
+            description: el.description ?? "",
+            name: el.name ?? "",
+            disabled: !!el.disabled,
+            readonly: !!el.readonly,
+            options:
+              el.options?.map((opt: any) => ({
+                label: opt.label ?? opt.text ?? "", // Handle both 'label' and 'text'
+                value: opt.value ?? "",
+              })) ?? [],
+            specificType: el.specificType ?? "",
+            height: el.height ? String(el.height) : undefined, // Ensure string for height
+            color: el.color ?? "",
+            rules: el.rules ?? [],
+            multiple: !!el.multiple,
+            dataSource: el.dataSource !== undefined ? el.dataSource : null, // Ensure dataSource is always present, even if null
+          };
+        }
       )
     );
     snackbar.value = {
@@ -497,7 +594,7 @@ const updateFormFromJson = async (): Promise<void> => {
 
 const saveFormToBackend = async (): Promise<void> => {
   try {
-    if (!authStore.token) {
+    if (!authStore.isAuthenticated) {
       throw new Error(
         "No se encontró el token de autenticación. Por favor inicia sesión."
       );
@@ -505,71 +602,86 @@ const saveFormToBackend = async (): Promise<void> => {
     if (!formStore.formName) {
       throw new Error("El nombre del formulario es obligatorio.");
     }
-    const {
-      public: { GQL_HOST },
-    } = useRuntimeConfig();
-    if (!GQL_HOST) {
-      throw new Error("GQL_HOST no está definido en la configuración");
-    }
-    const query = await import("~/queries/createForm.gql?raw").then(
-      (m) => m.default
-    );
-    const response = await fetch(GQL_HOST, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authStore.token}`,
-      },
-      body: JSON.stringify({
-        query,
-        variables: {
-          createFormInput: {
-            name: formStore.formName,
-            fields: formElementStore.formElements.map(
-              (element: FormElement) => ({
-                type: element.type,
-                label: element.label ?? "",
-                value:
-                  element.value !== undefined && element.value !== null
-                    ? String(element.value)
-                    : null,
-                variableName: element.variableName ?? "",
-                placeholder: element.placeholder ?? "",
-                hint: element.hint ?? "",
-                height: element.height ? String(element.height) : null,
-                required: !!element.required,
-                chapter: element.chapter ?? null,
-                question: element.question ?? null,
-                questionNumber: element.questionNumber ?? null,
-                consistencyCondition: element.consistencyCondition ?? null,
-                inconsistencyMessage: element.inconsistencyMessage ?? null,
-                errorType: element.errorType ?? null,
-                description: element.description ?? null,
-                requirementLevel: element.requirementLevel ?? "Optional",
-                options:
-                  element.options?.map((opt: any) =>
-                    typeof opt === "string"
-                      ? { value: opt, label: opt }
-                      : { value: opt.value, label: opt.text ?? opt.value }
-                  ) ?? [],
-                disabled: !!element.disabled,
-                readonly: !!element.readonly,
-                name: element.name ?? null,
-                specificType: element.specificType ?? null,
-                color: element.color ?? null,
-                rules: element.rules ?? [],
-                multiple: !!element.multiple,
-              })
-            ),
-          },
-        },
-      }),
-    });
 
-    const data = await response.json();
-    if (data.errors) {
-      throw new Error(data.errors[0]?.message ?? "Error en la mutación");
+    const { mutate: createForm } = useMutation(CreateFormMutation);
+    const { mutate: updateForm } = useMutation(UpdateFormMutation);
+
+    let result;
+    console.log("Guardando formulario con los siguientes datos:", {
+      fields: formElementStore.formElements,
+    });
+    const formFields = formElementStore.formElements.map(
+      (element: FormElement) => ({
+        type: element.type,
+        label: element.label ?? "",
+        value:
+          element.value !== undefined && element.value !== null
+            ? String(element.value)
+            : null,
+        variableName: element.variableName ?? "",
+        placeholder: element.placeholder ?? "",
+        hint: element.hint ?? "",
+        height: element.height ? String(element.height) : null,
+        required: !!element.required,
+        chapter: element.chapter ?? null,
+        question: element.question ?? null,
+        questionNumber: element.questionNumber ?? null,
+        consistencyCondition: element.consistencyCondition ?? null,
+        inconsistencyMessage: element.inconsistencyMessage ?? null,
+        errorType: element.errorType ?? null,
+        description: element.description ?? null,
+        requirementLevel: element.requirementLevel ?? "Optional",
+        options:
+          element.options?.map((opt: any) =>
+            typeof opt === "string"
+              ? { value: opt, label: opt }
+              : { value: opt.value, label: opt.text ?? opt.value }
+          ) ?? [],
+        disabled: !!element.disabled,
+        readonly: !!element.readonly,
+        name: element.name ?? null,
+        specificType: element.specificType ?? null,
+        color: element.color ?? null,
+        rules: element.rules ?? [],
+        multiple: !!element.multiple,
+        dataSource: element.dataSource ?? null,
+      })
+    );
+
+    if (formStore.editingFormId) {
+      console.log("Attempting to UPDATE form. editingFormId:", formStore.editingFormId);
+      const updateInput = {
+        id: formStore.editingFormId,
+        name: formStore.formName,
+        fields: formFields,
+      };
+      console.log("Update input:", updateInput);
+      result = await updateForm({
+        updateFormInput: updateInput,
+      });
+    } else {
+      console.log("Attempting to CREATE new form.");
+      const createInput = {
+        name: formStore.formName,
+        fields: formFields,
+      };
+      console.log("Create input:", createInput);
+      result = await createForm({
+        createFormInput: createInput,
+      });
     }
+
+    if (result?.errors) {
+      throw new Error(result.errors[0]?.message ?? "Error en la mutación");
+    }
+
+    // If a new form was created, store its ID
+    if (!formStore.editingFormId && result?.data?.createForm?._id) {
+      formStore.editingFormId = result.data.createForm._id;
+    }
+
+    // Clear editingFormId after successful save (create or update)
+    formStore.clearEditingFormId();
 
     formElementStore.initializeForm([]);
     formStore.formName = "";

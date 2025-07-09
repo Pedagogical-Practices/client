@@ -2,17 +2,20 @@ import { defineStore } from "pinia";
 import type { Form } from "~/types/form";
 import { useFormElementStore } from "~/stores/formElementStore";
 import { usePracticeStore } from "~/stores/practiceStore";
+import { useApolloClient } from '#imports';
 
 // Import GQL documents
 import FormsQuery from "~/queries/forms.gql";
 import FormQuery from "~/queries/form.gql";
 import SubmitProtocolMutation from '~/queries/submitProtocol.gql';
 import RegisterFormSubmissionMutation from '~/queries/registerFormSubmission.gql';
+import RemoveFormMutation from '~/queries/removeForm.gql';
 
 interface FormState {
   forms: Form[];
   currentForm: Form | null;
   formName: string;
+  editingFormId: string | null;
 }
 
 export const useFormStore = defineStore("form", {
@@ -20,42 +23,59 @@ export const useFormStore = defineStore("form", {
     forms: [],
     currentForm: null,
     formName: "",
+    editingFormId: null,
   }),
   actions: {
     async fetchForms() {
-      const { data, error } = await useAsyncQuery(FormsQuery);
-      if (error.value) {
-        console.error("Error fetching forms:", error.value);
-        return;
-      }
-      if (data.value?.forms) {
-        this.forms = data.value.forms;
+      const { client } = useApolloClient();
+      try {
+        const { data } = await client.query({ query: FormsQuery });
+        if (data?.forms) {
+          this.forms = data.forms;
+        }
+      } catch (error: any) {
+        console.error("Error fetching forms:", error);
       }
     },
 
     async fetchForm(id: string) {
-      const { data, error } = await useAsyncQuery(FormQuery, { id });
-      if (error.value) {
-        console.error("Error fetching form:", error.value);
-        return;
-      }
-      if (data.value?.form) {
-        this.currentForm = data.value.form;
+      const { client } = useApolloClient();
+      try {
+        const { data } = await client.query({ query: FormQuery, variables: { id } });
+        if (data?.form) {
+          this.currentForm = data.form;
+        }
+      } catch (error: any) {
+        console.error("Error fetching form:", error);
       }
     },
 
     async fetchFormById(id: string) {
-      const { data, error } = await useAsyncQuery(FormQuery, { id });
-      if (error.value) {
-        console.error("Error fetching form by id:", error.value);
-        throw error.value;
+      const { client } = useApolloClient();
+      try {
+        const { data } = await client.query({ query: FormQuery, variables: { id } });
+        if (data?.form) {
+          const form = data.form;
+          this.formName = form.name;
+          const formElementStore = useFormElementStore();
+
+          // Ensure every field has a unique client-side ID for reactivity.
+          const fieldsWithIds = form.fields.map(field => ({
+            ...field,
+            id: field.id || (Date.now().toString(36) + Math.random().toString(36).substring(2, 9)),
+          }));
+
+          formElementStore.initializeForm(fieldsWithIds);
+          this.editingFormId = form._id;
+        }
+      } catch (error: any) {
+        console.error("Error fetching form by id:", error);
+        throw error;
       }
-      if (data.value?.form) {
-        const form = data.value.form;
-        this.formName = form.name;
-        const formElementStore = useFormElementStore();
-        formElementStore.initializeForm(form.fields);
-      }
+    },
+
+    clearEditingFormId() {
+      this.editingFormId = null;
     },
 
     async submitForm(practiceId: string, formId: string, formData: Record<string, any>) {
@@ -103,6 +123,23 @@ export const useFormStore = defineStore("form", {
         throw error;
       }
     },
+
+    async deleteForm(id: string) {
+      const { mutate } = useMutation(RemoveFormMutation);
+      try {
+        const result = await mutate({ id: id });
+        if (result?.errors) {
+          throw new Error(result.errors[0]?.message || 'Error deleting form');
+        }
+        // Remove the deleted form from the store's forms array
+        this.forms = this.forms.filter(form => form._id !== id);
+      } catch (error: any) {
+        console.error('Error deleting form:', error);
+        throw error;
+      }
+    },
   },
-  persist: true,
+  persist: {
+    paths: ['forms', 'currentForm', 'formName'], // Only persist these properties
+  },
 });

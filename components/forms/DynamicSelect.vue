@@ -1,4 +1,3 @@
-
 <template>
   <v-select
     v-model="selectedValue"
@@ -13,8 +12,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
-import { useAuthStore } from '~/stores/authStore';
+import { ref, watch, onMounted } from "vue";
+import { useDataSourceStore } from "~/stores/dataSourceStore";
 
 const props = defineProps<{
   modelValue: any;
@@ -25,43 +24,49 @@ const props = defineProps<{
   itemValue?: string;
 }>();
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 
 const loading = ref(false);
 const items = ref<any[]>([]);
 const selectedValue = ref(props.modelValue);
-const authStore = useAuthStore();
+const dataSourceStore = useDataSourceStore();
 
-watch(() => props.modelValue, (newValue) => {
-  selectedValue.value = newValue;
-});
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    selectedValue.value = newValue;
+  }
+);
 
 watch(selectedValue, (newValue) => {
-  emit('update:modelValue', newValue);
+  emit("update:modelValue", newValue);
 });
 
 async function fetchFromDataSource() {
   if (!props.dataSource) return;
   loading.value = true;
   try {
-    const response = await fetch(props.dataSource, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const data = await response.json();
-    items.value = data;
+    const formattedOptions = await dataSourceStore.fetchFormattedOptions(
+      props.dataSource
+    );
+    console.log("DynamicSelect: formattedOptions received:", formattedOptions);
+    items.value = formattedOptions
+      .split("\n")
+      .filter((line) => line)
+      .map((line) => {
+        const parts = line.split("|");
+        return { value: parts[0], label: parts[1] };
+      });
+    console.log("DynamicSelect: items after parsing:", items.value);
   } catch (error) {
-    console.error('Error fetching from data source:', error);
+    console.error(`Error fetching data for ${props.dataSource}:`, error);
   } finally {
     loading.value = false;
   }
 }
 
 onMounted(() => {
+  console.log("DynamicSelect mounted with props:", props);
   if (props.dataSource) {
     fetchFromDataSource();
   } else if (props.options) {

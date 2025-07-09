@@ -1,0 +1,44 @@
+mutation UpdateForm($updateFormInput: UpdateFormInput!) {
+  updateForm(updateFormInput: $updateFormInput) {
+    _id
+    name
+    fields {
+      type
+      label
+      value
+      variableName
+      placeholder
+      hint
+      height
+      required
+      chapter
+      question
+      questionNumber
+      consistencyCondition
+      inconsistencyMessage
+      errorType
+      description
+      requirementLevel
+      options {
+        label
+        value
+      }
+      disabled
+      readonly
+      name
+      specificType
+      color
+      rules
+      multiple
+      dataSource
+    }
+    createdBy {
+      _id
+      name
+      email
+      role
+    }
+    createdAt
+    updatedAt
+  }
+}
