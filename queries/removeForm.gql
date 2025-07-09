@@ -1,0 +1,5 @@
+mutation RemoveForm($id: String!) {
+  removeForm(id: $id) {
+    _id
+  }
+}

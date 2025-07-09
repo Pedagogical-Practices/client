@@ -2,11 +2,10 @@
   "name": "Formato de Control de Asistencia",
   "fields": [
     {
-      "type": "text",
+      "type": "select",
       "label": "Docente en Formación",
       "value": "",
       "variableName": "docenteFormacion",
-      "placeholder": "Nombre del docente en formación",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -19,14 +18,15 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "students",
+      "options": [],
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Docente Asesor",
       "value": "",
       "variableName": "docenteAsesor",
-      "placeholder": "Nombre del docente asesor",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -39,14 +39,15 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "teachers",
+      "options": [],
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Institución Educativa",
       "value": "",
       "variableName": "institucionEducativa",
-      "placeholder": "Nombre de la institución educativa",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -59,14 +60,15 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "institutions",
+      "options": [],
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Docente Tutor",
       "value": "",
       "variableName": "docenteTutor",
-      "placeholder": "Nombre del docente tutor",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -79,7 +81,9 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "teachers",
+      "options": [],
+      "multiple": false
     },
     {
       "type": "text",
@@ -181,11 +185,10 @@
       "specificType": "number"
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Grupo",
       "value": "",
       "variableName": "grupo",
-      "placeholder": "Grupo al que se impartió la clase",
       "hint": "",
       "required": true,
       "chapter": "Registro de Actividades",
@@ -198,7 +201,9 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "courses",
+      "options": [],
+      "multiple": false
     },
     {
       "type": "checkbox",
@@ -239,11 +244,10 @@
       "readonly": false
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Firma del Docente Asesor (Actividad)",
       "value": "",
       "variableName": "firmaAsesorActividad",
-      "placeholder": "Firma del docente asesor",
       "hint": "",
       "required": true,
       "chapter": "Registro de Actividades",
@@ -256,14 +260,15 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "teachers",
+      "options": [],
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Firma Docente Tutor (Actividad)",
       "value": "",
       "variableName": "firmaTutorActividad",
-      "placeholder": "Firma del docente tutor",
       "hint": "",
       "required": true,
       "chapter": "Registro de Actividades",
@@ -276,7 +281,9 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "teachers",
+      "options": [],
+      "multiple": false
     },
     {
       "type": "textarea",

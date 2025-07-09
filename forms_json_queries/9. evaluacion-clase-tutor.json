@@ -2,11 +2,10 @@
   "name": "Formato de Evaluación de la Clase del Docente en Formación (Docente Tutor)",
   "fields": [
     {
-      "type": "text",
+      "type": "select",
       "label": "Docente en Formación",
       "value": "",
       "variableName": "docenteFormacion",
-      "placeholder": "Nombre del docente en formación",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -19,14 +18,15 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "students",
+      "options": [],
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Docente Tutor",
       "value": "",
       "variableName": "docenteTutor",
-      "placeholder": "Nombre del docente tutor",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -39,14 +39,15 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "teachers",
+      "options": [],
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Institución Educativa",
       "value": "",
       "variableName": "institucionEducativa",
-      "placeholder": "Nombre de la institución educativa",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -59,14 +60,15 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "institutions",
+      "options": [],
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Curso",
       "value": "",
       "variableName": "curso",
-      "placeholder": "Curso asignado",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -79,7 +81,9 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "courses",
+      "options": [],
+      "multiple": false
     },
     {
       "type": "date-picker",
@@ -237,11 +241,10 @@
       "height": "4"
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Firma del Docente Tutor",
       "value": "",
       "variableName": "firmaDocenteTutor",
-      "placeholder": "Firma del docente tutor",
       "hint": "",
       "required": true,
       "chapter": "Firmas",
@@ -254,7 +257,9 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "teachers",
+      "options": [],
+      "multiple": false
     }
   ]
 }

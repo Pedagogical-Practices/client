@@ -7,5 +7,35 @@ query Forms {
       email
     }
     createdAt
+    fields {
+      type
+      label
+      value
+      placeholder
+      hint
+      required
+      chapter
+      question
+      questionNumber
+      consistencyCondition
+      inconsistencyMessage
+      errorType
+      description
+      requirementLevel
+      rules
+      name
+      disabled
+      readonly
+      specificType
+      dataSource
+      multiple
+      options {
+        label
+        value
+      }
+      height
+      color
+      variableName
+    }
   }
 }

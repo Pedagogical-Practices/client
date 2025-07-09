@@ -27,7 +27,7 @@
         <v-card>
           <v-card-title>Campos del Formulario</v-card-title>
           <v-card-text>
-            <FormViewer :fields="form.fields" />
+            <FormViewer :formDefinition="{ fields: form.fields }" :modelValue="{}" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -57,7 +57,7 @@ import { useRoute, useRouter } from "vue-router";
 // import { useFormBuilderStore } from "~/stores/formBuilderStore";
 import { useFormStore } from "~/stores/formStores";
 import { useAuthStore } from "~/stores/authStore";
-import FormViewer from "~/components/forms/FormViewer.vue";
+import FormViewer from "~/components/FormViewer.vue";
 
 const route = useRoute();
 const router = useRouter();

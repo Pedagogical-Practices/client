@@ -16,6 +16,7 @@
         <span class="text-h6 font-weight-medium"
           >Edit: {{ editableElement.label || editableElement.type }}</span
         >
+
         <v-btn
           icon="mdi-close"
           variant="text"
@@ -37,6 +38,18 @@
         <v-window v-model="currentTab" class="pa-4 tab-content-window">
           <v-window-item value="general" class="tab-pane">
             <v-row dense>
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="editableElement.type"
+                  :items="elementTypes"
+                  label="Component Type"
+                  hint="Change the base type of the element."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                  @update:model-value="handleTypeChange"
+                ></v-select>
+              </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="editableElement.label"
@@ -141,7 +154,15 @@
               >
                 <v-select
                   v-model="editableElement.dataSource"
-                  :items="['institutions', 'teachers', 'students', 'courses']"
+                  :items="[
+                    'institutions',
+                    'teachers',
+                    'students',
+                    'courses',
+                    'forms',
+                    'protocols',
+                    'users',
+                  ]"
                   label="Data Source"
                   hint="Source for dynamic options (e.g., institutions, teachers)."
                   persistent-hint
@@ -152,7 +173,7 @@
               </v-col>
             </v-row>
           </v-window-item>
-
+          {{ editableElement }} - {{ selectedElement }}
           <v-window-item value="behavior" class="tab-pane">
             <v-row dense>
               <v-col cols="12" sm="4">
@@ -333,36 +354,77 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <v-dialog v-model="showPreview" fullscreen>
+    <v-card>
+      <v-card-title
+        class="d-flex justify-space-between align-center headline-bar"
+      >
+        <span class="text-h6 font-weight-medium">Form Preview</span>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          @click="showPreview = false"
+        ></v-btn>
+      </v-card-title>
+      <v-card-text>
+        <FormViewer
+          :formDefinition="{ fields: formElement.getFormElements() }"
+        />
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
-import {
-  useFormElementStore,
-  type FormElement,
-} from "~/stores/formElementStore";
-import { useDataSourceStore } from "~/stores/dataSourceStore"; // Import useDataSourceStore
+import { ref, watch, computed, toRaw, reactive } from "vue";
+import { useFormElementStore } from "~/stores/formElementStore";
+import { useDataSourceStore } from "~/stores/dataSourceStore";
+import FormViewer from "~/components/FormViewer.vue";
+import { availableElements } from "./formElementDefinitions";
+import type { FormElement } from "~/types/form";
 
 const formElement = useFormElementStore();
+const dataSourceStore = useDataSourceStore();
 
 const selectedElement = computed(() => formElement.getSelectedElement);
 const editableElement = ref<FormElement | null>(null);
 const currentTab = ref("general");
+const showPreview = ref(false);
 
 const selectItemsText = ref("");
 const rulesText = ref("");
+
+const elementTypes = computed(() =>
+  availableElements.map((el) => ({
+    title: el.displayName,
+    value: el.type,
+  }))
+);
 
 watch(
   selectedElement,
   async (newVal) => {
     if (newVal) {
-      editableElement.value = JSON.parse(JSON.stringify(newVal));
+      editableElement.value = reactive(toRaw(newVal));
+      // Aseguramos que dataSource sea un string simple para el v-select
+      if (typeof editableElement.value.dataSource !== 'string') {
+        editableElement.value.dataSource = String(editableElement.value.dataSource || '');
+      }
+      console.log("ElementEditor: selectedElement newVal", newVal);
+      console.log(
+        "ElementEditor: editableElement.value after copy",
+        editableElement.value
+      );
+      console.log(
+        "ElementEditor: dataSource value",
+        editableElement.value?.dataSource
+      );
       rulesText.value = Array.isArray(editableElement.value?.rules)
         ? editableElement.value!.rules.join(",")
         : "";
       currentTab.value = "general";
 
-      // Prioritize dataSource for populating selectItemsText
       if (editableElement.value?.dataSource) {
         selectItemsText.value = await dataSourceStore.fetchFormattedOptions(
           editableElement.value.dataSource
@@ -371,7 +433,8 @@ watch(
         selectItemsText.value = editableElement
           .value!.options.map((opt) => {
             if (typeof opt === "string") return opt;
-            return `${opt.value}|${opt.text}`;
+            // Correctly handle both {text, value} and {label, value}
+            return `${opt.value}|${opt.label || opt.text}`;
           })
           .join("\n");
       } else {
@@ -384,7 +447,6 @@ watch(
   { deep: true, immediate: true }
 );
 
-// Watch for changes in dataSource and update selectItemsText
 watch(
   () => editableElement.value?.dataSource,
   async (newDataSource) => {
@@ -399,9 +461,59 @@ watch(
   }
 );
 
+const handleTypeChange = (newType: string) => {
+  if (!editableElement.value || editableElement.value.type === newType) return;
+
+  const newElementDef = availableElements.find((el) => el.type === newType);
+  if (!newElementDef) return;
+
+  const oldElement = editableElement.value;
+  const newDefaultConfig = JSON.parse(
+    JSON.stringify(newElementDef.defaultConfig)
+  );
+
+  // Preserve common properties
+  const preservedProps = {
+    id: oldElement.id,
+    label: oldElement.label,
+    variableName: oldElement.variableName,
+    hint: oldElement.hint,
+    required: oldElement.required,
+    disabled: oldElement.disabled,
+    readonly: oldElement.readonly,
+    rules: oldElement.rules,
+    chapter: oldElement.chapter,
+    question: oldElement.question,
+    questionNumber: oldElement.questionNumber,
+    description: oldElement.description,
+    requirementLevel: oldElement.requirementLevel,
+  };
+
+  // Create the new element state by merging defaults and preserved props
+  editableElement.value = {
+    ...newDefaultConfig,
+    ...preservedProps,
+    type: newType, // Ensure the new type is set
+    // Ensure dataSource is preserved or initialized for select/dynamic-select types
+    dataSource:
+      newType === "select" ||
+      newType === "dynamic-select" ||
+      newType === "autocomplete"
+        ? oldElement.dataSource || ""
+        : undefined,
+  };
+
+  // Reset specific text fields
+  rulesText.value = Array.isArray(editableElement.value.rules)
+    ? editableElement.value.rules.join(",")
+    : "";
+  selectItemsText.value = "";
+};
+
 const handleDialogClose = (value: boolean) => {
   if (!value) closeEditor();
 };
+
 const closeEditor = () => {
   formElement.setSelectedElement(null);
   editableElement.value = null;
@@ -409,11 +521,14 @@ const closeEditor = () => {
 
 const saveChanges = () => {
   if (!editableElement.value) return;
+  console.log(
+    "ElementEditor: Saving changes. editableElement.value BEFORE stringify:",
+    JSON.parse(JSON.stringify(editableElement.value))
+  );
   if (
     editableElement.value.type === "select" ||
     editableElement.value.type === "radio-group"
   ) {
-    // If dataSource is set, clear options as they are dynamically loaded
     if (editableElement.value.dataSource) {
       editableElement.value.options = [];
     } else {
@@ -424,8 +539,8 @@ const saveChanges = () => {
         .map((line) => {
           const parts = line.split("|");
           if (parts.length === 2)
-            return { value: parts[0].trim(), text: parts[1].trim() };
-          return { value: line, text: line };
+            return { value: parts[0].trim(), label: parts[1].trim() };
+          return { value: line, label: line };
         });
     }
   }

@@ -2,11 +2,10 @@
   "name": "Formato de Informe Final PPI4",
   "fields": [
     {
-      "type": "text",
+      "type": "select",
       "label": "Docente en Formación",
       "value": "",
       "variableName": "docenteFormacion",
-      "placeholder": "Nombre del docente en formación",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -19,14 +18,15 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "students",
+      "options": [],
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Docente Asesor",
       "value": "",
       "variableName": "docenteAsesor",
-      "placeholder": "Nombre del docente asesor",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -39,14 +39,15 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "teachers",
+      "options": [],
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Institución Educativa",
       "value": "",
       "variableName": "institucionEducativa",
-      "placeholder": "Nombre de la institución educativa",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -59,7 +60,9 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "institutions",
+      "options": [],
+      "multiple": false
     },
     {
       "type": "text",
@@ -181,11 +184,10 @@
       "height": "6"
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Firma del Docente en Formación",
       "value": "",
       "variableName": "firmaDocenteFormacion",
-      "placeholder": "Firma del docente en formación",
       "hint": "",
       "required": true,
       "chapter": "Firmas",
@@ -198,14 +200,15 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "students",
+      "options": [],
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "select",
       "label": "Firma del Docente Asesor",
       "value": "",
       "variableName": "firmaDocenteAsesor",
-      "placeholder": "Firma del docente asesor",
       "hint": "",
       "required": true,
       "chapter": "Firmas",
@@ -218,7 +221,9 @@
       "name": "",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "teachers",
+      "options": [],
+      "multiple": false
     }
   ]
 }

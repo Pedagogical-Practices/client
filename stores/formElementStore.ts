@@ -1,39 +1,5 @@
 import { defineStore } from "pinia";
-
-export interface FormElement {
-  id: string;
-  type: string;
-  label: string;
-  value?: any;
-  placeholder?: string;
-  hint?: string;
-  required?: boolean;
-  disabled?: boolean;
-  readonly?: boolean;
-  name?: string;
-  specificType?: string;
-  height?: string | number;
-  width?: string | number;
-  color?: string;
-  options?: string[] | { text: string; value: any }[];
-  rules?: string[];
-  variableName?: string;
-  chapter?: string;
-  question?: string;
-  questionNumber?: string;
-  consistencyCondition?: string;
-  inconsistencyMessage?: string;
-  errorType?: "Soft" | "Hard" | string;
-  description?: string;
-  requirementLevel?: "Required" | "Optional" | "Conditional" | string;
-  multiple?: boolean;
-  dataSource?: string;
-}
-
-interface FormElementState {
-  formElements: FormElement[];
-  selectedElementId: string | null;
-}
+import type { FormElement } from "~/types/form";
 
 export const useFormElementStore = defineStore("formElement", {
   state: (): FormElementState => ({
@@ -49,17 +15,32 @@ export const useFormElementStore = defineStore("formElement", {
       this.formElements.push(element);
     },
     removeElement(elementId: string) {
-      this.formElements = this.formElements.filter((el) => el.id !== elementId);
+      this.formElements = this.formElements.filter(
+        (el: any) => el.id !== elementId
+      );
       if (this.selectedElementId === elementId) {
         this.selectedElementId = null;
       }
     },
     updateElement(updatedElement: FormElement) {
+      console.log('Attempting to update element with ID:', updatedElement.id);
+      console.log('Data received for update:', JSON.parse(JSON.stringify(updatedElement)));
+
       const index = this.formElements.findIndex(
         (el) => el.id === updatedElement.id
       );
+
       if (index !== -1) {
-        this.formElements[index] = updatedElement;
+        console.log('Found element at index:', index);
+        console.log('State BEFORE update:', JSON.parse(JSON.stringify(this.formElements[index])));
+        
+        // Use Object.assign to merge properties into the existing object
+        // This preserves the object reference, helping Vue's reactivity.
+        Object.assign(this.formElements[index], updatedElement);
+        
+        console.log('State AFTER update:', JSON.parse(JSON.stringify(this.formElements[index])));
+      } else {
+        console.error('Update failed: Element with ID', updatedElement.id, 'not found in store.');
       }
     },
     setSelectedElement(elementId: string | null) {
@@ -69,17 +50,40 @@ export const useFormElementStore = defineStore("formElement", {
       this.formElements = elements;
       this.selectedElementId = null;
     },
+    moveElementUp(elementId: string) {
+      const index = this.formElements.findIndex((el) => el.id === elementId);
+      if (index > 0) {
+        const element = this.formElements[index];
+        this.formElements.splice(index, 1);
+        this.formElements.splice(index - 1, 0, element);
+      }
+    },
+    moveElementDown(elementId: string) {
+      const index = this.formElements.findIndex((el) => el.id === elementId);
+      if (index !== -1 && index < this.formElements.length - 1) {
+        const element = this.formElements[index];
+        this.formElements.splice(index, 1);
+        this.formElements.splice(index + 1, 0, element);
+      }
+    },
+    updateElementValue({ elementId, value }: { elementId: string, value: any }) {
+      const element = this.formElements.find(el => el.id === elementId);
+      if (element) {
+        element.value = value;
+      }
+    },
   },
   getters: {
     getElement:
       (state) =>
       (elementId: string): FormElement | undefined =>
-        state.formElements.find((el) => el.id === elementId),
+        state.formElements.find((el: any) => el.id === elementId),
     getFormElements: (state): FormElement[] => state.formElements,
     getSelectedElement: (state): FormElement | undefined =>
       state.selectedElementId
-        ? state.formElements.find((el) => el.id === state.selectedElementId)
+        ? state.formElements.find(
+            (el: any) => el.id === state.selectedElementId
+          )
         : undefined,
   },
-  persist: true,
-});
+  });
