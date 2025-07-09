@@ -34,7 +34,7 @@ export const useDataSourceStore = defineStore('dataSource', () => {
       if (data && data[dataKey]) {
         let items = data[dataKey];
         if (dataSource === 'teachers') {
-          items = items.filter((user: any) => user.role === 'teacher');
+          items = items.filter((user: any) => user.role === 'teacher_directive');
         } else if (dataSource === 'students') {
           items = items.filter((user: any) => user.role === 'student');
         }
