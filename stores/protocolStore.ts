@@ -5,16 +5,20 @@ import type { Protocol, CreateProtocolInput } from "~/types/protocol";
 import ProtocolsQuery from "~/queries/protocols.gql";
 import ProtocolQuery from "~/queries/protocol.gql";
 import CreateProtocolMutation from "~/queries/createProtocol.gql";
+import { UpdateProtocol, DeleteProtocol } from '~/queries/admin-protocols.gql';
+import GetFormsForSelect from '~/queries/forms-for-select.gql';
 
 interface ProtocolState {
   protocols: Protocol[];
   currentProtocol: Protocol | null;
+  forms: any[]; // Para el selector de formularios
 }
 
 export const useProtocolStore = defineStore("protocol", {
   state: (): ProtocolState => ({
     protocols: [],
     currentProtocol: null,
+    forms: [],
   }),
   actions: {
     async fetchProtocols() {
@@ -52,6 +56,37 @@ export const useProtocolStore = defineStore("protocol", {
       } catch (error: any) {
         console.error("Error creating protocol:", error);
         throw error;
+      }
+    },
+
+    async updateProtocol(id: string, data: any) {
+      const { mutate, error } = useMutation(UpdateProtocol);
+      if (error.value) {
+        console.error("updateProtocol: Error:", error.value);
+        return;
+      }
+      await mutate({ updateProtocolInput: { id, ...data } });
+      await this.fetchProtocols(); // Re-fetch
+    },
+
+    async deleteProtocol(id: string) {
+      const { mutate, error } = useMutation(DeleteProtocol);
+      if (error.value) {
+        console.error("deleteProtocol: Error:", error.value);
+        return;
+      }
+      await mutate({ id });
+      await this.fetchProtocols(); // Re-fetch
+    },
+
+    async fetchFormsForSelect() {
+      const { data, error } = await useAsyncQuery(GetFormsForSelect);
+      if (error.value) {
+        console.error("fetchFormsForSelect: Error:", error.value);
+        return;
+      }
+      if (data.value?.forms) {
+        this.forms = data.value.forms;
       }
     },
   },

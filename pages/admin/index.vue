@@ -29,6 +29,17 @@
       </v-col>
 
       <!-- Añadir más tarjetas aquí para otras secciones de administración -->
+      <v-col cols="12" md="4">
+        <v-card to="/admin/protocols" hover class="pa-2">
+          <v-card-title>
+            <v-icon left>mdi-file-document-multiple</v-icon>
+            <span class="ml-2">Gestionar Protocolos</span>
+          </v-card-title>
+          <v-card-text>
+            Definir y organizar los protocolos que contienen los formularios para las prácticas.
+          </v-card-text>
+        </v-card>
+      </v-col>
 
     </v-row>
   </v-container>
