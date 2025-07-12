@@ -1,0 +1,32 @@
+query GetProtocols {
+  protocols {
+    _id
+    name
+    description
+    module
+    forms {
+      _id
+      name
+    }
+  }
+}
+
+mutation CreateProtocol($createProtocolInput: CreateProtocolInput!) {
+  createProtocol(createProtocolInput: $createProtocolInput) {
+    _id
+    name
+    description
+  }
+}
+
+mutation UpdateProtocol($updateProtocolInput: UpdateProtocolInput!) {
+  updateProtocol(updateProtocolInput: $updateProtocolInput) {
+    _id
+    name
+    description
+  }
+}
+
+mutation DeleteProtocol($id: String!) {
+  deleteProtocol(id: $id)
+}

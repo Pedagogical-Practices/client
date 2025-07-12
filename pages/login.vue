@@ -24,9 +24,7 @@
                 >Iniciar Sesión</v-btn
               >
             </v-form>
-            <v-btn variant="text" to="/register" class="mt-2"
-              >¿No tienes cuenta? Regístrate</v-btn
-            >
+            
           </v-card-text>
           <v-snackbar
             v-model="snackbar.show"
