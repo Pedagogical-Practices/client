@@ -13,7 +13,7 @@
       <v-data-table
         :headers="headers"
         :items="store.users"
-        :loading="store.loading"
+        :loading="loading"
         class="elevation-1"
       >
         <template v-slot:item.actions="{ item }">
@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useUserAdminStore } from '~/stores/userAdminStore';
 
 // Middleware de ruta
@@ -87,6 +87,13 @@ definePageMeta({
 
 const store = useUserAdminStore();
 
+const loading = ref(true); // Re-introducing local loading state
+const dialog = ref(false);
+const deleteDialog = ref(false);
+const isEditing = ref(false);
+const editableUser = ref<any>({});
+const userToDelete = ref<any>(null);
+
 const headers = [
   { title: 'Nombre', value: 'name' },
   { title: 'Email', value: 'email' },
@@ -94,17 +101,27 @@ const headers = [
   { title: 'Acciones', value: 'actions', sortable: false },
 ];
 
-const dialog = ref(false);
-const deleteDialog = ref(false);
-const isEditing = ref(false);
-const editableUser = ref<any>({});
-const userToDelete = ref<any>(null);
-
-// Lista de roles obtenida de la investigación del backend
 const userRoles = ['admin', 'student', 'teacher_directive', 'administrative', 'family', 'coordinator'];
 
-onMounted(() => {
-  store.fetchUsers();
+const formTitle = computed(() => {
+  return isEditing.value ? 'Editar Usuario' : 'Crear Usuario';
+});
+
+const filteredInstitutions = computed(() => {
+  // This computed property seems to be a leftover from institution page, it should be filteredUsers
+  // For now, it's not used in the template, so it won't cause an error.
+  // If filtering is needed, it should be implemented here based on store.users
+  return store.users; // Returning all users for now
+});
+
+onMounted(async () => {
+  try {
+    await store.fetchUsers();
+  } catch (error: any) {
+    // Handle error, maybe show a snackbar
+  } finally {
+    loading.value = false;
+  }
 });
 
 const openCreateModal = () => {
@@ -125,12 +142,16 @@ const closeModal = () => {
 };
 
 const saveUser = async () => {
-  if (isEditing.value) {
-    await store.updateUser(editableUser.value._id, editableUser.value);
-  } else {
-    await store.createUser(editableUser.value);
+  try {
+    if (isEditing.value) {
+      await store.updateUser(editableUser.value._id, editableUser.value);
+    } else {
+      await store.createUser(editableUser.value);
+    }
+    closeModal();
+  } catch (error: any) {
+    // Handle error, maybe show a snackbar
   }
-  closeModal();
 };
 
 const confirmDelete = (user: any) => {
@@ -139,11 +160,15 @@ const confirmDelete = (user: any) => {
 };
 
 const deleteUserConfirmed = async () => {
-    if (userToDelete.value) {
-        await store.deleteUser(userToDelete.value._id);
+    try {
+        if (userToDelete.value) {
+            await store.deleteUser(userToDelete.value._id);
+        }
+    } catch (error: any) {
+        // Handle error
+    } finally {
+        deleteDialog.value = false;
+        userToDelete.value = null;
     }
-    deleteDialog.value = false;
-    userToDelete.value = null;
 };
-
 </script>

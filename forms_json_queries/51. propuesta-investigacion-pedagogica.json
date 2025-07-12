@@ -1,0 +1,70 @@
+{
+  "name": "Propuesta de Investigación Pedagógica (Práctica Docente)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Propuesta",
+      "value": "",
+      "variableName": "fechaPropuesta",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Problema de Investigación",
+      "value": "",
+      "variableName": "problemaInvestigacion",
+      "placeholder": "Describa el problema de investigación identificado en el aula.",
+      "required": true,
+      "chapter": "Propuesta"
+    },
+    {
+      "type": "textarea",
+      "label": "Objetivos de la Investigación",
+      "value": "",
+      "variableName": "objetivosInvestigacion",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Propuesta"
+    },
+    {
+      "type": "textarea",
+      "label": "Metodología Propuesta",
+      "value": "",
+      "variableName": "metodologiaPropuesta",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Propuesta"
+    },
+    {
+      "type": "textarea",
+      "label": "Resultados Esperados",
+      "value": "",
+      "variableName": "resultadosEsperados",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Propuesta"
+    }
+  ]
+}

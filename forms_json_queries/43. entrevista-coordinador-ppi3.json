@@ -1,0 +1,171 @@
+{
+  "name": "Protocolo 2: Entrevista Coordinador (PPI3)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "select",
+      "label": "Coordinador Entrevistado",
+      "value": "",
+      "variableName": "coordinadorEntrevistado",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "teachers"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Entrevista",
+      "value": "",
+      "variableName": "fechaEntrevista",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "text",
+      "label": "Título Profesional del Coordinador",
+      "value": "",
+      "variableName": "tituloProfesional",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Datos del Entrevistado"
+    },
+    {
+      "type": "text",
+      "label": "Título de Posgrado del Coordinador",
+      "value": "",
+      "variableName": "tituloPosgrado",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Datos del Entrevistado"
+    },
+    {
+      "type": "text",
+      "label": "Años de Experiencia en el Cargo",
+      "value": "",
+      "variableName": "anosExperiencia",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Datos del Entrevistado",
+      "specificType": "number"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Qué provoca los ajustes al currículo en la institución educativa?",
+      "value": "",
+      "variableName": "ajustesCurriculo",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Diseño del Currículo Institucional"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Quién convoca a las reuniones para el seguimiento y actualización del currículo institucional?",
+      "value": "",
+      "variableName": "quienConvocaReuniones",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Diseño del Currículo Institucional"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Con qué frecuencia se convoca a estas reuniones?",
+      "value": "",
+      "variableName": "frecuenciaReuniones",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Diseño del Currículo Institucional"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cuál es el proceso para la aprobación de los ajustes realizados al currículo?",
+      "value": "",
+      "variableName": "procesoAprobacion",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Diseño del Currículo Institucional"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Qué estrategias utiliza para orientar el trabajo pedagógico de los docentes, en relación a la aplicación del enfoque pedagógico definido en el PEI?",
+      "value": "",
+      "variableName": "estrategiasOrientacion",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Funciones Relacionadas con la Gestión Curricular"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cómo evalúa el desarrollo de los planes de estudio, métodos de enseñanza y metodologías de evaluación del aprendizaje de los estudiantes?",
+      "value": "",
+      "variableName": "evaluacionPlanes",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Funciones Relacionadas con la Gestión Curricular"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cómo realiza el seguimiento y retroalimentación a las prácticas de aula que realizan los docentes?",
+      "value": "",
+      "variableName": "seguimientoRetroalimentacion",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Funciones Relacionadas con la Gestión Curricular"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Qué proyectos pedagógicos transversales se desarrollan en la institución y cómo se hace el seguimiento y evaluación a estos?",
+      "value": "",
+      "variableName": "proyectosTransversales",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Funciones Relacionadas con la Gestión Curricular"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Qué cambios curriculares ha propuesto en los últimos cinco años?",
+      "value": "",
+      "variableName": "cambiosCurriculares",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Funciones Relacionadas con la Gestión Curricular"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cómo se identifica y hace seguimiento a los casos de los estudiantes con dificultades académicas?",
+      "value": "",
+      "variableName": "seguimientoDificultades",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Funciones Relacionadas con la Gestión Curricular"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cuáles son los pasos de la ruta de convivencia escolar que se sigue para dar tratamiento a casos especiales (maltrato, abuso sexual, bullying, porte de armas, consumo de sustancias psicoactivas, entre otras)?",
+      "value": "",
+      "variableName": "rutaConvivencia",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Funciones Relacionadas con la Gestión Curricular"
+    }
+  ]
+}

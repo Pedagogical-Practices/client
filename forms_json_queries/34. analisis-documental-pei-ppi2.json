@@ -1,0 +1,176 @@
+{
+  "name": "Protocolo 1: Análisis Documental del PEI (PPI2)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Análisis",
+      "value": "",
+      "variableName": "fechaAnalisis",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Título del Documento",
+      "value": "",
+      "variableName": "tituloDocumento",
+      "placeholder": "Ej: Proyecto Educativo Institucional",
+      "required": true,
+      "chapter": "Análisis Formal"
+    },
+    {
+      "type": "text",
+      "label": "Autor(es)",
+      "value": "",
+      "variableName": "autores",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Análisis Formal"
+    },
+    {
+      "type": "text",
+      "label": "Fecha de Publicación",
+      "value": "",
+      "variableName": "fechaPublicacion",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Análisis Formal"
+    },
+    {
+      "type": "text",
+      "label": "Número de Páginas",
+      "value": "",
+      "variableName": "numPaginas",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Análisis Formal",
+      "specificType": "number"
+    },
+    {
+      "type": "textarea",
+      "label": "Observaciones Generales del PEI",
+      "value": "",
+      "variableName": "observacionesGenerales",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Análisis Formal"
+    },
+    {
+      "type": "checkbox",
+      "label": "Misión Institucional",
+      "value": false,
+      "variableName": "misionInstitucional",
+      "chapter": "Análisis de Contenido: Directivo-Administrativa"
+    },
+    {
+      "type": "textarea",
+      "label": "Comentarios Misión",
+      "value": "",
+      "variableName": "comentariosMision",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Análisis de Contenido: Directivo-Administrativa"
+    },
+    {
+      "type": "checkbox",
+      "label": "Visión Institucional",
+      "value": false,
+      "variableName": "visionInstitucional",
+      "chapter": "Análisis de Contenido: Directivo-Administrativa"
+    },
+    {
+      "type": "textarea",
+      "label": "Comentarios Visión",
+      "value": "",
+      "variableName": "comentariosVision",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Análisis de Contenido: Directivo-Administrativa"
+    },
+    {
+      "type": "checkbox",
+      "label": "Valores Institucionales",
+      "value": false,
+      "variableName": "valoresInstitucionales",
+      "chapter": "Análisis de Contenido: Directivo-Administrativa"
+    },
+    {
+      "type": "textarea",
+      "label": "Comentarios Valores",
+      "value": "",
+      "variableName": "comentariosValores",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Análisis de Contenido: Directivo-Administrativa"
+    },
+    {
+      "type": "checkbox",
+      "label": "Objetivos de Calidad",
+      "value": false,
+      "variableName": "objetivosCalidad",
+      "chapter": "Análisis de Contenido: Directivo-Administrativa"
+    },
+    {
+      "type": "textarea",
+      "label": "Comentarios Objetivos de Calidad",
+      "value": "",
+      "variableName": "comentariosObjetivosCalidad",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Análisis de Contenido: Directivo-Administrativa"
+    },
+    {
+      "type": "checkbox",
+      "label": "Estrategias Pedagógicas",
+      "value": false,
+      "variableName": "estrategiasPedagogicas",
+      "chapter": "Análisis de Contenido: Académico-Pedagógica"
+    },
+    {
+      "type": "textarea",
+      "label": "Comentarios Estrategias Pedagógicas",
+      "value": "",
+      "variableName": "comentariosEstrategiasPedagogicas",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Análisis de Contenido: Académico-Pedagógica"
+    },
+    {
+      "type": "checkbox",
+      "label": "Relación con otras organizaciones sociales",
+      "value": false,
+      "variableName": "relacionOrganizaciones",
+      "chapter": "Análisis de Contenido: Comunidad"
+    },
+    {
+      "type": "textarea",
+      "label": "Comentarios Relación con Organizaciones",
+      "value": "",
+      "variableName": "comentariosRelacionOrganizaciones",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Análisis de Contenido: Comunidad"
+    }
+  ]
+}

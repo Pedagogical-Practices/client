@@ -1,0 +1,89 @@
+{
+  "name": "Protocolo 1: Currículo y PEI (PPI3)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Análisis",
+      "value": "",
+      "variableName": "fechaAnalisis",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Análisis de Elementos Curriculares en el PEI",
+      "value": "",
+      "variableName": "analisisCurricularPEI",
+      "placeholder": "Describa cómo los elementos curriculares contribuyen a la formación integral y la identidad institucional.",
+      "required": true,
+      "chapter": "Análisis"
+    },
+    {
+      "type": "textarea",
+      "label": "Instrucciones: Secciones del PEI relacionadas con el currículo formal",
+      "value": "",
+      "variableName": "instrucciones",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Instrucciones",
+      "readonly": true
+    },
+    {
+      "type": "text",
+      "label": "Condicionante",
+      "value": "",
+      "variableName": "condicionante",
+      "placeholder": "Ej: Fuente sociológica, Fuente psicológica",
+      "required": true,
+      "chapter": "Tabla de Análisis"
+    },
+    {
+      "type": "text",
+      "label": "Sección del PEI",
+      "value": "",
+      "variableName": "seccionPEI",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Tabla de Análisis"
+    },
+    {
+      "type": "textarea",
+      "label": "Descripción",
+      "value": "",
+      "variableName": "descripcion",
+      "placeholder": "Síntesis de aspectos importantes",
+      "required": true,
+      "chapter": "Tabla de Análisis"
+    },
+    {
+      "type": "textarea",
+      "label": "Análisis Final",
+      "value": "",
+      "variableName": "analisisFinal",
+      "placeholder": "¿Cuál es el papel de las TIC dentro del currículo?",
+      "required": true,
+      "chapter": "Análisis Final"
+    }
+  ]
+}

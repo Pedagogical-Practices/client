@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useApolloClient } from '@vue/apollo-composable';
 import type { Institution } from '~/types/institution';
 
 // Import GQL documents
@@ -18,15 +19,14 @@ export const useInstitutionStore = defineStore('institution', {
   }),
   actions: {
     async fetchInstitutions(search?: string) {
-      const { data, error } = await useAsyncQuery(InstitutionsQuery, { search });
-      if (error.value) {
-        console.error('Error fetching institutions:', error.value);
-        throw error.value;
-      }
-      console.log('fetchInstitutions: Data received:', data.value);
-      if (data.value?.institutions) {
-        this.institutions = data.value.institutions;
-        console.log('fetchInstitutions: Store updated with', this.institutions.length, 'institutions.');
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.query({ query: InstitutionsQuery, variables: { search }, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        this.institutions = data.institutions;
+      } catch (error: any) {
+        console.error('Error fetching institutions:', error);
+        throw error;
       }
     },
 
@@ -37,9 +37,7 @@ export const useInstitutionStore = defineStore('institution', {
         if (result?.errors) {
           throw new Error(result.errors[0]?.message || 'Error creating institution');
         }
-        if (result?.data?.createInstitution) {
-          this.institutions.push(result.data.createInstitution);
-        }
+        await this.fetchInstitutions(); // Re-fetch the list
       } catch (error: any) {
         console.error('Error creating institution:', error);
         throw error;
@@ -53,12 +51,7 @@ export const useInstitutionStore = defineStore('institution', {
         if (result?.errors) {
           throw new Error(result.errors[0]?.message || 'Error updating institution');
         }
-        if (result?.data?.updateInstitution) {
-          const index = this.institutions.findIndex(i => i._id === result.data.updateInstitution._id);
-          if (index !== -1) {
-            this.institutions.splice(index, 1, result.data.updateInstitution);
-          }
-        }
+        await this.fetchInstitutions(); // Re-fetch the list
       } catch (error: any) {
         console.error('Error updating institution:', error);
         throw error;
@@ -72,7 +65,7 @@ export const useInstitutionStore = defineStore('institution', {
         if (result?.errors) {
           throw new Error(result.errors[0]?.message || 'Error deleting institution');
         }
-        this.institutions = this.institutions.filter(i => i._id !== id);
+        await this.fetchInstitutions(); // Re-fetch the list
       } catch (error: any) {
         console.error('Error deleting institution:', error);
         throw error;
@@ -80,12 +73,15 @@ export const useInstitutionStore = defineStore('institution', {
     },
 
     async fetchInstitutionById(id: string): Promise<Institution | null> {
-      const { data, error } = await useAsyncQuery(InstitutionQuery, { id });
-      if (error.value) {
-        console.error('Error fetching institution by ID:', error.value);
-        throw error.value;
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.query({ query: InstitutionQuery, variables: { id }, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        return data.institution || null;
+      } catch (error: any) {
+        console.error('Error fetching institution by ID:', error);
+        throw error;
       }
-      return data.value?.institution || null;
     },
   },
 });

@@ -1,0 +1,143 @@
+{
+  "name": "Protocolo 3: Observación de Clases (PPI2)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Docente Observado",
+      "value": "",
+      "variableName": "docenteObservado",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "teachers"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Observación",
+      "value": "",
+      "variableName": "fechaObservacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "text",
+      "label": "Grado/Curso",
+      "value": "",
+      "variableName": "gradoCurso",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cómo inicia la clase el maestro?",
+      "value": "",
+      "variableName": "inicioClase",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Preguntas de Observación"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cuál es el papel del docente en el aula y en el descanso?",
+      "value": "",
+      "variableName": "papelDocente",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Preguntas de Observación"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cómo es la organización del aula?",
+      "value": "",
+      "variableName": "organizacionAula",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Preguntas de Observación"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cómo es el ambiente del aula?",
+      "value": "",
+      "variableName": "ambienteAula",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Preguntas de Observación"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Qué materiales o recursos utiliza el maestro en el aula para el proceso de enseñanza?",
+      "value": "",
+      "variableName": "recursosEnsenanza",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Preguntas de Observación"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cómo evalúa el maestro?",
+      "value": "",
+      "variableName": "evaluacionMaestro",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Preguntas de Observación"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cómo se construye el conocimiento en el aula y quien lo construye?",
+      "value": "",
+      "variableName": "construccionConocimiento",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Preguntas de Observación"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Qué tipo de relación se establece entre el maestro y el estudiante?",
+      "value": "",
+      "variableName": "relacionMaestroEstudiante",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Preguntas de Observación"
+    },
+    {
+      "type": "textarea",
+      "label": "¿Cómo se relaciona lo observado con las tendencias desde el maestro, el estudiante en términos de enseñanza, aprendizaje y evaluación?",
+      "value": "",
+      "variableName": "relacionTendencias",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Preguntas de Observación"
+    },
+    {
+      "type": "textarea",
+      "label": "Observaciones Adicionales",
+      "value": "",
+      "variableName": "observacionesAdicionales",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Observaciones"
+    }
+  ]
+}

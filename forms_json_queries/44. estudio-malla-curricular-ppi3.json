@@ -1,0 +1,70 @@
+{
+  "name": "Protocolo 3: Estudio de la Malla Curricular (PPI3)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Análisis",
+      "value": "",
+      "variableName": "fechaAnalisis",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Relación entre la malla curricular y el documento de orientaciones curriculares para T&I",
+      "value": "",
+      "variableName": "relacionMallaCurricular",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Aspectos de la Malla Curricular"
+    },
+    {
+      "type": "text",
+      "label": "Aspectos que conforman la malla curricular de la institución educativa",
+      "value": "",
+      "variableName": "aspectosMallaInstitucion",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Contenidos de las Orientaciones de T&I"
+    },
+    {
+      "type": "text",
+      "label": "Aspectos sugeridos por las Orientaciones de T&I para la organización curricular",
+      "value": "",
+      "variableName": "aspectosSugeridosTI",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Contenidos de las Orientaciones de T&I"
+    },
+    {
+      "type": "textarea",
+      "label": "Análisis General de la Malla Curricular",
+      "value": "",
+      "variableName": "analisisGeneralMalla",
+      "placeholder": "¿Cuáles aspectos considera deben ser actualizados en la malla curricular de T&I de la institución educativa? ¿Por qué?",
+      "required": true,
+      "chapter": "Análisis General de la Malla Curricular"
+    }
+  ]
+}

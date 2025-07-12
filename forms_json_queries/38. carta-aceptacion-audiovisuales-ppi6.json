@@ -1,0 +1,53 @@
+{
+  "name": "Formato Carta de Aceptación (Audiovisuales) (PPI6)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Emisión",
+      "value": "",
+      "variableName": "fechaEmision",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Contenido de la Carta",
+      "value": "",
+      "variableName": "contenidoCarta",
+      "placeholder": "Redacte el contenido de la carta de aceptación de la propuesta.",
+      "required": true,
+      "chapter": "Contenido"
+    },
+    {
+      "type": "select",
+      "label": "Firma del Director/Rector",
+      "value": "",
+      "variableName": "firmaDirector",
+      "hint": "",
+      "required": true,
+      "chapter": "Firmas",
+      "dataSource": "teachers"
+    }
+  ]
+}
