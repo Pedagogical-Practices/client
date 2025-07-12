@@ -58,30 +58,141 @@ const isMobile = ref(false);
 const router = useRouter();
 
 const allItems = [
-  { title: "Home", value: "home", to: "/", icon: "mdi-home", roles: ['admin', 'student', 'teacher_directive', 'administrative', 'family', 'coordinator'] },
-  { title: "Editor", value: "editor", to: "/editor", icon: "mdi-text-box", roles: ['admin', 'coordinator'] },
-  { title: "Cursos", value: "courses", to: "/courses", icon: "mdi-book-open-page-variant", roles: ['admin', 'coordinator'] },
-  { title: "Formularios", value: "forms", to: "/forms", icon: "mdi-form-select", roles: ['admin', 'coordinator'] },
-  { title: "Protocolos", value: "protocols", to: "/protocols", icon: "mdi-file-document-box", roles: ['admin', 'coordinator'] },
-  { title: "Perfil", value: "profile", to: "/profile", icon: "mdi-account-profile", roles: ['admin', 'student', 'teacher_directive', 'administrative', 'family', 'coordinator'] },
-  { title: "Asistencia", value: "attendance", to: "/attendance", icon: "mdi-chart-bar", roles: ['admin', 'coordinator'] },
-  { title: "Administración", value: "admin", to: "/admin", icon: "mdi-account-cog", roles: ['admin'] },
-  { title: "Usuarios", value: "users", to: "/admin/users", icon: "mdi-account-group", roles: ['admin'] },
-  { title: "Instituciones", value: "institutions", to: "/admin/institutions", icon: "mdi-bank", roles: ['admin'] },
-  { title: "Protocolos", value: "protocols", to: "/admin/protocols", icon: "mdi-file-document-multiple", roles: ['admin'] },
-  { title: "Configuración", value: "settings", to: "/settings", icon: "mdi-cog", roles: ['admin', 'coordinator'] },
-  { title: "Prácticas", value: "practices", to: "/practices", icon: "mdi-school", roles: ['admin', 'coordinator'] },
-  { title: "Cerrar sesión", value: "logout", to: "/logout", icon: "mdi-logout", roles: ['admin', 'student', 'teacher_directive', 'administrative', 'family', 'coordinator'] },
+  {
+    title: "Home",
+    value: "home",
+    to: "/",
+    icon: "mdi-home",
+    roles: [
+      "admin",
+      "student",
+      "teacher_directive",
+      "administrative",
+      "family",
+      "coordinator",
+    ],
+  },
+  {
+    title: "Editor",
+    value: "editor",
+    to: "/editor",
+    icon: "mdi-text-box",
+    roles: ["admin", "coordinator"],
+  },
+  {
+    title: "Cursos",
+    value: "courses",
+    to: "/courses",
+    icon: "mdi-book-open-page-variant",
+    roles: ["admin", "coordinator"],
+  },
+  {
+    title: "Formularios",
+    value: "forms",
+    to: "/forms",
+    icon: "mdi-form-select",
+    roles: ["admin", "coordinator"],
+  },
+  {
+    title: "Protocolos",
+    value: "protocols",
+    to: "/protocols",
+    icon: "mdi-file-document-box",
+    roles: [
+      "admin",
+      "student",
+      "teacher_directive",
+      "administrative",
+      "family",
+      "coordinator",
+    ],
+  },
+  {
+    title: "Perfil",
+    value: "profile",
+    to: "/profile",
+    icon: "mdi-account-profile",
+    roles: [
+      "admin",
+      "student",
+      "teacher_directive",
+      "administrative",
+      "family",
+      "coordinator",
+    ],
+  },
+  {
+    title: "Asistencia",
+    value: "attendance",
+    to: "/attendance",
+    icon: "mdi-chart-bar",
+    roles: ["admin", "coordinator"],
+  },
+  {
+    title: "Administración",
+    value: "admin",
+    to: "/admin",
+    icon: "mdi-account-cog",
+    roles: ["admin"],
+  },
+  {
+    title: "Usuarios",
+    value: "users",
+    to: "/admin/users",
+    icon: "mdi-account-group",
+    roles: ["admin"],
+  },
+  {
+    title: "Instituciones",
+    value: "institutions",
+    to: "/admin/institutions",
+    icon: "mdi-bank",
+    roles: ["admin"],
+  },
+  /*{
+    title: "Gestionar Protocolos",
+    value: "admin-protocols",
+    to: "/admin/protocols",
+    icon: "mdi-file-document-multiple",
+    roles: ["admin"],
+  },*/
+  {
+    title: "Configuración",
+    value: "settings",
+    to: "/settings",
+    icon: "mdi-cog",
+    roles: ["admin", "coordinator"],
+  },
+  {
+    title: "Prácticas",
+    value: "practices",
+    to: "/practices",
+    icon: "mdi-school",
+    roles: ["admin", "coordinator"],
+  },
+  {
+    title: "Cerrar sesión",
+    value: "logout",
+    to: "/logout",
+    icon: "mdi-logout",
+    roles: [
+      "admin",
+      "student",
+      "teacher_directive",
+      "administrative",
+      "family",
+      "coordinator",
+    ],
+  },
 ];
 
 const filteredItems = computed(() => {
   if (!authStore.isAuthenticated || !authStore.user) {
     return [];
   }
-  return allItems.filter(item => item.roles.includes(authStore.user.role));
+  return allItems.filter((item) => item.roles.includes(authStore.user.role));
 });
 
-// Cerrar el drawer cuando cambia la ruta
 router.afterEach(() => {
   drawer.value = false;
 });
