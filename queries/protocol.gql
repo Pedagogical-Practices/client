@@ -2,6 +2,7 @@ query Protocol($id: String!) {
   protocol(id: $id) {
     _id
     name
+    description # <-- Añadido
     module
     forms { # Seleccionar los campos del formulario
       _id
