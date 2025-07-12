@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useApolloClient } from '@vue/apollo-composable';
 import type { Protocol, CreateProtocolInput } from "~/types/protocol";
 
 // Import GQL documents
@@ -11,7 +12,7 @@ import GetFormsForSelect from '~/queries/forms-for-select.gql';
 interface ProtocolState {
   protocols: Protocol[];
   currentProtocol: Protocol | null;
-  forms: any[]; // Para el selector de formularios
+  forms: any[];
 }
 
 export const useProtocolStore = defineStore("protocol", {
@@ -22,24 +23,24 @@ export const useProtocolStore = defineStore("protocol", {
   }),
   actions: {
     async fetchProtocols() {
-      const { data, error } = await useAsyncQuery(ProtocolsQuery);
-      if (error.value) {
-        console.error("fetchProtocols: Error:", error.value);
-        return;
-      }
-      if (data.value?.protocols) {
-        this.protocols = data.value.protocols;
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.query({ query: ProtocolsQuery, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        this.protocols = data.protocols;
+      } catch (error) {
+        console.error("Error fetching protocols:", error);
       }
     },
 
     async fetchProtocol(id: string) {
-      const { data, error } = await useAsyncQuery(ProtocolQuery, { id });
-      if (error.value) {
-        console.error("Error fetching protocol:", error.value);
-        return;
-      }
-      if (data.value?.protocol) {
-        this.currentProtocol = data.value.protocol;
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.query({ query: ProtocolQuery, variables: { id }, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        this.currentProtocol = data.protocol;
+      } catch (error) {
+        console.error("Error fetching protocol:", error);
       }
     },
 
@@ -47,12 +48,8 @@ export const useProtocolStore = defineStore("protocol", {
       const { mutate } = useMutation(CreateProtocolMutation);
       try {
         const result = await mutate({ createProtocolInput: input });
-        if (result?.errors) {
-          throw new Error(result.errors[0]?.message || "Error creating protocol");
-        }
-        if (result?.data?.createProtocol) {
-          this.protocols.push(result.data.createProtocol);
-        }
+        if (result?.errors) throw new Error(result.errors[0]?.message);
+        await this.fetchProtocols(); // Re-fetch the list
       } catch (error: any) {
         console.error("Error creating protocol:", error);
         throw error;
@@ -60,33 +57,35 @@ export const useProtocolStore = defineStore("protocol", {
     },
 
     async updateProtocol(id: string, data: any) {
-      const { mutate, error } = useMutation(UpdateProtocol);
-      if (error.value) {
-        console.error("updateProtocol: Error:", error.value);
-        return;
+      const { mutate } = useMutation(UpdateProtocol);
+      try {
+        await mutate({ updateProtocolInput: { id, ...data } });
+        await this.fetchProtocols(); // Re-fetch the list
+      } catch (error: any) {
+        console.error("Error updating protocol:", error);
+        throw error;
       }
-      await mutate({ updateProtocolInput: { id, ...data } });
-      await this.fetchProtocols(); // Re-fetch
     },
 
     async deleteProtocol(id: string) {
-      const { mutate, error } = useMutation(DeleteProtocol);
-      if (error.value) {
-        console.error("deleteProtocol: Error:", error.value);
-        return;
+      const { mutate } = useMutation(DeleteProtocol);
+      try {
+        await mutate({ id });
+        await this.fetchProtocols(); // Re-fetch the list
+      } catch (error: any) {
+        console.error("Error deleting protocol:", error);
+        throw error;
       }
-      await mutate({ id });
-      await this.fetchProtocols(); // Re-fetch
     },
 
     async fetchFormsForSelect() {
-      const { data, error } = await useAsyncQuery(GetFormsForSelect);
-      if (error.value) {
-        console.error("fetchFormsForSelect: Error:", error.value);
-        return;
-      }
-      if (data.value?.forms) {
-        this.forms = data.value.forms;
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.query({ query: GetFormsForSelect, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        this.forms = data.forms;
+      } catch (error) {
+        console.error("Error fetching forms for select:", error);
       }
     },
   },
