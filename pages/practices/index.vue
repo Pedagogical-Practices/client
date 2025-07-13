@@ -118,16 +118,6 @@
               density="compact"
               :rules="[(v) => !!v || 'Institución es requerida']"
             ></v-select>
-            <v-select
-              v-model="newPractice.institutionName"
-              :items="institutionStore.institutions || []"
-              item-title="name"
-              item-value="name"
-              label="Nombre de la Institución"
-              variant="outlined"
-              density="compact"
-              :rules="[(v) => !!v || 'Institución es requerida']"
-            ></v-select>
             <v-text-field
               v-model="newPractice.courseName"
               label="Nombre del Curso"
@@ -135,14 +125,6 @@
               density="compact"
               :rules="[(v) => !!v || 'Curso es requerido']"
             ></v-text-field>
-            <!--v-select
-              v-if="isEditMode"
-              v-model="newPractice.status"
-              :items="Object.values(PracticeStatus)"
-              label="Estado de la Práctica"
-              variant="outlined"
-              density="compact"
-            ></v-select-->
           </v-form>
         </v-card-text>
         <v-card-actions>

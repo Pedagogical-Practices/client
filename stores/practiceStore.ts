@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useApolloClient } from '@vue/apollo-composable';
 import type { Practice, CreatePracticeInput, UpdatePracticeInput } from "~/types/practice";
 
 // Import GQL documents
@@ -20,24 +21,26 @@ export const usePracticeStore = defineStore("practice", {
   }),
   actions: {
     async fetchPractices() {
-      const { data, error } = await useAsyncQuery(PracticesQuery);
-      if (error.value) {
-        console.error("Error fetching practices:", error.value);
-        return;
-      }
-      if (data.value?.practices) {
-        this.practices = data.value.practices;
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.query({ query: PracticesQuery, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        this.practices = data.practices;
+      } catch (error: any) {
+        console.error("Error fetching practices:", error);
+        throw error;
       }
     },
 
     async fetchPractice(id: string) {
-      const { data, error } = await useAsyncQuery(PracticeQuery, { id });
-      if (error.value) {
-        console.error("Error fetching practice:", error.value);
-        return;
-      }
-      if (data.value?.practice) {
-        this.currentPractice = data.value.practice;
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.query({ query: PracticeQuery, variables: { id }, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        this.currentPractice = data.practice;
+      } catch (error: any) {
+        console.error("Error fetching practice:", error);
+        throw error;
       }
     },
 
@@ -48,9 +51,7 @@ export const usePracticeStore = defineStore("practice", {
         if (result?.errors) {
           throw new Error(result.errors[0]?.message || "Error creating practice");
         }
-        if (result?.data?.createPractice) {
-          this.practices.push(result.data.createPractice);
-        }
+        await this.fetchPractices(); // Re-fetch the list
       } catch (error: any) {
         console.error("Error creating practice:", error);
         throw error;
@@ -64,13 +65,7 @@ export const usePracticeStore = defineStore("practice", {
         if (result?.errors) {
           throw new Error(result.errors[0]?.message || "Error updating practice");
         }
-        if (result?.data?.updatePractice) {
-          const index = this.practices.findIndex((p) => p._id === result.data.updatePractice._id);
-          if (index !== -1) {
-            this.practices[index] = result.data.updatePractice;
-          }
-          this.currentPractice = result.data.updatePractice;
-        }
+        await this.fetchPractices(); // Re-fetch the list
       } catch (error: any) {
         console.error("Error updating practice:", error);
         throw error;
@@ -84,7 +79,7 @@ export const usePracticeStore = defineStore("practice", {
         if (result?.errors) {
           throw new Error(result.errors[0]?.message || "Error removing practice");
         }
-        this.practices = this.practices.filter((p) => p._id !== id);
+        await this.fetchPractices(); // Re-fetch the list
       } catch (error: any) {
         console.error("Error removing practice:", error);
         throw error;
