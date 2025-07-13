@@ -9,6 +9,8 @@ import CreatePracticeMutation from "~/queries/createPractice.gql";
 import UpdatePracticeMutation from "~/queries/updatePractice.gql";
 import RemovePracticeMutation from "~/queries/removePractice.gql";
 
+import MyPracticesQuery from '~/queries/myPractices.gql';
+
 interface PracticeState {
   practices: Practice[];
   currentPractice: Practice | null;
@@ -27,7 +29,19 @@ export const usePracticeStore = defineStore("practice", {
         if (errors) throw errors;
         this.practices = data.practices;
       } catch (error: any) {
-        console.error("Error fetching practices:", error);
+        console.error("Error fetching admin practices:", error);
+        throw error;
+      }
+    },
+
+    async fetchMyPractices() {
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.query({ query: MyPracticesQuery, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        this.practices = data.myPractices;
+      } catch (error: any) {
+        console.error("Error fetching user practices:", error);
         throw error;
       }
     },

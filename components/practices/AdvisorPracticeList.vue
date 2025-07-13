@@ -22,8 +22,9 @@
 <script setup>
 import { defineProps } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '~/stores/authStore';
 
-defineProps({
+const props = defineProps({
   practices: {
     type: Array,
     required: true,
@@ -31,6 +32,7 @@ defineProps({
 });
 
 const router = useRouter();
+const authStore = useAuthStore();
 
 const statusColor = (status) => {
   switch (status) {
@@ -43,6 +45,10 @@ const statusColor = (status) => {
 };
 
 const viewPractice = (id) => {
-  router.push(`/admin/practices/${id}`); // Reutilizamos la vista de detalle del admin
+  if (authStore.user && (authStore.user.role === 'admin' || authStore.user.role === 'coordinator' || authStore.user.role === 'teacher_directive')) {
+    router.push(`/admin/practices/${id}`);
+  } else {
+    router.push(`/practices/${id}`);
+  }
 };
 </script>

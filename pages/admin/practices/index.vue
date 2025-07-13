@@ -335,7 +335,7 @@ const savePractice = async () => {
 };
 
 const viewPractice = (id: string) => {
-  router.push(`/practices/${id}`); // Navegar a la página de detalle de la práctica
+  router.push(`/admin/practices/${id}`); // Navegar a la página de detalle de la práctica
 };
 
 const editPractice = (id: string) => {
