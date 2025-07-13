@@ -164,11 +164,25 @@ const allItems = [
     roles: ["admin", "coordinator"],
   },
   {
-    title: "Prácticas",
+    title: "Gestionar Prácticas",
+    value: "admin-practices",
+    to: "/admin/practices",
+    icon: "mdi-school-outline",
+    roles: ["admin", "coordinator", "teacher_directive"],
+  },
+  {
+    title: "Mis Prácticas",
     value: "practices",
     to: "/practices",
     icon: "mdi-school",
-    roles: ["admin", "coordinator"],
+    roles: [
+      "admin",
+      "student",
+      "teacher_directive",
+      "administrative",
+      "family",
+      "coordinator",
+    ],
   },
   {
     title: "Cerrar sesión",

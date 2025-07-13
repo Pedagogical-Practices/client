@@ -45,12 +45,13 @@ export const usePracticeStore = defineStore("practice", {
     },
 
     async createPractice(input: CreatePracticeInput) {
-      const { mutate } = useMutation(CreatePracticeMutation);
+      const { client } = useApolloClient();
       try {
-        const result = await mutate({ createPracticeInput: input });
-        if (result?.errors) {
-          throw new Error(result.errors[0]?.message || "Error creating practice");
-        }
+        const { data, errors } = await client.mutate({
+          mutation: CreatePracticeMutation,
+          variables: { createPracticeInput: input },
+        });
+        if (errors) throw errors;
         await this.fetchPractices(); // Re-fetch the list
       } catch (error: any) {
         console.error("Error creating practice:", error);
@@ -59,12 +60,13 @@ export const usePracticeStore = defineStore("practice", {
     },
 
     async updatePractice(input: UpdatePracticeInput) {
-      const { mutate } = useMutation(UpdatePracticeMutation);
+      const { client } = useApolloClient();
       try {
-        const result = await mutate({ updatePracticeInput: input });
-        if (result?.errors) {
-          throw new Error(result.errors[0]?.message || "Error updating practice");
-        }
+        const { data, errors } = await client.mutate({
+          mutation: UpdatePracticeMutation,
+          variables: { updatePracticeInput: input },
+        });
+        if (errors) throw errors;
         await this.fetchPractices(); // Re-fetch the list
       } catch (error: any) {
         console.error("Error updating practice:", error);
@@ -73,12 +75,13 @@ export const usePracticeStore = defineStore("practice", {
     },
 
     async removePractice(id: string) {
-      const { mutate } = useMutation(RemovePracticeMutation);
+      const { client } = useApolloClient();
       try {
-        const result = await mutate({ id });
-        if (result?.errors) {
-          throw new Error(result.errors[0]?.message || "Error removing practice");
-        }
+        const { data, errors } = await client.mutate({
+          mutation: RemovePracticeMutation,
+          variables: { id },
+        });
+        if (errors) throw errors;
         await this.fetchPractices(); // Re-fetch the list
       } catch (error: any) {
         console.error("Error removing practice:", error);
