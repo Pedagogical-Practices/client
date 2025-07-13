@@ -1,5 +1,8 @@
 import { defineStore } from "pinia";
 import { navigateTo } from "nuxt/app";
+import { ref, computed } from 'vue'; // Importar ref y computed
+import { useApolloClient } from '@vue/apollo-composable'; // Importar useApolloClient
+import { gql } from 'graphql-tag'; // Importar gql
 import type { UserDto, CreateUserInput, UpdateUserInput } from "~/types/user";
 
 // Import GQL documents. The module will handle loading them as DocumentNodes.
@@ -8,15 +11,28 @@ import LoginMutation from "~/queries/login.gql";
 import UpdateUserMutation from "~/queries/updateUser.gql";
 import MeQuery from "~/queries/me.gql";
 
+const GET_USERS_QUERY_STRING = `
+  query GetUsers {
+    users {
+      _id
+      name
+      email
+      role
+    }
+  }
+`;
+
 // piniaPluginPersistedstate is auto-imported by the Nuxt module
 
 interface AuthState {
   user: UserDto | null;
+  users: UserDto[]; // Añadir la lista de usuarios
 }
 
 export const useAuthStore = defineStore("auth", () => {
   // State
   const user = ref<UserDto | null>(null);
+  const users = ref<UserDto[]>([]); // Inicializar users como un array vacío
 
   // Actions
   const login = async (email: string, password: string): Promise<void> => {
@@ -89,6 +105,19 @@ export const useAuthStore = defineStore("auth", () => {
     user.value = newUser;
   };
 
+  const fetchUsers = async () => {
+    const { client } = useApolloClient();
+    try {
+      const { data, errors } = await client.query({ query: gql(GET_USERS_QUERY_STRING), fetchPolicy: 'network-only' });
+      if (errors) throw errors;
+      users.value = data.users;
+      console.log('authStore: Users fetched and assigned:', users.value);
+    } catch (error: any) {
+      console.error("authStore: Error fetching users:", error);
+      throw new Error(error.message || "Error desconocido al cargar usuarios.");
+    }
+  };
+
   // Getters
   const isAuthenticated = computed(() => !!user.value);
   const isAdmin = computed(() => user.value?.role === "admin");
@@ -96,11 +125,13 @@ export const useAuthStore = defineStore("auth", () => {
   // Return state, actions, and getters
   return {
     user,
+    users, // Exportar users
     login,
     register,
     updateProfile,
     logout,
     setUser,
+    fetchUsers, // Exportar fetchUsers
     isAuthenticated,
     isAdmin,
   };

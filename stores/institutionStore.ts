@@ -24,6 +24,7 @@ export const useInstitutionStore = defineStore('institution', {
         const { data, errors } = await client.query({ query: InstitutionsQuery, variables: { search }, fetchPolicy: 'network-only' });
         if (errors) throw errors;
         this.institutions = data.institutions;
+        console.log('institutionStore: Institutions fetched and assigned:', this.institutions);
       } catch (error: any) {
         console.error('Error fetching institutions:', error);
         throw error;

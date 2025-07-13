@@ -108,28 +108,41 @@
               density="compact"
               :rules="[(v) => !!v || 'Protocolo es requerido']"
             ></v-select>
-            <v-text-field
+            <v-select
               v-model="newPractice.institutionName"
+              :items="institutionStore.institutions || []"
+              item-title="name"
+              item-value="name"
               label="Nombre de la Institución"
               variant="outlined"
               density="compact"
               :rules="[(v) => !!v || 'Institución es requerida']"
-            ></v-text-field>
-            <v-text-field
-              v-model="newPractice.courseName"
-              label="Nombre del Curso/Grado"
+            ></v-select>
+            <v-select
+              v-model="newPractice.institutionName"
+              :items="institutionStore.institutions || []"
+              item-title="name"
+              item-value="name"
+              label="Nombre de la Institución"
               variant="outlined"
               density="compact"
-              :rules="[(v) => !!v || 'Curso/Grado es requerido']"
+              :rules="[(v) => !!v || 'Institución es requerida']"
+            ></v-select>
+            <v-text-field
+              v-model="newPractice.courseName"
+              label="Nombre del Curso"
+              variant="outlined"
+              density="compact"
+              :rules="[(v) => !!v || 'Curso es requerido']"
             ></v-text-field>
-            <v-select
+            <!--v-select
               v-if="isEditMode"
               v-model="newPractice.status"
               :items="Object.values(PracticeStatus)"
               label="Estado de la Práctica"
               variant="outlined"
               density="compact"
-            ></v-select>
+            ></v-select-->
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -192,7 +205,8 @@ import { useRouter } from "vue-router";
 import { usePracticeStore } from "~/stores/practiceStore";
 import { useAuthStore } from "~/stores/authStore";
 import { useProtocolStore } from "~/stores/protocolStore";
-import { PracticeStatus } from "~/types/practice"; // Importar el enum
+import { PracticeStatus } from "~/types/practice";
+import { useInstitutionStore } from "~/stores/institutionStore";
 
 definePageMeta({});
 
@@ -200,6 +214,7 @@ const router = useRouter();
 const practiceStore = usePracticeStore();
 const authStore = useAuthStore();
 const protocolStore = useProtocolStore();
+const institutionStore = useInstitutionStore();
 
 const dialog = ref(false);
 const practiceFormRef = ref<HTMLFormElement | null>(null);
@@ -233,63 +248,34 @@ const headers = ref([
   { title: "Acciones", key: "actions", sortable: false },
 ]);
 
-const students = ref<Array<{ _id: string; name: string }>>([]);
-const advisors = ref<Array<{ _id: string; name: string }>>([]);
-
 onMounted(async () => {
+  console.log("practices/index.vue: onMounted started.");
   await practiceStore.fetchPractices();
+  console.log("practices/index.vue: practices fetched.");
   await protocolStore.fetchProtocols(); // Cargar protocolos
-  await fetchUsersForSelects(); // Cargar usuarios (estudiantes y asesores)
+  console.log("practices/index.vue: protocols fetched.");
+  await authStore.fetchUsers(); // Cargar todos los usuarios
+  console.log("practices/index.vue: users fetched.");
+  await institutionStore.fetchInstitutions(); // Cargar instituciones
+  console.log("practices/index.vue: institutions fetched.");
 });
 
-const fetchUsersForSelects = async () => {
-  // Aquí deberías tener una forma de obtener todos los usuarios
-  // o usuarios con roles específicos (estudiantes, asesores)
-  // Por ahora, simularemos o usaremos una API si existe
-  // Asumiendo que authStore.fetchUsers() existe y devuelve todos los usuarios
-  // O que tienes endpoints específicos para estudiantes y asesores
-  try {
-    // Ejemplo: Si tienes un endpoint para listar todos los usuarios
-    // const allUsers = await authStore.fetchAllUsers();
-    // students.value = allUsers.filter(user => user.role === 'student');
-    // advisors.value = allUsers.filter(user => user.role === 'advisor');
-
-    // Por ahora, simularemos con los usuarios que ya tenemos en authStore
-    // Esto es un placeholder, deberías tener una forma real de obtenerlos
-    const dummyUsers = [
-      {
-        _id: "686069b0a63eb317830f9368",
-        name: "Alexander Toscano Ricardo",
-        email: "atoscano@correo.unicordoba.edu.co",
-        role: "admin",
-      },
-      // Añade más usuarios de prueba si es necesario
-    ];
-    students.value = dummyUsers.filter(
-      (user) => user.role === "student" || user.role === "admin"
-    ); // Asumiendo que admin puede ser estudiante/asesor para pruebas
-    advisors.value = dummyUsers.filter(
-      (user) => user.role === "advisor" || user.role === "admin"
-    );
-
-    // Si necesitas obtener usuarios reales, deberías implementar un método en authStore
-    // que llame a un endpoint del backend para listar usuarios.
-    // Por ejemplo, en auth.resolver.ts podrías tener una query `users`
-    // y en auth.service.ts un `findAllUsers`
-    // Y luego en authStore.ts un `fetchUsers`
-    // await authStore.fetchUsers();
-    // students.value = authStore.users.filter(u => u.role === 'student');
-    // advisors.value = authStore.users.filter(u => u.role === 'advisor');
-  } catch (error: any) {
-    console.error("Error fetching users for selects:", error);
-    snackbar.value = {
-      show: true,
-      text: `Error al cargar usuarios: ${error.message}`,
-      color: "error",
-      timeout: 3000,
-    };
-  }
-};
+const students = computed(() => {
+  console.log(
+    "practices/index.vue: Computing students. authStore.users:",
+    authStore.users
+  );
+  return (authStore.users || []).filter((user) => user.role === "student");
+});
+const advisors = computed(() => {
+  console.log(
+    "practices/index.vue: Computing advisors. authStore.users:",
+    authStore.users
+  );
+  return (authStore.users || []).filter(
+    (user) => user.role === "teacher_directive"
+  );
+});
 
 const getStatusColor = (status: PracticeStatus): string => {
   switch (status) {
