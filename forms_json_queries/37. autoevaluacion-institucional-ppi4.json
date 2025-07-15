@@ -22,13 +22,14 @@
       "dataSource": "institutions"
     },
     {
-      "type": "date-picker",
+      "type": "text",
       "label": "Fecha de Análisis",
       "value": "",
       "variableName": "fechaAnalisis",
       "hint": "",
       "required": true,
-      "chapter": "Identificación"
+      "chapter": "Identificación",
+      "specificType": "date"
     },
     {
       "type": "textarea",
@@ -47,7 +48,7 @@
       "placeholder": "",
       "required": false,
       "chapter": "Instrucciones",
-      "readonly": true
+      "readonly": false
     },
     {
       "type": "text",

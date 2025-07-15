@@ -29,13 +29,13 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="submitForm">Enviar</v-btn>
+      <v-btn color="primary" @click="submitForm">{{ submissionId ? 'Actualizar' : 'Enviar' }}</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 import {
   VTextField,
   VTextarea,
@@ -48,15 +48,16 @@ import {
 import DynamicSelect from "~/components/forms/DynamicSelect.vue";
 
 const props = defineProps<{
-  formDefinition: any; // El objeto JSON del formulario
+  formDefinition: any;
+  initialData?: Record<string, any>;
+  submissionId?: string | null;
 }>();
 
-const emit = defineEmits(['submit']);
+const emit = defineEmits(['submit', 'update']);
 
 const formRef = ref<HTMLFormElement | null>(null);
 const formData = reactive<Record<string, any>>({});
 
-// Mapeo de tipos de campo a componentes de Vuetify
 const componentMap: Record<string, any> = {
   text: VTextField,
   textarea: VTextarea,
@@ -74,23 +75,34 @@ const getComponentName = (field: any): any => {
   return componentMap[field.type] || VTextField;
 };
 
-onMounted(() => {
-  // Inicializar formData con valores por defecto del formDefinition
+const initializeForm = () => {
+  const data = props.initialData || {};
   props.formDefinition.fields.forEach((field: any) => {
-    formData[field.variableName] = field.value !== undefined ? field.value : null;
-    // Manejar valores iniciales para checkboxes y selects múltiples
+    formData[field.variableName] = data[field.variableName] !== undefined ? data[field.variableName] : (field.value !== undefined ? field.value : null);
     if (field.type === 'checkbox') {
-      formData[field.variableName] = field.value || false;
+      formData[field.variableName] = data[field.variableName] || field.value || false;
     } else if (field.type === 'select' && field.multiple) {
-      formData[field.variableName] = field.value || [];
+      formData[field.variableName] = data[field.variableName] || field.value || [];
     }
   });
+};
+
+onMounted(() => {
+  initializeForm();
 });
+
+watch(() => props.initialData, () => {
+  initializeForm();
+}, { deep: true });
 
 const submitForm = async () => {
   const { valid } = await formRef.value!.validate();
   if (valid) {
-    emit('submit', formData);
+    if (props.submissionId) {
+      emit('update', { id: props.submissionId, data: formData });
+    } else {
+      emit('submit', formData);
+    }
   }
 };
 </script>

@@ -8,7 +8,10 @@
         <PracticeProgress :practice="practiceStore.currentPractice" />
       </v-col>
       <v-col cols="12">
-        <PracticeFormList :practice="practiceStore.currentPractice" />
+        <PracticeFormList
+          :practice="practiceStore.currentPractice"
+          :userRole="authStore.user?.role"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -23,19 +26,23 @@
 
 <script setup>
 definePageMeta({
-  middleware: ['redirect-admin-from-practices'],
+  middleware: ["redirect-admin-from-practices"],
 });
-import { onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { usePracticeStore } from '~/stores/practiceStore';
-import PracticeDetailHeader from '~/components/practices/PracticeDetailHeader.vue';
-import PracticeProgress from '~/components/practices/PracticeProgress.vue';
-import PracticeFormList from '~/components/practices/PracticeFormList.vue';
+import { onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { usePracticeStore } from "~/stores/practiceStore";
+import { useAuthStore } from "~/stores/authStore"; // Importar useAuthStore
+import PracticeDetailHeader from "~/components/practices/PracticeDetailHeader.vue";
+import PracticeProgress from "~/components/practices/PracticeProgress.vue";
+import PracticeFormList from "~/components/practices/PracticeFormList.vue";
 
 console.log("practices/[id].vue: Script setup started.");
 
 const route = useRoute();
 const practiceStore = usePracticeStore();
+const authStore = useAuthStore(); // Inicializar authStore
+
+console.log("practices/[id].vue: userRole being passed:", authStore.user?.role);
 
 onMounted(async () => {
   const practiceId = route.params.id;
@@ -43,9 +50,15 @@ onMounted(async () => {
   if (practiceId) {
     try {
       await practiceStore.fetchPractice(practiceId);
-      console.log("practices/[id].vue: Practice fetched:", practiceStore.currentPractice);
+      console.log(
+        "practices/[id].vue: Practice fetched:",
+        practiceStore.currentPractice
+      );
     } catch (error) {
-      console.error("practices/[id].vue: Error fetching practice details:", error);
+      console.error(
+        "practices/[id].vue: Error fetching practice details:",
+        error
+      );
     }
   }
 });

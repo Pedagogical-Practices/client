@@ -28,6 +28,7 @@ query Practice($id: String!) {
       }
       submission {
         _id
+        data
       }
     }
     createdBy {

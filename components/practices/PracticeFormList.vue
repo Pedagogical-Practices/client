@@ -14,7 +14,7 @@
           </template>
           <template v-slot:append>
             <v-btn
-              v-if="!getFormStatus(formInProtocol._id).isCompleted"
+              v-if="!getFormStatus(formInProtocol._id).isCompleted && isStudentOrFamily"
               color="primary"
               variant="flat"
               @click="fillForm(formInProtocol._id)"
@@ -22,7 +22,7 @@
               Llenar Formulario
             </v-btn>
             <v-btn
-              v-else
+              v-else-if="getFormStatus(formInProtocol._id).isCompleted"
               color="success"
               variant="outlined"
               @click="viewSubmission(getFormStatus(formInProtocol._id).submissionId)"
@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
+import { defineProps, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const props = defineProps({
@@ -45,9 +45,19 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  userRole: {
+    type: String,
+    required: true,
+  },
 });
 
+console.log("PracticeFormList.vue: Received userRole:", props.userRole);
+
 const router = useRouter();
+
+const isStudentOrFamily = computed(() => {
+  return props.userRole === 'student' || props.userRole === 'family';
+});
 
 const getFormStatus = (formId) => {
   const filledForm = props.practice.filledForms.find(ff => ff.form._id === formId);

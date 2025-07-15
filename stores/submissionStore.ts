@@ -1,8 +1,10 @@
 import { defineStore } from "pinia";
-import type { Submission, CreateSubmissionInput } from "~/types/submission";
+import { useApolloClient } from '@vue/apollo-composable';
+import type { Submission, CreateSubmissionInput, UpdateSubmissionInput } from "~/types/submission";
 
 // Import GQL documents
 import CreateSubmissionMutation from "~/queries/createSubmission.gql";
+import UpdateSubmissionMutation from "~/queries/updateSubmission.gql";
 import SubmissionQuery from "~/queries/submission.gql";
 
 interface SubmissionState {
@@ -16,18 +18,50 @@ export const useSubmissionStore = defineStore("submission", {
     currentSubmission: null,
   }),
   actions: {
-    async createSubmission(input: CreateSubmissionInput): Promise<Submission | null> {
-      const { mutate } = useMutation(CreateSubmissionMutation);
+    setCurrentSubmission(submission: Submission | null) {
+      this.currentSubmission = submission;
+    },
+    async createSubmission(practiceId: string, formId: string, data: Record<string, any>): Promise<Submission | null> {
+      const { client } = useApolloClient();
+      const input: CreateSubmissionInput = { protocolId: practiceId, formId, data };
       try {
-        const result = await mutate({ createSubmissionInput: input });
+        const result = await client.mutate({
+          mutation: CreateSubmissionMutation,
+          variables: { createSubmissionInput: input },
+        });
         if (result?.errors) {
           throw new Error(result.errors[0]?.message || "Error creating submission");
         }
-        // Note: The original code returned `submitProtocol`, which might be a typo.
-        // Assuming it should be `createSubmission` based on the mutation name.
-        return result?.data?.createSubmission || null;
+
+        const newSubmission = result?.data?.submitProtocol;
+        if (newSubmission) {
+          const practiceStore = usePracticeStore();
+          await practiceStore.registerFormSubmission({
+            practiceId: practiceId,
+            formId: formId,
+            submissionId: newSubmission._id,
+          });
+        }
+        return newSubmission || null;
       } catch (error: any) {
         console.error("Error creating submission:", error);
+        throw error;
+      }
+    },
+    async updateSubmission(id: string, data: Record<string, any>): Promise<Submission | null> {
+      const { client } = useApolloClient();
+      const input: UpdateSubmissionInput = { id, data };
+      try {
+        const result = await client.mutate({
+          mutation: UpdateSubmissionMutation,
+          variables: { updateSubmissionInput: input },
+        });
+        if (result?.errors) {
+          throw new Error(result.errors[0]?.message || "Error updating submission");
+        }
+        return result?.data?.updateSubmission || null;
+      } catch (error: any) {
+        console.error("Error updating submission:", error);
         throw error;
       }
     },

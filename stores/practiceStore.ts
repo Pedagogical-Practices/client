@@ -11,6 +11,8 @@ import RemovePracticeMutation from "~/queries/removePractice.gql";
 
 import MyPracticesQuery from '~/queries/myPractices.gql';
 
+import RegisterFormSubmissionMutation from '~/queries/registerFormSubmission.gql';
+
 interface PracticeState {
   practices: Practice[];
   currentPractice: Practice | null;
@@ -99,6 +101,25 @@ export const usePracticeStore = defineStore("practice", {
         await this.fetchPractices(); // Re-fetch the list
       } catch (error: any) {
         console.error("Error removing practice:", error);
+        throw error;
+      }
+    },
+
+    async registerFormSubmission(input: { practiceId: string; formId: string; submissionId: string }) {
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.mutate({
+          mutation: RegisterFormSubmissionMutation,
+          variables: input,
+        });
+        if (errors) throw errors;
+        // Opcional: Actualizar la práctica actual en el store si es la que se modificó
+        if (this.currentPractice?._id === input.practiceId) {
+          await this.fetchPractice(input.practiceId);
+        }
+        return data?.registerFormSubmission;
+      } catch (error: any) {
+        console.error("Error registering form submission:", error);
         throw error;
       }
     },
