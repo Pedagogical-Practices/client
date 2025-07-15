@@ -37,6 +37,19 @@ const practiceStore = usePracticeStore();
 const submissionStore = useSubmissionStore();
 const authStore = useAuthStore();
 
+const snackbar = ref({
+  show: false,
+  message: '',
+  color: '',
+  timeout: 3000,
+});
+
+const showSnackbar = (message, color) => {
+  snackbar.value.message = message;
+  snackbar.value.color = color;
+  snackbar.value.show = true;
+};
+
 onMounted(async () => {
   if (formId.value) {
     await formStore.fetchForm(formId.value);
