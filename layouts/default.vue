@@ -14,31 +14,33 @@
         </v-btn>
       </v-app-bar>
 
-      <v-navigation-drawer
-        v-model="drawer"
-        :temporary="isMobile"
-        :mobile="isMobile"
-        location="left"
-        theme="light"
-        v-if="authStore.isAuthenticated"
-      >
-        <v-list>
-          <v-list-item
-            v-for="(item, i) in filteredItems"
-            :key="i"
-            :value="item"
-            color="primary"
-            variant="plain"
-            :to="item.to"
-            @click="drawer = false"
-          >
-            <template v-slot:prepend>
-              <v-icon :icon="item.icon"></v-icon>
-            </template>
-            <v-list-item-title v-text="item.title"></v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
+      <client-only>
+        <v-navigation-drawer
+          v-model="drawer"
+          :temporary="isMobile"
+          :mobile="isMobile"
+          location="left"
+          theme="light"
+          v-if="authStore.isAuthenticated"
+        >
+          <v-list>
+            <v-list-item
+              v-for="(item, i) in filteredItems"
+              :key="i"
+              :value="item"
+              color="primary"
+              variant="plain"
+              :to="item.to"
+              @click="drawer = false"
+            >
+              <template v-slot:prepend>
+                <v-icon :icon="item.icon"></v-icon>
+              </template>
+              <v-list-item-title v-text="item.title"></v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-navigation-drawer>
+      </client-only>
 
       <v-main>
         <slot />
@@ -98,14 +100,7 @@ const allItems = [
     value: "protocols",
     to: "/protocols",
     icon: "mdi-file-document-box",
-    roles: [
-      "admin",
-      "student",
-      "teacher_directive",
-      "administrative",
-      "family",
-      "coordinator",
-    ],
+    roles: ["admin", "teacher_directive", "administrative", "coordinator"],
   },
   {
     title: "Perfil",
@@ -164,11 +159,25 @@ const allItems = [
     roles: ["admin", "coordinator"],
   },
   {
-    title: "Prácticas",
+    title: "Gestionar Prácticas",
+    value: "admin-practices",
+    to: "/admin/practices",
+    icon: "mdi-school-outline",
+    roles: ["admin", "coordinator", "teacher_directive"],
+  },
+  {
+    title: "Mis Prácticas",
     value: "practices",
     to: "/practices",
     icon: "mdi-school",
-    roles: ["admin", "coordinator"],
+    roles: [
+      "admin",
+      "student",
+      "teacher_directive",
+      "administrative",
+      "family",
+      "coordinator",
+    ],
   },
   {
     title: "Cerrar sesión",

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import GetUsers from '~/queries/adminUsers.gql';
-import { CreateUser, UpdateUserByAdmin, DeleteUser } from '~/queries/adminUsers.gql';
+import { useApolloClient } from '@vue/apollo-composable';
+import * as AdminUsersQueries from '~/queries/adminUsers.gql';
 
 export const useUserAdminStore = defineStore('userAdmin', {
   state: () => ({
@@ -13,11 +13,10 @@ export const useUserAdminStore = defineStore('userAdmin', {
       this.loading = true;
       this.error = null;
       try {
-        const { data, error } = await useAsyncQuery(GetUsers);
-        if (error.value) {
-          throw error.value;
-        }
-        this.users = data.value.users;
+        const { client } = useApolloClient();
+        const { data, errors } = await client.query({ query: AdminUsersQueries.GetUsers, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        this.users = data.users;
       } catch (e) {
         this.error = e;
       } finally {
@@ -27,11 +26,10 @@ export const useUserAdminStore = defineStore('userAdmin', {
     async createUser(userData: any) {
       this.loading = true;
       try {
-        const { mutate } = useMutation(CreateUser);
+        const { mutate } = useMutation(AdminUsersQueries.CreateUser);
         const response = await mutate({ createUserInput: userData });
-        if (response?.data) {
-          this.users.push(response.data.createUser.user);
-        }
+        if (response?.errors) throw response.errors;
+        await this.fetchUsers(); // Re-fetch the list
       } catch (e) {
         this.error = e;
       } finally {
@@ -41,14 +39,10 @@ export const useUserAdminStore = defineStore('userAdmin', {
     async updateUser(id: string, userData: any) {
       this.loading = true;
       try {
-        const { mutate } = useMutation(UpdateUserByAdmin);
+        const { mutate } = useMutation(AdminUsersQueries.UpdateUserByAdmin);
         const response = await mutate({ id, updateUserInput: { _id: id, ...userData } });
-        if (response?.data) {
-          const index = this.users.findIndex(u => u._id === id);
-          if (index !== -1) {
-            this.users[index] = response.data.updateUserByAdmin;
-          }
-        }
+        if (response?.errors) throw response.errors;
+        await this.fetchUsers(); // Re-fetch the list
       } catch (e) {
         this.error = e;
       } finally {
@@ -58,9 +52,10 @@ export const useUserAdminStore = defineStore('userAdmin', {
     async deleteUser(id: string) {
       this.loading = true;
       try {
-        const { mutate } = useMutation(DeleteUser);
-        await mutate({ id });
-        this.users = this.users.filter(u => u._id !== id);
+        const { mutate } = useMutation(AdminUsersQueries.DeleteUser);
+        const response = await mutate({ id });
+        if (response?.errors) throw response.errors;
+        await this.fetchUsers(); // Re-fetch the list
       } catch (e) {
         this.error = e;
       } finally {

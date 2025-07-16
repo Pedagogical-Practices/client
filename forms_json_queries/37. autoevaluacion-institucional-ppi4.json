@@ -1,0 +1,100 @@
+{
+  "name": "Protocolo 1: Autoevaluación Institucional (PPI4)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "text",
+      "label": "Fecha de Análisis",
+      "value": "",
+      "variableName": "fechaAnalisis",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "specificType": "date"
+    },
+    {
+      "type": "textarea",
+      "label": "Análisis del Resultado de la Autoevaluación Institucional",
+      "value": "",
+      "variableName": "analisisAutoevaluacion",
+      "placeholder": "Describa el resultado de la autoevaluación en todos los componentes y procesos de las cuatro áreas de gestión escolar y su relación con la formulación del plan de mejoramiento.",
+      "required": true,
+      "chapter": "Análisis"
+    },
+    {
+      "type": "textarea",
+      "label": "Instrucciones: Revisar la autoevaluación institucional y realizar un análisis por proceso",
+      "value": "",
+      "variableName": "instrucciones",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Instrucciones",
+      "readonly": false
+    },
+    {
+      "type": "text",
+      "label": "Área de Gestión",
+      "value": "",
+      "variableName": "areaGestion",
+      "placeholder": "Ej: Gestión Directiva, Gestión Académica",
+      "required": true,
+      "chapter": "Tabla de Análisis"
+    },
+    {
+      "type": "text",
+      "label": "Proceso",
+      "value": "",
+      "variableName": "proceso",
+      "placeholder": "Ej: Direccionamiento estratégico",
+      "required": true,
+      "chapter": "Tabla de Análisis"
+    },
+    {
+      "type": "text",
+      "label": "Componente",
+      "value": "",
+      "variableName": "componente",
+      "placeholder": "Ej: Misión, visión y principios",
+      "required": true,
+      "chapter": "Tabla de Análisis"
+    },
+    {
+      "type": "text",
+      "label": "Valoración (1-4)",
+      "value": "",
+      "variableName": "valoracion",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Tabla de Análisis",
+      "specificType": "number"
+    },
+    {
+      "type": "textarea",
+      "label": "Análisis",
+      "value": "",
+      "variableName": "analisis",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Tabla de Análisis"
+    }
+  ]
+}

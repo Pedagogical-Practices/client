@@ -1,0 +1,52 @@
+{
+  "name": "Registro de Datos y Seguimiento (PPI5)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Registro",
+      "value": "",
+      "variableName": "fechaRegistro",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Progreso de los Estudiantes",
+      "value": "",
+      "variableName": "progresoEstudiantes",
+      "placeholder": "Describa el progreso de los estudiantes en cada sesión de clase.",
+      "required": true,
+      "chapter": "Seguimiento"
+    },
+    {
+      "type": "textarea",
+      "label": "Notas y Observaciones",
+      "value": "",
+      "variableName": "notasObservaciones",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Seguimiento"
+    }
+  ]
+}

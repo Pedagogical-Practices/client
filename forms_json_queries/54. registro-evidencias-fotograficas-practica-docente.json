@@ -1,0 +1,52 @@
+{
+  "name": "Registro de Evidencias Fotográficas (Práctica Docente)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de la Evidencia",
+      "value": "",
+      "variableName": "fechaEvidencia",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Descripción de la Evidencia",
+      "value": "",
+      "variableName": "descripcionEvidencia",
+      "placeholder": "Describa la actividad o situación que documenta la fotografía.",
+      "required": true,
+      "chapter": "Evidencia"
+    },
+    {
+      "type": "text",
+      "label": "URL de la Fotografía (si aplica)",
+      "value": "",
+      "variableName": "urlFotografia",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Evidencia"
+    }
+  ]
+}

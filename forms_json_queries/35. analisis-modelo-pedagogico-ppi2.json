@@ -1,0 +1,115 @@
+{
+  "name": "Protocolo 2: Análisis Documental del Modelo Pedagógico (PPI2)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Análisis",
+      "value": "",
+      "variableName": "fechaAnalisis",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Principios Epistemológicos (Teoría)",
+      "value": "",
+      "variableName": "principiosEpistemologicos",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Elementos del Modelo Pedagógico"
+    },
+    {
+      "type": "textarea",
+      "label": "Principios Epistemológicos (PEI)",
+      "value": "",
+      "variableName": "principiosEpistemologicosPEI",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Elementos del Modelo Pedagógico"
+    },
+    {
+      "type": "textarea",
+      "label": "Propósito de la Formación (Teoría)",
+      "value": "",
+      "variableName": "propositoFormacion",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Elementos del Modelo Pedagógico"
+    },
+    {
+      "type": "textarea",
+      "label": "Propósito de la Formación (PEI)",
+      "value": "",
+      "variableName": "propositoFormacionPEI",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Elementos del Modelo Pedagógico"
+    },
+    {
+      "type": "textarea",
+      "label": "Características del Ser Humano a Formar (Teoría)",
+      "value": "",
+      "variableName": "caracteristicasSerHumano",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Elementos del Modelo Pedagógico"
+    },
+    {
+      "type": "textarea",
+      "label": "Características del Ser Humano a Formar (PEI)",
+      "value": "",
+      "variableName": "caracteristicasSerHumanoPEI",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Elementos del Modelo Pedagógico"
+    },
+    {
+      "type": "textarea",
+      "label": "Métodos y Estrategias de Enseñanza (Teoría)",
+      "value": "",
+      "variableName": "metodosEnsenanza",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Elementos del Modelo Pedagógico"
+    },
+    {
+      "type": "textarea",
+      "label": "Métodos y Estrategias de Enseñanza (PEI)",
+      "value": "",
+      "variableName": "metodosEnsenanzaPEI",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Elementos del Modelo Pedagógico"
+    },
+    {
+      "type": "textarea",
+      "label": "Observaciones y Conclusiones",
+      "value": "",
+      "variableName": "observacionesConclusiones",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Observaciones"
+    }
+  ]
+}

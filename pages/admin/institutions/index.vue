@@ -188,7 +188,8 @@ const saveInstitution = async () => {
       showSnackbar("Institución actualizada correctamente.", "success");
     } else {
       // Crear
-      await institutionStore.createInstitution(editedItem.value);
+      const { _id, ...institutionData } = editedItem.value; // Excluir _id
+      await institutionStore.createInstitution(institutionData);
       showSnackbar("Institución creada correctamente.", "success");
     }
     closeDialog();

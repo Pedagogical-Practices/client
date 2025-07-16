@@ -1,0 +1,61 @@
+{
+  "name": "Informe de Evidencias de Aplicación (PPI5)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Informe",
+      "value": "",
+      "variableName": "fechaInforme",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Descripción de la Implementación de la Estrategia Didáctica",
+      "value": "",
+      "variableName": "descripcionImplementacion",
+      "placeholder": "Describa la implementación de la estrategia didáctica sesión por sesión.",
+      "required": true,
+      "chapter": "Contenido del Informe"
+    },
+    {
+      "type": "textarea",
+      "label": "Progreso de los Estudiantes en Scratch",
+      "value": "",
+      "variableName": "progresoScratch",
+      "placeholder": "Describa el progreso de los estudiantes en Scratch.",
+      "required": true,
+      "chapter": "Contenido del Informe"
+    },
+    {
+      "type": "textarea",
+      "label": "Evidencias Visuales (Fotos/Videos)",
+      "value": "",
+      "variableName": "evidenciasVisuales",
+      "placeholder": "Describa las evidencias visuales (fotos, videos) que documentan el proceso.",
+      "required": false,
+      "chapter": "Contenido del Informe"
+    }
+  ]
+}

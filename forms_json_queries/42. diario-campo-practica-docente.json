@@ -1,0 +1,52 @@
+{
+  "name": "Diario de Campo (Práctica Docente)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha",
+      "value": "",
+      "variableName": "fecha",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Observaciones y Reflexiones",
+      "value": "",
+      "variableName": "observacionesReflexiones",
+      "placeholder": "Registre sus observaciones, reflexiones y hallazgos preliminares.",
+      "required": true,
+      "chapter": "Contenido"
+    },
+    {
+      "type": "textarea",
+      "label": "Anécdotas y Situaciones Relevantes",
+      "value": "",
+      "variableName": "anecdotas",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Contenido"
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "name": "Plan de Clase (Enseñanza de la Programación) (PPI5)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "text",
+      "label": "Grado",
+      "value": "",
+      "variableName": "grado",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "text",
+      "label": "Tema de la Clase",
+      "value": "",
+      "variableName": "temaClase",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha",
+      "value": "",
+      "variableName": "fecha",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Objetivos de Aprendizaje",
+      "value": "",
+      "variableName": "objetivosAprendizaje",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Plan de Clase"
+    },
+    {
+      "type": "textarea",
+      "label": "Actividades",
+      "value": "",
+      "variableName": "actividades",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Plan de Clase"
+    },
+    {
+      "type": "textarea",
+      "label": "Recursos",
+      "value": "",
+      "variableName": "recursos",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Plan de Clase"
+    },
+    {
+      "type": "textarea",
+      "label": "Evaluación",
+      "value": "",
+      "variableName": "evaluacion",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Plan de Clase"
+    }
+  ]
+}
