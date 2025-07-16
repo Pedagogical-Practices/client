@@ -100,14 +100,7 @@ const allItems = [
     value: "protocols",
     to: "/protocols",
     icon: "mdi-file-document-box",
-    roles: [
-      "admin",
-      "student",
-      "teacher_directive",
-      "administrative",
-      "family",
-      "coordinator",
-    ],
+    roles: ["admin", "teacher_directive", "administrative", "coordinator"],
   },
   {
     title: "Perfil",

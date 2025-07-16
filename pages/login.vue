@@ -24,7 +24,6 @@
                 >Iniciar Sesión</v-btn
               >
             </v-form>
-            
           </v-card-text>
           <v-snackbar
             v-model="snackbar.show"
@@ -69,7 +68,7 @@ const handleLogin = async () => {
       color: "success",
       timeout: 3000,
     };
-    router.push("/editor");
+    router.push("/");
   } catch (error: any) {
     snackbar.value = {
       show: true,

@@ -77,6 +77,13 @@ const getComponentName = (field: any): any => {
 
 const initializeForm = () => {
   const data = props.initialData || {};
+  console.log("FormFiller.vue: initializeForm - using data:", data);
+
+  // Clear existing properties from formData to ensure a fresh state
+  for (const key in formData) {
+    delete formData[key];
+  }
+
   props.formDefinition.fields.forEach((field: any) => {
     formData[field.variableName] = data[field.variableName] !== undefined ? data[field.variableName] : (field.value !== undefined ? field.value : null);
     if (field.type === 'checkbox') {
@@ -88,10 +95,13 @@ const initializeForm = () => {
 };
 
 onMounted(() => {
+  console.log("FormFiller.vue: onMounted - initialData:", props.initialData);
+  console.log("FormFiller.vue: onMounted - formDefinition:", props.formDefinition);
   initializeForm();
 });
 
-watch(() => props.initialData, () => {
+watch(() => props.initialData, (newData) => {
+  console.log("FormFiller.vue: watch - initialData changed to:", newData);
   initializeForm();
 }, { deep: true });
 

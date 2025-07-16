@@ -52,18 +52,21 @@ async function fetchFromDataSource() {
     console.log("DynamicSelect: formattedOptions received:", formattedOptions);
 
     const lines = formattedOptions.split("\n").filter((line) => line);
-    if (lines.length === 1) {
-      // Si solo hay una línea, asumimos que es un valor preseleccionado
-      const parts = lines[0].split("|");
-      selectedValue.value = parts[0]; // Establecer el valor preseleccionado
-      items.value = [{ value: parts[0], label: parts[1] }]; // Asegurar que el item esté en la lista
-    } else {
-      items.value = lines.map((line) => {
-        const parts = line.split("|");
-        return { value: parts[0], label: parts[1] };
-      });
-    }
+    items.value = lines.map((line) => {
+      const parts = line.split("|");
+      return { value: parts[0], label: parts[1] };
+    });
     console.log("DynamicSelect: items after parsing:", items.value);
+
+    // Ensure selectedValue is set after items are populated
+    if (props.modelValue) {
+      const foundItem = items.value.find(
+        (item) => item.value === props.modelValue
+      );
+      if (foundItem) {
+        selectedValue.value = props.modelValue;
+      }
+    }
   } catch (error) {
     console.error(`Error fetching data for ${props.dataSource}:`, error);
   } finally {

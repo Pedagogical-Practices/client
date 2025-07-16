@@ -10,6 +10,7 @@ import CreateUserMutation from "~/queries/register.gql";
 import LoginMutation from "~/queries/login.gql";
 import UpdateUserMutation from "~/queries/updateUser.gql";
 import MeQuery from "~/queries/me.gql";
+import GetUserByIdQuery from "~/queries/getUserById.gql";
 
 const GET_USERS_QUERY_STRING = `
   query GetUsers {
@@ -30,6 +31,7 @@ interface AuthState {
 }
 
 export const useAuthStore = defineStore("auth", () => {
+  const { client: apolloClient } = useApolloClient();
   // State
   const user = ref<UserDto | null>(null);
   const users = ref<UserDto[]>([]); // Inicializar users como un array vacío
@@ -106,15 +108,25 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const fetchUsers = async () => {
-    const { client } = useApolloClient();
     try {
-      const { data, errors } = await client.query({ query: gql(GET_USERS_QUERY_STRING), fetchPolicy: 'network-only' });
+      const { data, errors } = await apolloClient.query({ query: gql(GET_USERS_QUERY_STRING), fetchPolicy: 'network-only' });
       if (errors) throw errors;
       users.value = data.users;
       console.log('authStore: Users fetched and assigned:', users.value);
     } catch (error: any) {
       console.error("authStore: Error fetching users:", error);
       throw new Error(error.message || "Error desconocido al cargar usuarios.");
+    }
+  };
+
+  const fetchUserById = async (id: string): Promise<UserDto | null> => {
+    try {
+      const { data, errors } = await apolloClient.query({ query: GetUserByIdQuery, variables: { id }, fetchPolicy: 'network-only' });
+      if (errors) throw errors;
+      return data.user;
+    } catch (error: any) {
+      console.error("authStore: Error fetching user by ID:", error);
+      throw new Error(error.message || "Error desconocido al cargar usuario por ID.");
     }
   };
 
@@ -132,6 +144,7 @@ export const useAuthStore = defineStore("auth", () => {
     logout,
     setUser,
     fetchUsers, // Exportar fetchUsers
+    fetchUserById, // Exportar fetchUserById
     isAuthenticated,
     isAdmin,
   };

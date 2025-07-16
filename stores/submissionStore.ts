@@ -23,7 +23,7 @@ export const useSubmissionStore = defineStore("submission", {
     },
     async createSubmission(practiceId: string, formId: string, data: Record<string, any>): Promise<Submission | null> {
       const { client } = useApolloClient();
-      const input: CreateSubmissionInput = { protocolId: practiceId, formId, data };
+      const input: CreateSubmissionInput = { protocolId: practiceId, formId, data, practiceId };
       try {
         const result = await client.mutate({
           mutation: CreateSubmissionMutation,

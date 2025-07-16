@@ -181,6 +181,10 @@ const fillForm = (formId: string) => {
 const viewSubmission = (submissionId: string) => {
   router.push(`/submissions/${submissionId}`);
 };
+
+const evaluateSubmission = (submissionId: string) => {
+  router.push(`/evaluate-submission/${submissionId}`);
+};
 </script>
 
 <style scoped>
