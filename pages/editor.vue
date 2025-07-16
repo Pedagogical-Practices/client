@@ -298,30 +298,37 @@ const snackbar = ref<{
 });
 
 // Watch for changes in route.params.id to load the form
-watch(() => route.params.id, async (newId) => {
-  if (newId) {
-    try {
-      await formStore.fetchFormById(newId as string);
-    } catch (error: any) {
-      console.error("Error loading form by ID, resetting to new form:", error);
-      // If form not found or error, reset to create new form
+watch(
+  () => route.params.id,
+  async (newId) => {
+    if (newId) {
+      try {
+        await formStore.fetchFormById(newId as string);
+      } catch (error: any) {
+        console.error(
+          "Error loading form by ID, resetting to new form:",
+          error
+        );
+        // If form not found or error, reset to create new form
+        formStore.clearEditingFormId();
+        formElementStore.initializeForm([]);
+        formStore.formName = "";
+        snackbar.value = {
+          show: true,
+          text: `Error al cargar el formulario: ${error.message || "Formulario no encontrado"}. Creando nuevo formulario.`,
+          color: "error",
+          timeout: 5000,
+        };
+      }
+    } else {
+      // If no ID in route, ensure it's a new form
       formStore.clearEditingFormId();
       formElementStore.initializeForm([]);
       formStore.formName = "";
-      snackbar.value = {
-        show: true,
-        text: `Error al cargar el formulario: ${error.message || 'Formulario no encontrado'}. Creando nuevo formulario.`,
-        color: "error",
-        timeout: 5000,
-      };
     }
-  } else {
-    // If no ID in route, ensure it's a new form
-    formStore.clearEditingFormId();
-    formElementStore.initializeForm([]);
-    formStore.formName = "";
-  }
-}, { immediate: true }); // Run immediately on component mount
+  },
+  { immediate: true }
+); // Run immediately on component mount
 
 import DynamicSelect from "~/components/forms/DynamicSelect.vue";
 
@@ -336,7 +343,11 @@ const componentMap: Record<string, any> = {
 };
 
 const getComponentName = (element: FormElement): any => {
-  if (element.type === "select" && element.dataSource && element.dataSource.length > 0) {
+  if (
+    element.type === "select" &&
+    element.dataSource &&
+    element.dataSource.length > 0
+  ) {
     return DynamicSelect;
   }
   return componentMap[element.type] || VTextField;
@@ -539,41 +550,39 @@ const updateFormFromJson = async (): Promise<void> => {
     }
     formStore.formName = parsedJson.name;
     formElementStore.initializeForm(
-      parsedJson.fields.map(
-        (el: any): FormElement => {
-          return {
-            id: el.id || generateUniqueId(), // Use existing id or generate new
-            type: el.type,
-            label: el.label ?? "",
-            value: el.value ?? "",
-            variableName: el.variableName ?? "",
-            placeholder: el.placeholder ?? "",
-            hint: el.hint ?? "",
-            requirementLevel: el.required ? "Required" : "Optional", // Map boolean to string
-            chapter: el.chapter ?? "",
-            question: el.question ?? "",
-            questionNumber: el.questionNumber ?? "",
-            consistencyCondition: el.consistencyCondition ?? "",
-            inconsistencyMessage: el.inconsistencyMessage ?? "",
-            errorType: el.errorType ?? "Soft",
-            description: el.description ?? "",
-            name: el.name ?? "",
-            disabled: !!el.disabled,
-            readonly: !!el.readonly,
-            options:
-              el.options?.map((opt: any) => ({
-                label: opt.label ?? opt.text ?? "", // Handle both 'label' and 'text'
-                value: opt.value ?? "",
-              })) ?? [],
-            specificType: el.specificType ?? "",
-            height: el.height ? String(el.height) : undefined, // Ensure string for height
-            color: el.color ?? "",
-            rules: el.rules ?? [],
-            multiple: !!el.multiple,
-            dataSource: el.dataSource !== undefined ? el.dataSource : null, // Ensure dataSource is always present, even if null
-          };
-        }
-      )
+      parsedJson.fields.map((el: any): FormElement => {
+        return {
+          id: el.id || generateUniqueId(), // Use existing id or generate new
+          type: el.type,
+          label: el.label ?? "",
+          value: el.value ?? "",
+          variableName: el.variableName ?? "",
+          placeholder: el.placeholder ?? "",
+          hint: el.hint ?? "",
+          requirementLevel: el.required ? "Required" : "Optional", // Map boolean to string
+          chapter: el.chapter ?? "",
+          question: el.question ?? "",
+          questionNumber: el.questionNumber ?? "",
+          consistencyCondition: el.consistencyCondition ?? "",
+          inconsistencyMessage: el.inconsistencyMessage ?? "",
+          errorType: el.errorType ?? "Soft",
+          description: el.description ?? "",
+          name: el.name ?? "",
+          disabled: !!el.disabled,
+          readonly: !!el.readonly,
+          options:
+            el.options?.map((opt: any) => ({
+              label: opt.label ?? opt.text ?? "", // Handle both 'label' and 'text'
+              value: opt.value ?? "",
+            })) ?? [],
+          specificType: el.specificType ?? "",
+          height: el.height ? String(el.height) : undefined, // Ensure string for height
+          color: el.color ?? "",
+          rules: el.rules ?? [],
+          multiple: !!el.multiple,
+          dataSource: el.dataSource !== undefined ? el.dataSource : null, // Ensure dataSource is always present, even if null
+        };
+      })
     );
     snackbar.value = {
       show: true,
@@ -649,7 +658,10 @@ const saveFormToBackend = async (): Promise<void> => {
     );
 
     if (formStore.editingFormId) {
-      console.log("Attempting to UPDATE form. editingFormId:", formStore.editingFormId);
+      console.log(
+        "Attempting to UPDATE form. editingFormId:",
+        formStore.editingFormId
+      );
       const updateInput = {
         id: formStore.editingFormId,
         name: formStore.formName,

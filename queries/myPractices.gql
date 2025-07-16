@@ -1,0 +1,20 @@
+query MyPractices {
+  myPractices {
+    _id
+    courseName
+    institutionName
+    status
+    advisor {
+      _id
+      name
+    }
+    student {
+      _id
+      name
+    }
+    protocol {
+      _id
+      name
+    }
+  }
+}

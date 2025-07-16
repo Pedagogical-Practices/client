@@ -1,0 +1,79 @@
+{
+  "name": "Formato de Cronograma de Actividades (Audiovisuales) (PPI6)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Inicio",
+      "value": "",
+      "variableName": "fechaInicio",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Fin",
+      "value": "",
+      "variableName": "fechaFin",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "text",
+      "label": "Actividad",
+      "value": "",
+      "variableName": "actividad",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Cronograma"
+    },
+    {
+      "type": "text",
+      "label": "Responsable",
+      "value": "",
+      "variableName": "responsable",
+      "placeholder": "",
+      "required": true,
+      "chapter": "Cronograma"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Realización",
+      "value": "",
+      "variableName": "fechaRealizacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Cronograma"
+    },
+    {
+      "type": "textarea",
+      "label": "Observaciones",
+      "value": "",
+      "variableName": "observaciones",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Observaciones"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "name": "Portafolio Físico (Práctica Docente)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Entrega",
+      "value": "",
+      "variableName": "fechaEntrega",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Contenido del Portafolio",
+      "value": "",
+      "variableName": "contenidoPortafolio",
+      "placeholder": "Describa los documentos y evidencias incluidos en el portafolio físico.",
+      "required": true,
+      "chapter": "Contenido"
+    },
+    {
+      "type": "checkbox",
+      "label": "Incluye Planes de Clase",
+      "value": false,
+      "variableName": "incluyePlanesClase",
+      "chapter": "Contenido"
+    },
+    {
+      "type": "checkbox",
+      "label": "Incluye Diarios de Campo",
+      "value": false,
+      "variableName": "incluyeDiariosCampo",
+      "chapter": "Contenido"
+    },
+    {
+      "type": "checkbox",
+      "label": "Incluye Evidencias Fotográficas",
+      "value": false,
+      "variableName": "incluyeEvidenciasFotograficas",
+      "chapter": "Contenido"
+    },
+    {
+      "type": "checkbox",
+      "label": "Incluye Informes de Actividades",
+      "value": false,
+      "variableName": "incluyeInformesActividades",
+      "chapter": "Contenido"
+    }
+  ]
+}

@@ -2,6 +2,7 @@ query Submission($id: String!) {
   submission(id: $id) {
     _id
     formId
+    practiceId
     data
     submittedBy
     createdAt

@@ -41,12 +41,21 @@ export const useFormStore = defineStore("form", {
     async fetchForm(id: string) {
       const { client } = useApolloClient();
       try {
-        const { data } = await client.query({ query: FormQuery, variables: { id } });
+        console.log(`formStores: Fetching form with ID: ${id}`);
+        const { data, errors } = await client.query({ query: FormQuery, variables: { id } });
+        if (errors) {
+          console.error("formStores: GraphQL errors fetching form:", errors);
+          throw errors;
+        }
         if (data?.form) {
           this.currentForm = data.form;
+          console.log("formStores: Form fetched successfully:", this.currentForm);
+        } else {
+          console.warn("formStores: No form data returned for ID:", id);
         }
       } catch (error: any) {
-        console.error("Error fetching form:", error);
+        console.error("formStores: Error fetching form:", error);
+        throw error;
       }
     },
 
@@ -86,17 +95,18 @@ export const useFormStore = defineStore("form", {
       }
       const protocolId = practiceStore.currentPractice.protocol._id;
 
-      // Get the mutation functions
-      const { mutate: submitProtocol } = useMutation(SubmitProtocolMutation);
-      const { mutate: registerSubmission } = useMutation(RegisterFormSubmissionMutation);
+      const { client } = useApolloClient(); // Obtener el cliente Apollo
 
       try {
         // Step 1: Create the Submission
-        const submitResult = await submitProtocol({
-          createSubmissionInput: {
-            formId,
-            protocolId,
-            data: formData,
+        const submitResult = await client.mutate({
+          mutation: SubmitProtocolMutation,
+          variables: {
+            createSubmissionInput: {
+              formId,
+              protocolId,
+              data: formData,
+            },
           },
         });
         if (submitResult?.errors) {
@@ -108,10 +118,13 @@ export const useFormStore = defineStore("form", {
         }
 
         // Step 2: Register the Submission in the Practice
-        const registerResult = await registerSubmission({
-          formId,
-          practiceId,
-          submissionId,
+        const registerResult = await client.mutate({
+          mutation: RegisterFormSubmissionMutation,
+          variables: {
+            formId,
+            practiceId,
+            submissionId,
+          },
         });
         if (registerResult?.errors) {
           throw new Error(registerResult.errors[0]?.message || 'Error registering form submission with practice');

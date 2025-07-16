@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useApolloClient } from '@vue/apollo-composable';
 import type { Practice, CreatePracticeInput, UpdatePracticeInput } from "~/types/practice";
 
 // Import GQL documents
@@ -7,6 +8,10 @@ import PracticeQuery from "~/queries/practice.gql";
 import CreatePracticeMutation from "~/queries/createPractice.gql";
 import UpdatePracticeMutation from "~/queries/updatePractice.gql";
 import RemovePracticeMutation from "~/queries/removePractice.gql";
+
+import MyPracticesQuery from '~/queries/myPractices.gql';
+
+import RegisterFormSubmissionMutation from '~/queries/registerFormSubmission.gql';
 
 interface PracticeState {
   practices: Practice[];
@@ -20,37 +25,50 @@ export const usePracticeStore = defineStore("practice", {
   }),
   actions: {
     async fetchPractices() {
-      const { data, error } = await useAsyncQuery(PracticesQuery);
-      if (error.value) {
-        console.error("Error fetching practices:", error.value);
-        return;
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.query({ query: PracticesQuery, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        this.practices = data.practices;
+      } catch (error: any) {
+        console.error("Error fetching admin practices:", error);
+        throw error;
       }
-      if (data.value?.practices) {
-        this.practices = data.value.practices;
+    },
+
+    async fetchMyPractices() {
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.query({ query: MyPracticesQuery, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        this.practices = data.myPractices;
+      } catch (error: any) {
+        console.error("Error fetching user practices:", error);
+        throw error;
       }
     },
 
     async fetchPractice(id: string) {
-      const { data, error } = await useAsyncQuery(PracticeQuery, { id });
-      if (error.value) {
-        console.error("Error fetching practice:", error.value);
-        return;
-      }
-      if (data.value?.practice) {
-        this.currentPractice = data.value.practice;
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.query({ query: PracticeQuery, variables: { id }, fetchPolicy: 'network-only' });
+        if (errors) throw errors;
+        this.currentPractice = data.practice;
+      } catch (error: any) {
+        console.error("Error fetching practice:", error);
+        throw error;
       }
     },
 
     async createPractice(input: CreatePracticeInput) {
-      const { mutate } = useMutation(CreatePracticeMutation);
+      const { client } = useApolloClient();
       try {
-        const result = await mutate({ createPracticeInput: input });
-        if (result?.errors) {
-          throw new Error(result.errors[0]?.message || "Error creating practice");
-        }
-        if (result?.data?.createPractice) {
-          this.practices.push(result.data.createPractice);
-        }
+        const { data, errors } = await client.mutate({
+          mutation: CreatePracticeMutation,
+          variables: { createPracticeInput: input },
+        });
+        if (errors) throw errors;
+        await this.fetchPractices(); // Re-fetch the list
       } catch (error: any) {
         console.error("Error creating practice:", error);
         throw error;
@@ -58,19 +76,14 @@ export const usePracticeStore = defineStore("practice", {
     },
 
     async updatePractice(input: UpdatePracticeInput) {
-      const { mutate } = useMutation(UpdatePracticeMutation);
+      const { client } = useApolloClient();
       try {
-        const result = await mutate({ updatePracticeInput: input });
-        if (result?.errors) {
-          throw new Error(result.errors[0]?.message || "Error updating practice");
-        }
-        if (result?.data?.updatePractice) {
-          const index = this.practices.findIndex((p) => p._id === result.data.updatePractice._id);
-          if (index !== -1) {
-            this.practices[index] = result.data.updatePractice;
-          }
-          this.currentPractice = result.data.updatePractice;
-        }
+        const { data, errors } = await client.mutate({
+          mutation: UpdatePracticeMutation,
+          variables: { updatePracticeInput: input },
+        });
+        if (errors) throw errors;
+        await this.fetchPractices(); // Re-fetch the list
       } catch (error: any) {
         console.error("Error updating practice:", error);
         throw error;
@@ -78,15 +91,35 @@ export const usePracticeStore = defineStore("practice", {
     },
 
     async removePractice(id: string) {
-      const { mutate } = useMutation(RemovePracticeMutation);
+      const { client } = useApolloClient();
       try {
-        const result = await mutate({ id });
-        if (result?.errors) {
-          throw new Error(result.errors[0]?.message || "Error removing practice");
-        }
-        this.practices = this.practices.filter((p) => p._id !== id);
+        const { data, errors } = await client.mutate({
+          mutation: RemovePracticeMutation,
+          variables: { id },
+        });
+        if (errors) throw errors;
+        await this.fetchPractices(); // Re-fetch the list
       } catch (error: any) {
         console.error("Error removing practice:", error);
+        throw error;
+      }
+    },
+
+    async registerFormSubmission(input: { practiceId: string; formId: string; submissionId: string }) {
+      const { client } = useApolloClient();
+      try {
+        const { data, errors } = await client.mutate({
+          mutation: RegisterFormSubmissionMutation,
+          variables: input,
+        });
+        if (errors) throw errors;
+        // Opcional: Actualizar la práctica actual en el store si es la que se modificó
+        if (this.currentPractice?._id === input.practiceId) {
+          await this.fetchPractice(input.practiceId);
+        }
+        return data?.registerFormSubmission;
+      } catch (error: any) {
+        console.error("Error registering form submission:", error);
         throw error;
       }
     },

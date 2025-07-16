@@ -1,0 +1,6 @@
+mutation UpdateSubmission($updateSubmissionInput: UpdateSubmissionInput!) {
+  updateSubmission(updateSubmissionInput: $updateSubmissionInput) {
+    _id
+    data
+  }
+}

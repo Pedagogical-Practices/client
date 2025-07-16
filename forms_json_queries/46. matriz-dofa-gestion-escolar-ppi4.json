@@ -1,0 +1,88 @@
+{
+  "name": "Protocolo 5: Matriz DOFA de las Áreas de Gestión Escolar (PPI4)",
+  "fields": [
+    {
+      "type": "select",
+      "label": "Docente en Formación",
+      "value": "",
+      "variableName": "docenteFormacion",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "students"
+    },
+    {
+      "type": "select",
+      "label": "Institución Educativa",
+      "value": "",
+      "variableName": "institucionEducativa",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación",
+      "dataSource": "institutions"
+    },
+    {
+      "type": "date-picker",
+      "label": "Fecha de Análisis",
+      "value": "",
+      "variableName": "fechaAnalisis",
+      "hint": "",
+      "required": true,
+      "chapter": "Identificación"
+    },
+    {
+      "type": "textarea",
+      "label": "Fortalezas (Origen interno)",
+      "value": "",
+      "variableName": "fortalezas",
+      "placeholder": "Aspectos positivos para alcanzar la gestión de los procesos.",
+      "required": true,
+      "chapter": "Matriz DOFA"
+    },
+    {
+      "type": "textarea",
+      "label": "Debilidades (Origen interno)",
+      "value": "",
+      "variableName": "debilidades",
+      "placeholder": "Aspectos negativos que dificultan alcanzar la gestión de los procesos.",
+      "required": true,
+      "chapter": "Matriz DOFA"
+    },
+    {
+      "type": "textarea",
+      "label": "Oportunidades (Origen externo)",
+      "value": "",
+      "variableName": "oportunidades",
+      "placeholder": "Atributos del contexto/ambiente.",
+      "required": true,
+      "chapter": "Matriz DOFA"
+    },
+    {
+      "type": "textarea",
+      "label": "Amenazas (Origen externo)",
+      "value": "",
+      "variableName": "amenazas",
+      "placeholder": "Atributos del contexto/ambiente.",
+      "required": true,
+      "chapter": "Matriz DOFA"
+    },
+    {
+      "type": "textarea",
+      "label": "Estrategias para maximizar fortalezas y oportunidades",
+      "value": "",
+      "variableName": "estrategiasFortalezasOportunidades",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Estrategias"
+    },
+    {
+      "type": "textarea",
+      "label": "Estrategias para minimizar debilidades y amenazas",
+      "value": "",
+      "variableName": "estrategiasDebilidadesAmenazas",
+      "placeholder": "",
+      "required": false,
+      "chapter": "Estrategias"
+    }
+  ]
+}

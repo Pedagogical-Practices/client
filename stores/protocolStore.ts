@@ -27,8 +27,9 @@ export const useProtocolStore = defineStore("protocol", {
       try {
         const { data, errors } = await client.query({ query: ProtocolsQuery, fetchPolicy: 'network-only' });
         if (errors) throw errors;
-        this.protocols = data.protocols;
-      } catch (error) {
+      this.protocols = data.protocols;
+      console.log('protocolStore: Protocols fetched and assigned:', this.protocols);
+    } catch (error) {
         console.error("Error fetching protocols:", error);
       }
     },
