@@ -1,39 +1,27 @@
-mutation UpdatePractice($updatePracticeInput: UpdatePracticeInput!) {
-  updatePractice(updatePracticeInput: $updatePracticeInput) {
-    _id
+mutation UpdatePracticeMutation($id: ID!, $input: UpdatePracticeInput!) {
+  updatePractice(id: $id, input: $input) {
+    id
+    course {
+      id
+      name
+    }
     student {
-      _id
+      id
       name
     }
-    advisor {
-      _id
+    teacher {
+      id
       name
     }
-    protocol {
-      _id
-      name
-      module
-      forms {
-        _id
-        name
-      }
-    }
-    institutionName
-    courseName
     status
-    filledForms {
-      form {
-        _id
-        name
-      }
-      submission {
-        _id
-      }
-    }
-    createdBy {
-      _id
+    protocols {
+      id
       name
+    }
+    submissions {
+      id
     }
     createdAt
+    updatedAt
   }
 }

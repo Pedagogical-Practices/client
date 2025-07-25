@@ -1,62 +1,68 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { useApolloClient } from "@vue/apollo-composable";
 
-// Importar las consultas GraphQL
-import UsersCountQuery from '~/queries/usersCount.gql';
-import PracticesCountQuery from '~/queries/practicesCount.gql';
-import ProtocolsCountQuery from '~/queries/protocolsCount.gql';
-import FormsCountQuery from '~/queries/formsCount.gql';
+// Importar queries GraphQL
+import GetUsers from "~/queries/getUsers.gql";
+import GetPractices from "~/queries/practices.gql";
+import GetProtocols from "~/queries/protocols.gql";
+import GetForms from "~/queries/forms.gql";
 
-interface DashboardState {
-  usersCount: number | null;
-  practicesCount: number | null;
-  protocolsCount: number | null;
-  formsCount: number | null;
-  loading: boolean;
-  error: string | null;
-}
+export const useDashboardStore = defineStore("dashboard", () => {
+  const { client: apolloClient } = useApolloClient();
 
-export const useDashboardStore = defineStore('dashboard', {
-  state: (): DashboardState => ({
-    usersCount: null,
-    practicesCount: null,
-    protocolsCount: null,
-    formsCount: null,
-    loading: false,
-    error: null,
-  }),
-  actions: {
-    async fetchAdminCoordinatorDashboardData() {
-      this.loading = true;
-      this.error = null;
+  // State
+  const usersCount = ref<number | null>(null);
+  const practicesCount = ref<number | null>(null);
+  const protocolsCount = ref<number | null>(null);
+  const formsCount = ref<number | null>(null);
+  const loading = ref(false);
+  const error = ref<string | null>(null);
 
-      try {
-        // We use useAsyncQuery for each piece of data.
-        // This will also cache the results.
-        const [usersCountResult, practicesCountResult, protocolsCountResult, formsCountResult] = await Promise.all([
-          useAsyncQuery(UsersCountQuery),
-          useAsyncQuery(PracticesCountQuery),
-          useAsyncQuery(ProtocolsCountQuery),
-          useAsyncQuery(FormsCountQuery),
+  // Actions
+  const fetchAdminCoordinatorDashboardData = async () => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const [usersRes, practicesRes, protocolsRes, formsRes] =
+        await Promise.all([
+          apolloClient.query({ query: GetUsers, fetchPolicy: "network-only" }),
+          apolloClient.query({
+            query: GetPractices,
+            fetchPolicy: "network-only",
+          }),
+          apolloClient.query({
+            query: GetProtocols,
+            fetchPolicy: "network-only",
+          }),
+          apolloClient.query({ query: GetForms, fetchPolicy: "network-only" }),
         ]);
 
-        if (usersCountResult.error.value) throw usersCountResult.error.value;
-        this.usersCount = usersCountResult.data.value?.usersCount;
+      if (usersRes.errors) throw usersRes.errors;
+      if (practicesRes.errors) throw practicesRes.errors;
+      if (protocolsRes.errors) throw protocolsRes.errors;
+      if (formsRes.errors) throw formsRes.errors;
 
-        if (practicesCountResult.error.value) throw practicesCountResult.error.value;
-        this.practicesCount = practicesCountResult.data.value?.practicesCount;
+      usersCount.value = usersRes.data.users.length;
+      practicesCount.value = practicesRes.data.practices.length;
+      protocolsCount.value = protocolsRes.data.protocols.length;
+      formsCount.value = formsRes.data.forms.length;
+    } catch (err: any) {
+      console.error("Error fetching dashboard data:", err);
+      error.value =
+        err.message || "Error desconocido al cargar datos del dashboard.";
+    } finally {
+      loading.value = false;
+    }
+  };
 
-        if (protocolsCountResult.error.value) throw protocolsCountResult.error.value;
-        this.protocolsCount = protocolsCountResult.data.value?.protocolsCount;
-
-        if (formsCountResult.error.value) throw formsCountResult.error.value;
-        this.formsCount = formsCountResult.data.value?.formsCount;
-
-      } catch (err: any) {
-        this.error = err.message || 'Failed to fetch dashboard data.';
-        console.error('Dashboard Store Error:', err);
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
+  return {
+    usersCount,
+    practicesCount,
+    protocolsCount,
+    formsCount,
+    loading,
+    error,
+    fetchAdminCoordinatorDashboardData,
+  };
 });

@@ -6,7 +6,6 @@
           variant="text"
           @click.stop="drawer = !drawer"
         ></v-app-bar-nav-icon>
-
         <v-toolbar-title>Control de prácticas pedagógicas</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn v-if="!authStore.isAuthenticated" to="/login" text>
@@ -53,6 +52,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "~/stores/authStore";
+import { UserRole } from "~/types";
 
 const authStore = useAuthStore();
 const drawer = ref(false);
@@ -66,12 +66,10 @@ const allItems = [
     to: "/",
     icon: "mdi-home",
     roles: [
-      "admin",
-      "student",
-      "teacher_directive",
-      "administrative",
-      "family",
-      "coordinator",
+      UserRole.ADMIN,
+      UserRole.STUDENT,
+      UserRole.TEACHER_DIRECTIVE,
+      UserRole.FAMILY,
     ],
   },
   {
@@ -79,28 +77,28 @@ const allItems = [
     value: "editor",
     to: "/editor",
     icon: "mdi-text-box",
-    roles: ["admin", "coordinator"],
+    roles: [UserRole.ADMIN, UserRole.TEACHER_DIRECTIVE],
   },
   {
     title: "Cursos",
     value: "courses",
     to: "/courses",
     icon: "mdi-book-open-page-variant",
-    roles: ["admin", "coordinator"],
+    roles: [UserRole.ADMIN],
   },
   {
     title: "Formularios",
     value: "forms",
     to: "/forms",
     icon: "mdi-form-select",
-    roles: ["admin", "coordinator"],
+    roles: [UserRole.ADMIN],
   },
   {
     title: "Protocolos",
     value: "protocols",
     to: "/protocols",
     icon: "mdi-file-document-box",
-    roles: ["admin", "teacher_directive", "administrative", "coordinator"],
+    roles: [UserRole.ADMIN, UserRole.TEACHER_DIRECTIVE, UserRole.STUDENT],
   },
   {
     title: "Perfil",
@@ -108,62 +106,32 @@ const allItems = [
     to: "/profile",
     icon: "mdi-account-profile",
     roles: [
-      "admin",
-      "student",
-      "teacher_directive",
-      "administrative",
-      "family",
-      "coordinator",
+      UserRole.ADMIN,
+      UserRole.STUDENT,
+      UserRole.TEACHER_DIRECTIVE,
+      UserRole.FAMILY,
     ],
-  },
-  {
-    title: "Asistencia",
-    value: "attendance",
-    to: "/attendance",
-    icon: "mdi-chart-bar",
-    roles: ["admin", "coordinator"],
   },
   {
     title: "Administración",
     value: "admin",
     to: "/admin",
     icon: "mdi-account-cog",
-    roles: ["admin"],
+    roles: [UserRole.ADMIN],
   },
   {
     title: "Usuarios",
     value: "users",
     to: "/admin/users",
     icon: "mdi-account-group",
-    roles: ["admin"],
-  },
-  {
-    title: "Instituciones",
-    value: "institutions",
-    to: "/admin/institutions",
-    icon: "mdi-bank",
-    roles: ["admin"],
-  },
-  /*{
-    title: "Gestionar Protocolos",
-    value: "admin-protocols",
-    to: "/admin/protocols",
-    icon: "mdi-file-document-multiple",
-    roles: ["admin"],
-  },*/
-  {
-    title: "Configuración",
-    value: "settings",
-    to: "/settings",
-    icon: "mdi-cog",
-    roles: ["admin", "coordinator"],
+    roles: [UserRole.ADMIN],
   },
   {
     title: "Gestionar Prácticas",
     value: "admin-practices",
     to: "/admin/practices",
     icon: "mdi-school-outline",
-    roles: ["admin", "coordinator", "teacher_directive"],
+    roles: [UserRole.ADMIN, UserRole.TEACHER_DIRECTIVE],
   },
   {
     title: "Mis Prácticas",
@@ -171,12 +139,10 @@ const allItems = [
     to: "/practices",
     icon: "mdi-school",
     roles: [
-      "admin",
-      "student",
-      "teacher_directive",
-      "administrative",
-      "family",
-      "coordinator",
+      UserRole.ADMIN,
+      UserRole.STUDENT,
+      UserRole.TEACHER_DIRECTIVE,
+      UserRole.FAMILY,
     ],
   },
   {
@@ -185,12 +151,10 @@ const allItems = [
     to: "/logout",
     icon: "mdi-logout",
     roles: [
-      "admin",
-      "student",
-      "teacher_directive",
-      "administrative",
-      "family",
-      "coordinator",
+      UserRole.ADMIN,
+      UserRole.STUDENT,
+      UserRole.TEACHER_DIRECTIVE,
+      UserRole.FAMILY,
     ],
   },
 ];

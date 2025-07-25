@@ -1,157 +1,208 @@
 import { defineStore } from "pinia";
 import { navigateTo } from "nuxt/app";
-import { ref, computed } from 'vue'; // Importar ref y computed
-import { useApolloClient } from '@vue/apollo-composable'; // Importar useApolloClient
-import { gql } from 'graphql-tag'; // Importar gql
-import type { UserDto, CreateUserInput, UpdateUserInput } from "~/types/user";
+import { ref, computed } from "vue";
+import { useApolloClient, useMutation } from "@vue/apollo-composable";
+import { gql } from "graphql-tag";
 
-// Import GQL documents. The module will handle loading them as DocumentNodes.
-import CreateUserMutation from "~/queries/register.gql";
+import { UserRole } from "~/types";
+import type { User } from "~/types";
+
+// GQL documents
 import LoginMutation from "~/queries/login.gql";
-import UpdateUserMutation from "~/queries/updateUser.gql";
-import MeQuery from "~/queries/me.gql";
-import GetUserByIdQuery from "~/queries/getUserById.gql";
 
-const GET_USERS_QUERY_STRING = `
-  query GetUsers {
-    users {
-      _id
-      name
-      email
-      role
-    }
-  }
-`;
+export const useAuthStore = defineStore(
+  "auth",
+  () => {
+    const { client: apolloClient } = useApolloClient();
+    // State
+    const user = ref<User | null>(null);
+    const users = ref<User[]>([]);
 
-// piniaPluginPersistedstate is auto-imported by the Nuxt module
+    // Actions
+    const login = async (email: string, password: string): Promise<void> => {
+      const { onLogin } = useApollo();
+      const { mutate } = useMutation(LoginMutation);
 
-interface AuthState {
-  user: UserDto | null;
-  users: UserDto[]; // Añadir la lista de usuarios
-}
+      try {
+        const result = await mutate({ email, password });
 
-export const useAuthStore = defineStore("auth", () => {
-  const { client: apolloClient } = useApolloClient();
-  // State
-  const user = ref<UserDto | null>(null);
-  const users = ref<UserDto[]>([]); // Inicializar users como un array vacío
+        if (result?.errors) {
+          throw new Error(result.errors[0]?.message || "Error en login");
+        }
 
-  // Actions
-  const login = async (email: string, password: string): Promise<void> => {
-    const { onLogin } = useApollo();
-    const { mutate } = useMutation(LoginMutation);
-
-    try {
-      const result = await mutate({ email, password });
-
-      if (result?.errors) {
-        throw new Error(result.errors[0]?.message || "Error en login");
+        const { user: loggedInUser, token } = result?.data?.login;
+        user.value = loggedInUser;
+        await onLogin(token);
+        await navigateTo(user.value?.role === UserRole.ADMIN ? "/admin" : "/");
+      } catch (error: any) {
+        console.error("authStore: Login error:", error);
+        throw new Error(
+          error.message || "Error desconocido durante el inicio de sesión."
+        );
       }
+    };
 
-      const { user: loggedInUser, token } = result?.data?.login;
-      user.value = loggedInUser;
-      await onLogin(token); // Handles token storage and client reset
-      await navigateTo(user.value?.role === "admin" ? "/editor" : "/");
-
-    } catch (error: any) {
-      console.error("authStore: Login error:", error);
-      throw new Error(error.message || "Error desconocido durante el inicio de sesión.");
-    }
-  };
-
-  const register = async (userInput: CreateUserInput): Promise<void> => {
-    const { onLogin } = useApollo();
-    const { mutate } = useMutation(CreateUserMutation);
-
-    try {
-      const result = await mutate({ createUserInput: userInput });
-
-      if (result?.errors) {
-        throw new Error(result.errors[0]?.message || "Error en el registro");
+    const createUser = async (userInput: any): Promise<User> => {
+      const { mutate } = useMutation(gql`
+        mutation CreateUser($input: CreateUserInput!) {
+          createUser(input: $input) {
+            id
+            name
+            email
+            role
+          }
+        }
+      `);
+      try {
+        const result = await mutate({ input: userInput });
+        if (result?.errors) {
+          throw new Error(
+            result.errors[0]?.message || "Error al crear usuario"
+          );
+        }
+        return result?.data?.createUser;
+      } catch (error: any) {
+        console.error("authStore: CreateUser error:", error);
+        throw new Error(error.message || "Error desconocido al crear usuario.");
       }
+    };
 
-      const { user: registeredUser, token } = result?.data?.createUser;
-      user.value = registeredUser;
-      await onLogin(token);
-      await navigateTo(user.value?.role === "admin" ? "/editor" : "/");
-
-    } catch (error: any) {
-      console.error("authStore: Register error:", error);
-      throw new Error(error.message || "Error desconocido durante el registro.");
-    }
-  };
-
-  const updateProfile = async (userInput: UpdateUserInput): Promise<void> => {
-    const { mutate } = useMutation(UpdateUserMutation);
-    try {
-      const result = await mutate({ updateUserInput: userInput });
-
-      if (result?.errors) {
-        throw new Error(result.errors[0]?.message || "Error al actualizar el perfil");
+    const updateUser = async (id: string, userInput: any): Promise<User> => {
+      const { mutate } = useMutation(gql`
+        mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
+          updateUser(id: $id, input: $input) {
+            id
+            name
+            email
+            role
+          }
+        }
+      `);
+      try {
+        const result = await mutate({ id, input: userInput });
+        if (result?.errors) {
+          throw new Error(
+            result.errors[0]?.message || "Error al actualizar usuario"
+          );
+        }
+        return result?.data?.updateUser;
+      } catch (error: any) {
+        console.error("authStore: UpdateUser error:", error);
+        throw new Error(
+          error.message || "Error desconocido al actualizar usuario."
+        );
       }
-      user.value = result?.data?.updateUser;
-    } catch (error: any) {
-      console.error("authStore: UpdateProfile error:", error);
-      throw new Error(error.message || "Error desconocido al actualizar el perfil.");
-    }
-  };
+    };
 
-  const logout = async (): Promise<void> => {
-    const { onLogout } = useApollo();
-    user.value = null;
-    await onLogout(); // Handles token removal and client reset
-    await navigateTo("/login");
-  };
+    const deleteUser = async (id: string): Promise<boolean> => {
+      const { mutate } = useMutation(gql`
+        mutation DeleteUser($id: ID!) {
+          deleteUser(id: $id)
+        }
+      `);
+      try {
+        const result = await mutate({ id });
+        if (result?.errors) {
+          throw new Error(
+            result.errors[0]?.message || "Error al eliminar usuario"
+          );
+        }
+        return result?.data?.deleteUser;
+      } catch (error: any) {
+        console.error("authStore: DeleteUser error:", error);
+        throw new Error(
+          error.message || "Error desconocido al eliminar usuario."
+        );
+      }
+    };
 
-  const setUser = (newUser: UserDto | null) => {
-    user.value = newUser;
-  };
+    const logout = async (): Promise<void> => {
+      const { onLogout } = useApollo();
+      user.value = null;
+      await onLogout();
+      await navigateTo("/login");
+    };
 
-  const fetchUsers = async () => {
-    try {
-      const { data, errors } = await apolloClient.query({ query: gql(GET_USERS_QUERY_STRING), fetchPolicy: 'network-only' });
-      if (errors) throw errors;
-      users.value = data.users;
-      console.log('authStore: Users fetched and assigned:', users.value);
-    } catch (error: any) {
-      console.error("authStore: Error fetching users:", error);
-      throw new Error(error.message || "Error desconocido al cargar usuarios.");
-    }
-  };
+    const setUser = (newUser: User | null) => {
+      user.value = newUser;
+    };
 
-  const fetchUserById = async (id: string): Promise<UserDto | null> => {
-    try {
-      const { data, errors } = await apolloClient.query({ query: GetUserByIdQuery, variables: { id }, fetchPolicy: 'network-only' });
-      if (errors) throw errors;
-      return data.user;
-    } catch (error: any) {
-      console.error("authStore: Error fetching user by ID:", error);
-      throw new Error(error.message || "Error desconocido al cargar usuario por ID.");
-    }
-  };
+    const fetchUsers = async () => {
+      try {
+        const { data, errors } = await apolloClient.query({
+          query: gql`
+            query GetUsers {
+              users {
+                id
+                name
+                email
+                role
+              }
+            }
+          `,
+          fetchPolicy: "network-only",
+        });
+        if (errors) throw errors;
+        users.value = data.users;
+      } catch (error: any) {
+        console.error("authStore: Error fetching users:", error);
+        throw new Error(
+          error.message || "Error desconocido al cargar usuarios."
+        );
+      }
+    };
 
-  // Getters
-  const isAuthenticated = computed(() => !!user.value);
-  const isAdmin = computed(() => user.value?.role === "admin");
+    const fetchUserById = async (id: string): Promise<User | null> => {
+      try {
+        const { data, errors } = await apolloClient.query({
+          query: gql`
+            query GetUserById($id: ID!) {
+              user(id: $id) {
+                id
+                name
+                email
+                role
+              }
+            }
+          `,
+          variables: { id },
+          fetchPolicy: "network-only",
+        });
+        if (errors) throw errors;
+        return data.user;
+      } catch (error: any) {
+        console.error("authStore: Error fetching user by ID:", error);
+        throw new Error(
+          error.message || "Error desconocido al cargar usuario por ID."
+        );
+      }
+    };
 
-  // Return state, actions, and getters
-  return {
-    user,
-    users, // Exportar users
-    login,
-    register,
-    updateProfile,
-    logout,
-    setUser,
-    fetchUsers, // Exportar fetchUsers
-    fetchUserById, // Exportar fetchUserById
-    isAuthenticated,
-    isAdmin,
-  };
-}, {
-  // Pinia Persist configuration
-  persist: {
-    storage: piniaPluginPersistedstate.localStorage(), // Use the module's localStorage function
-    paths: ['user'],
+    // Getters
+    const isAuthenticated = computed(() => !!user.value);
+    const isAdmin = computed(() => user.value?.role === UserRole.ADMIN);
+
+    // Return state, actions, and getters
+    return {
+      user,
+      users,
+      login,
+      createUser,
+      updateUser,
+      deleteUser,
+      logout,
+      setUser,
+      fetchUsers,
+      fetchUserById,
+      isAuthenticated,
+      isAdmin,
+    };
   },
-});
+  {
+    // Pinia Persist configuration
+    persist: {
+      storage: piniaPluginPersistedstate.localStorage(),
+      paths: ["user"],
+    },
+  }
+);

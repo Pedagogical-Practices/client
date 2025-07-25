@@ -6,22 +6,18 @@
       :rules="[rules.required]"
       required
     ></v-text-field>
-    <v-text-field
-      v-model="protocol.module"
-      label="Módulo"
-      :rules="[rules.required]"
+    <EntityAutocomplete
+      v-model="protocol.formId"
+      specific-type="form"
+      label="Formulario Asociado"
       required
+    ></EntityAutocomplete>
+    <v-text-field
+      v-model="protocol.productType"
+      label="Tipo de Producto"
+      hint="Ej: INFORME_MAPEO, RECURSO_DIGITAL"
+      persistent-hint
     ></v-text-field>
-    <v-select
-      v-model="protocol.formIds"
-      :items="forms"
-      item-title="name"
-      item-value="_id"
-      label="Formularios Asociados"
-      multiple
-      chips
-      clearable
-    ></v-select>
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn color="blue-darken-1" text @click="emit('cancel')">Cancelar</v-btn>
@@ -32,15 +28,12 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import EntityAutocomplete from '~/components/EntityAutocomplete.vue';
 
 const props = defineProps({
   initialData: {
     type: Object,
     default: null,
-  },
-  forms: {
-    type: Array,
-    default: () => [],
   },
 });
 
@@ -48,8 +41,9 @@ const emit = defineEmits(['submit', 'cancel']);
 
 const protocol = ref({
   name: '',
-  module: '',
-  formIds: [],
+  description: '',
+  formId: '',
+  productType: '',
 });
 
 const rules = {
@@ -62,14 +56,16 @@ watch(
     if (newVal) {
       protocol.value = {
         name: newVal.name || '',
-        module: newVal.module || '',
-        formIds: newVal.forms ? newVal.forms.map((f: any) => f._id) : [],
+        description: newVal.description || '',
+        formId: newVal.form?.id || '',
+        productType: newVal.productType || '',
       };
     } else {
       protocol.value = {
         name: '',
-        module: '',
-        formIds: [],
+        description: '',
+        formId: '',
+        productType: '',
       };
     }
   },

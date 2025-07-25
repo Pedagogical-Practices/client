@@ -1,66 +1,120 @@
-import { defineStore } from 'pinia';
-import { useApolloClient } from '@vue/apollo-composable';
-import * as AdminUsersQueries from '~/queries/adminUsers.gql';
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { useApolloClient, useMutation } from "@vue/apollo-composable";
+import { gql } from "graphql-tag";
+import type { User } from "~/types";
 
-export const useUserAdminStore = defineStore('userAdmin', {
-  state: () => ({
-    users: [] as any[],
-    loading: false,
-    error: null as any,
-  }),
-  actions: {
-    async fetchUsers() {
-      this.loading = true;
-      this.error = null;
-      try {
-        const { client } = useApolloClient();
-        const { data, errors } = await client.query({ query: AdminUsersQueries.GetUsers, fetchPolicy: 'network-only' });
-        if (errors) throw errors;
-        this.users = data.users;
-      } catch (e) {
-        this.error = e;
-      } finally {
-        this.loading = false;
-      }
-    },
-    async createUser(userData: any) {
-      this.loading = true;
-      try {
-        const { mutate } = useMutation(AdminUsersQueries.CreateUser);
-        const response = await mutate({ createUserInput: userData });
-        if (response?.errors) throw response.errors;
-        await this.fetchUsers(); // Re-fetch the list
-      } catch (e) {
-        this.error = e;
-      } finally {
-        this.loading = false;
-      }
-    },
-    async updateUser(id: string, userData: any) {
-      this.loading = true;
-      try {
-        const { mutate } = useMutation(AdminUsersQueries.UpdateUserByAdmin);
-        const response = await mutate({ id, updateUserInput: { _id: id, ...userData } });
-        if (response?.errors) throw response.errors;
-        await this.fetchUsers(); // Re-fetch the list
-      } catch (e) {
-        this.error = e;
-      } finally {
-        this.loading = false;
-      }
-    },
-    async deleteUser(id: string) {
-      this.loading = true;
-      try {
-        const { mutate } = useMutation(AdminUsersQueries.DeleteUser);
-        const response = await mutate({ id });
-        if (response?.errors) throw response.errors;
-        await this.fetchUsers(); // Re-fetch the list
-      } catch (e) {
-        this.error = e;
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
+export const useUserAdminStore = defineStore("userAdmin", () => {
+  // State
+  const users = ref<User[]>([]);
+  const loading = ref<boolean>(false);
+  const error = ref<any>(null);
+
+  // Actions
+  const fetchUsers = async () => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const { client } = useApolloClient();
+      const { data, errors } = await client.query({
+        query: gql`
+          query GetUsers {
+            users {
+              id
+              name
+              email
+              role
+            }
+          }
+        `,
+        fetchPolicy: "network-only",
+      });
+      if (errors) throw errors;
+      users.value = data.users;
+    } catch (e) {
+      error.value = e;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const createUser = async (userData: any): Promise<User> => {
+    loading.value = true;
+    try {
+      const { mutate } = useMutation(gql`
+        mutation CreateUser($input: CreateUserInput!) {
+          createUser(input: $input) {
+            id
+            name
+            email
+            role
+          }
+        }
+      `);
+      const result = await mutate({ input: userData });
+      if (result?.errors) throw result.errors;
+      await fetchUsers();
+      return result?.data?.createUser;
+    } catch (e) {
+      error.value = e;
+      throw e;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const updateUser = async (id: string, userData: any): Promise<User> => {
+    loading.value = true;
+    try {
+      const { mutate } = useMutation(gql`
+        mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
+          updateUser(id: $id, input: $input) {
+            id
+            name
+            email
+            role
+          }
+        }
+      `);
+      const result = await mutate({ id, input: userData });
+      if (result?.errors) throw result.errors;
+      await fetchUsers();
+      return result?.data?.updateUser;
+    } catch (e) {
+      error.value = e;
+      throw e;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const deleteUser = async (id: string): Promise<boolean> => {
+    loading.value = true;
+    try {
+      const { mutate } = useMutation(gql`
+        mutation DeleteUser($id: ID!) {
+          deleteUser(id: $id)
+        }
+      `);
+      const result = await mutate({ id });
+      if (result?.errors) throw result.errors;
+      await fetchUsers();
+      return result?.data?.deleteUser;
+    } catch (e) {
+      error.value = e;
+      throw e;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  return {
+    users,
+    loading,
+    error,
+    fetchUsers,
+    createUser,
+    updateUser,
+    deleteUser,
+  };
 });

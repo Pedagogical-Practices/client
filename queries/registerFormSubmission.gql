@@ -1,14 +1,9 @@
-mutation RegisterFormSubmission($formId: String!, $practiceId: String!, $submissionId: String!) {
-  registerFormSubmission(formId: $formId, practiceId: $practiceId, submissionId: $submissionId) {
-    _id
+mutation UpdatePractice($id: ID!, $input: UpdatePracticeInput!) {
+  updatePractice(id: $id, input: $input) {
+    id
     status
-    filledForms {
-      form {
-        _id
-      }
-      submission {
-        _id
-      }
+    submissions {
+      id
     }
   }
 }

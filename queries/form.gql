@@ -1,41 +1,16 @@
-query Form($id: String!) {
+query Form($id: ID!) {
   form(id: $id) {
-    _id
+    id
     name
+    description
     fields {
-      type
-      label
-      value
-      variableName
-      placeholder
-      hint
-      height
-      required
-      chapter
-      question
-      questionNumber
-      consistencyCondition
-      inconsistencyMessage
-      errorType
-      description
-      requirementLevel
-      dataSource
-      multiple
-      options {
-        label
-        value
-      }
-      color
       name
-      disabled
-      readonly
-      specificType
+      label
+      type
+      options
       rules
     }
-    createdBy {
-      name
-      email
-    }
     createdAt
+    updatedAt
   }
 }

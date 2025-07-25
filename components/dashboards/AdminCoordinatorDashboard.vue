@@ -48,12 +48,6 @@
           <v-alert type="error">Error al cargar el dashboard: {{ dashboardStore.error }}</v-alert>
         </v-col>
       </v-row>
-
-      <v-row class="mt-4">
-        <v-col cols="12">
-          <ImportantDatesCalendar />
-        </v-col>
-      </v-row>
     </v-col>
   </v-row>
 </template>
@@ -61,7 +55,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useDashboardStore } from '@/stores/dashboardStore';
-import ImportantDatesCalendar from '@/components/ImportantDatesCalendar.vue';
 
 const dashboardStore = useDashboardStore();
 

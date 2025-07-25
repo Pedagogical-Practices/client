@@ -21,8 +21,8 @@
         <FormFiller
           v-if="formStore.currentForm"
           :formDefinition="formStore.currentForm"
-          :initialData="submissionStore.currentSubmission?.data"
-          :submissionId="submissionStore.currentSubmission?._id"
+          :initialData="submissionStore.currentSubmission?.formData"
+          :submissionId="submissionStore.currentSubmission?.id"
           @submit="handleSubmit"
           @update="handleUpdate"
         />
@@ -43,8 +43,8 @@ import FormFiller from "~/components/FormFiller.vue";
 
 const route = useRoute();
 const router = useRouter();
-const practiceId = ref(route.params.practiceId);
-const formId = ref(route.params.formId);
+const practiceId = ref(route.params.practiceId as string);
+const protocolId = ref(route.params.formId as string); // Renamed formId to protocolId
 const submissionId = ref(route.query.submissionId as string | undefined);
 const formStore = useFormStore();
 const practiceStore = usePracticeStore();
@@ -65,8 +65,8 @@ const showSnackbar = (message: string, color: string) => {
 };
 
 onMounted(async () => {
-  if (formId.value) {
-    await formStore.fetchForm(formId.value);
+  if (protocolId.value) {
+    await formStore.fetchForm(protocolId.value);
   }
   if (practiceId.value) {
     await practiceStore.fetchPractice(practiceId.value);
@@ -76,21 +76,13 @@ onMounted(async () => {
     );
 
     if (submissionId.value) {
-      // Si hay un submissionId en la URL, cargar esa submission específica
       await submissionStore.fetchSubmission(submissionId.value);
       console.log("Existing submission loaded for editing:", submissionStore.currentSubmission);
     } else {
-      // Si no hay submissionId, asegurar que currentSubmission sea null para un formulario vacío
       submissionStore.setCurrentSubmission(null);
-      // Precargar el campo 'docenteFormacion' con el ID del usuario actual si es un estudiante
-      if (authStore.user?.role === 'student') {
+      if (authStore.user?.role === 'STUDENT') {
         submissionStore.setCurrentSubmission({
-          data: { docenteFormacion: authStore.user._id },
-          _id: null, // No hay _id para una nueva submission
-          formId: formId.value, // Asignar el formId
-          practiceId: practiceId.value, // Asignar el practiceId
-          submittedBy: authStore.user._id, // Asignar el submittedBy
-          createdAt: new Date().toISOString(), // Asignar la fecha actual
+          formData: { docenteFormacion: authStore.user.id },
         });
       }
     }
@@ -98,13 +90,13 @@ onMounted(async () => {
 });
 
 const handleSubmit = async (formData: Record<string, any>) => {
-  if (!formId.value || !practiceId.value || !authStore.user) return;
+  if (!protocolId.value || !practiceId.value || !authStore.user) return;
   try {
-    await submissionStore.createSubmission(
-      practiceId.value,
-      formId.value,
-      formData
-    );
+    await submissionStore.createSubmission({
+      practiceId: practiceId.value,
+      protocolId: protocolId.value,
+      formData: formData,
+    });
     await practiceStore.fetchPractice(practiceId.value); // Forzar recarga
     showSnackbar("Formulario enviado exitosamente!", "success");
     router.push(`/practices/${practiceId.value}`);
@@ -117,7 +109,7 @@ const handleSubmit = async (formData: Record<string, any>) => {
 const handleUpdate = async ({ id, data }: { id: string; data: Record<string, any> }) => {
   if (!id) return;
   try {
-    await submissionStore.updateSubmission(id, data);
+    await submissionStore.updateSubmission(id, { formData: data });
     await practiceStore.fetchPractice(practiceId.value); // Forzar recarga
     showSnackbar("Formulario actualizado exitosamente!", "success");
     router.push(`/practices/${practiceId.value}`);

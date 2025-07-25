@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { useFormElementStore } from "~/stores/formElementStore";
-import type { FormElement } from "~/stores/formElementStore";
+import type { FormField } from "~/server/src/form/schemas/formfield.shcema";
 import {
   availableElements,
   type AvailableElementDefinition,
@@ -46,11 +46,9 @@ import {
 const formElement = useFormElementStore();
 
 const addElementByClick = (elementDef: AvailableElementDefinition) => {
-  const newElementConfig = JSON.parse(JSON.stringify(elementDef.defaultConfig));
-  const newElement: FormElement = {
-    ...newElementConfig,
-    id: generateUniqueId(),
-    type: elementDef.type,
+  const newElement: FormField = {
+    ...JSON.parse(JSON.stringify(elementDef.defaultConfig)),
+    name: `field_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`, // Generate a unique name
   };
   formElement.addElement(newElement);
 };
@@ -62,14 +60,10 @@ const handleDragStart = (
   if (event.dataTransfer) {
     event.dataTransfer.setData(
       "application/json",
-      JSON.stringify({ type: elementDef.type })
+      JSON.stringify({ type: elementDef.type, name: elementDef.defaultConfig.name || `field_${Date.now()}_${Math.random().toString(36).substring(2, 9)}` }) // Pass name for identification
     );
     event.dataTransfer.effectAllowed = "copy";
   }
-};
-
-const generateUniqueId = (): string => {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
 };
 </script>
 

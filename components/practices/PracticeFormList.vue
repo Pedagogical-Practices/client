@@ -1,36 +1,36 @@
 <template>
   <v-card>
     <v-card-title class="text-h5 primary--text"
-      >Formularios del Protocolo</v-card-title
+      >Protocolos de la Práctica</v-card-title
     >
     <v-card-text>
       <v-list lines="two">
         <v-list-item
-          v-for="formInProtocol in practice.protocol.forms"
-          :key="formInProtocol._id"
-          :title="formInProtocol.name"
-          :subtitle="getFormStatus(formInProtocol._id).statusText"
+          v-for="protocol in practice.protocols"
+          :key="protocol.id"
+          :title="protocol.name"
+          :subtitle="getProtocolStatus(protocol.id).statusText"
         >
           <template v-slot:prepend>
-            <v-icon :color="getFormStatus(formInProtocol._id).color">{{
-              getFormStatus(formInProtocol._id).icon
+            <v-icon :color="getProtocolStatus(protocol.id).color">{{
+              getProtocolStatus(protocol.id).icon
             }}</v-icon>
           </template>
           <template v-slot:append>
             <v-btn
-              v-if="!getFormStatus(formInProtocol._id).isCompleted && isStudentOrFamily"
+              v-if="!getProtocolStatus(protocol.id).isCompleted"
               color="primary"
               variant="flat"
-              @click="fillForm(formInProtocol._id)"
+              @click="fillForm(protocol.id)"
             >
               <v-icon left>mdi-file-edit-outline</v-icon>
               Llenar Formulario
             </v-btn>
-            <div v-else-if="getFormStatus(formInProtocol._id).isCompleted">
+            <div v-else-if="getProtocolStatus(protocol.id).isCompleted">
               <v-btn
                 color="success"
                 variant="outlined"
-                @click="viewSubmission(getFormStatus(formInProtocol._id).submission._id)"
+                @click="viewSubmission(getProtocolStatus(protocol.id).submissionId)"
               >
                 <v-icon left>mdi-file-document-outline</v-icon>
                 Ver Reporte
@@ -38,7 +38,7 @@
               <v-btn
                 color="info"
                 variant="text"
-                @click="fillForm(formInProtocol._id)"
+                @click="fillForm(protocol.id)"
                 class="ml-2"
               >
                 <v-icon left>mdi-plus-box</v-icon>
@@ -52,40 +52,30 @@
   </v-card>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { defineProps, computed } from "vue";
 import { useRouter } from "vue-router";
+import { Practice } from "~/server/src/practice/schemas/practice.schema";
+import { Submission } from "~/server/src/submission/schemas/submission.schema";
 
-const props = defineProps({
-  practice: {
-    type: Object,
-    required: true,
-  },
-  userRole: {
-    type: String,
-    required: true,
-  },
-});
-
-console.log("PracticeFormList.vue: Received userRole:", props.userRole);
+const props = defineProps<{
+  practice: Practice;
+}>();
 
 const router = useRouter();
 
-const isStudentOrFamily = computed(() => {
-  return props.userRole === "student" || props.userRole === "family";
-});
-
-const getFormStatus = (formId) => {
-  const filledForm = props.practice.filledForms.find(
-    (ff) => ff.form._id === formId
+const getProtocolStatus = (protocolId: string) => {
+  const submission = props.practice.submissions.find(
+    (sub: Submission) => sub.protocol.id === protocolId
   );
-  if (filledForm && filledForm.submission) {
+
+  if (submission) {
     return {
       isCompleted: true,
-      statusText: `Completado (${new Date(filledForm.submission.createdAt).toLocaleDateString()})`, // Show submission date
+      statusText: `Completado (${new Date(submission.createdAt).toLocaleDateString()})`,
       color: "green",
       icon: "mdi-check-circle",
-      submission: filledForm.submission, // Return the full submission object
+      submissionId: submission.id,
     };
   } else {
     return {
@@ -98,23 +88,11 @@ const getFormStatus = (formId) => {
   }
 };
 
-const fillForm = (formId) => {
-  console.log("PracticeFormList.vue: fillForm called with formId:", formId);
-  router.push(`/fill-form/${props.practice._id}/${formId}`);
+const fillForm = (protocolId: string) => {
+  router.push(`/fill-form/${props.practice.id}/${protocolId}`);
 };
 
-const viewSubmission = (submissionId) => {
-  console.log("PracticeFormList.vue: viewSubmission called with submissionId:", submissionId);
+const viewSubmission = (submissionId: string) => {
   router.push(`/submissions/${submissionId}`);
 };
-
-// Log each form in protocol to inspect their IDs
-props.practice.protocol.forms.forEach((form) => {
-  console.log(
-    "PracticeFormList.vue: Form in protocol - ID:",
-    form._id,
-    "Name:",
-    form.name
-  );
-});
 </script>

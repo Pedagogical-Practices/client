@@ -1,41 +1,16 @@
 query Forms {
   forms {
-    _id
+    id
     name
-    createdBy {
+    description
+    fields {
       name
-      email
+      label
+      type
+      options
+      rules
     }
     createdAt
-    fields {
-      type
-      label
-      value
-      placeholder
-      hint
-      required
-      chapter
-      question
-      questionNumber
-      consistencyCondition
-      inconsistencyMessage
-      errorType
-      description
-      requirementLevel
-      rules
-      name
-      disabled
-      readonly
-      specificType
-      dataSource
-      multiple
-      options {
-        label
-        value
-      }
-      height
-      color
-      variableName
-    }
+    updatedAt
   }
 }

@@ -1,59 +1,177 @@
 import { defineStore } from "pinia";
-import type { Course, CreateCourseInput } from "~/types/course";
+import { ref } from "vue";
+import { useApolloClient, useMutation } from "@vue/apollo-composable";
+import { gql } from "graphql-tag";
+import type { Course } from "~/types";
 
-// Import GQL documents
-import CoursesQuery from "~/queries/courses.gql";
-import CourseQuery from "~/queries/course.gql";
-import CreateCourseMutation from "~/queries/createCourse.gql";
+export const useCourseStore = defineStore(
+  "course",
+  () => {
+    const { client: apolloClient } = useApolloClient();
 
-interface CourseState {
-  courses: Course[];
-  currentCourse: Course | null;
-}
+    // State
+    const courses = ref<Course[]>([]);
+    const currentCourse = ref<Course | null>(null);
 
-export const useCourseStore = defineStore("course", {
-  state: (): CourseState => ({
-    courses: [],
-    currentCourse: null,
-  }),
-  actions: {
-    async fetchCourses() {
-      const { data, error } = await useAsyncQuery(CoursesQuery);
-      if (error.value) {
-        console.error("Error fetching courses:", error.value);
-        return;
-      }
-      if (data.value?.courses) {
-        this.courses = data.value.courses;
-      }
-    },
-
-    async fetchCourse(id: string) {
-      const { data, error } = await useAsyncQuery(CourseQuery, { id });
-      if (error.value) {
-        console.error("Error fetching course:", error.value);
-        return;
-      }
-      if (data.value?.course) {
-        this.currentCourse = data.value.course;
-      }
-    },
-
-    async createCourse(input: CreateCourseInput) {
-      const { mutate, error } = useMutation(CreateCourseMutation);
+    // Actions
+    const fetchCourses = async () => {
       try {
-        const result = await mutate({ createCourseInput: input });
-        if (result?.errors) {
-          throw new Error(result.errors[0]?.message || "Error creating course");
-        }
-        if (result?.data?.createCourse) {
-          this.courses.push(result.data.createCourse);
-        }
-      } catch (err: any) {
-        console.error("Error creating course:", err);
-        throw err;
+        const { data, errors } = await apolloClient.query({
+          query: gql`
+            query Courses {
+              courses {
+                id
+                name
+                description
+                startDate
+                endDate
+                protocols {
+                  id
+                  name
+                }
+                createdAt
+                updatedAt
+              }
+            }
+          `,
+          fetchPolicy: "network-only",
+        });
+        if (errors) throw errors;
+        courses.value = data.courses;
+      } catch (error: any) {
+        console.error("courseStore: Error fetching courses:", error);
+        throw new Error(error.message || "Error desconocido al cargar cursos.");
       }
-    },
+    };
+
+    const fetchCourse = async (id: string) => {
+      try {
+        const { data, errors } = await apolloClient.query({
+          query: gql`
+            query Course($id: ID!) {
+              course(id: $id) {
+                id
+                name
+                description
+                startDate
+                endDate
+                protocols {
+                  id
+                  name
+                }
+                createdAt
+                updatedAt
+              }
+            }
+          `,
+          variables: { id },
+          fetchPolicy: "network-only",
+        });
+        if (errors) throw errors;
+        currentCourse.value = data.course;
+      } catch (error: any) {
+        console.error("courseStore: Error fetching course:", error);
+        throw new Error(
+          error.message || "Error desconocido al cargar curso por ID."
+        );
+      }
+    };
+
+    const createCourse = async (input: any): Promise<Course> => {
+      const { mutate } = useMutation(gql`
+        mutation CreateCourse($input: CreateCourseInput!) {
+          createCourse(input: $input) {
+            id
+            name
+            description
+            startDate
+            endDate
+            protocols {
+              id
+              name
+            }
+            createdAt
+            updatedAt
+          }
+        }
+      `);
+      try {
+        const result = await mutate({ input });
+        if (result?.errors) {
+          throw new Error(result.errors[0]?.message || "Error al crear curso");
+        }
+        return result?.data?.createCourse;
+      } catch (error: any) {
+        console.error("courseStore: CreateCourse error:", error);
+        throw new Error(error.message || "Error desconocido al crear curso.");
+      }
+    };
+
+    const updateCourse = async (id: string, input: any): Promise<Course> => {
+      const { mutate } = useMutation(gql`
+        mutation UpdateCourse($id: ID!, $input: UpdateCourseInput!) {
+          updateCourse(id: $id, input: $input) {
+            id
+            name
+            description
+            startDate
+            endDate
+            protocols {
+              id
+              name
+            }
+            createdAt
+            updatedAt
+          }
+        }
+      `);
+      try {
+        const result = await mutate({ id, input });
+        if (result?.errors) {
+          throw new Error(
+            result.errors[0]?.message || "Error al actualizar curso"
+          );
+        }
+        return result?.data?.updateCourse;
+      } catch (error: any) {
+        console.error("courseStore: UpdateCourse error:", error);
+        throw new Error(
+          error.message || "Error desconocido al actualizar curso."
+        );
+      }
+    };
+
+    const deleteCourse = async (id: string): Promise<boolean> => {
+      const { mutate } = useMutation(gql`
+        mutation DeleteCourse($id: ID!) {
+          deleteCourse(id: $id)
+        }
+      `);
+      try {
+        const result = await mutate({ id });
+        if (result?.errors) {
+          throw new Error(
+            result.errors[0]?.message || "Error al eliminar curso"
+          );
+        }
+        return result?.data?.deleteCourse;
+      } catch (error: any) {
+        console.error("courseStore: DeleteCourse error:", error);
+        throw new Error(
+          error.message || "Error desconocido al eliminar curso."
+        );
+      }
+    };
+
+    return {
+      courses,
+      currentCourse,
+      fetchCourses,
+      fetchCourse,
+      createCourse,
+      updateCourse,
+      deleteCourse,
+    };
   },
-  persist: true,
-});
+  { persist: true }
+);

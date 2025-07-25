@@ -98,14 +98,14 @@ import { useRouter } from "vue-router";
 // import { useFormBuilderStore } from "~/stores/formBuilderStore";
 import ProtocolList from "~/components/ProtocolList.vue";
 
-import { useFormStore } from "~/stores/formStores";
+import { useFormStore } from "~/stores/formStore"; // Importar el store de formularios
 import { useProtocolStore } from "~/stores/protocolStore";
 // import { useCourseStore } from "~/stores/courseStore"; // Ya no es necesario
 
-definePageMeta({});
+//definePageMeta({});
 
 const router = useRouter();
-// const formBuilderStore = useFormBuilderStore();
+// const formBuilderStore = useFormBuilderStore();)
 const formStore = useFormStore();
 const protocolStore = useProtocolStore();
 // const courseStore = useCourseStore(); // Ya no es necesario

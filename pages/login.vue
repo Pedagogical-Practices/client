@@ -46,9 +46,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useAuthStore } from "~/stores/authStore";
-import { useRouter } from "vue-router";
 
-const router = useRouter();
 const authStore = useAuthStore();
 const email = ref("");
 const password = ref("");
@@ -68,7 +66,6 @@ const handleLogin = async () => {
       color: "success",
       timeout: 3000,
     };
-    router.push("/");
   } catch (error: any) {
     snackbar.value = {
       show: true,

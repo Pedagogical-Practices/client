@@ -30,19 +30,31 @@
               variant="outlined"
               :rules="[(v) => !!v || 'Requerido']"
             />
+            <v-textarea
+              v-model="newCourse.description"
+              label="Descripción"
+              variant="outlined"
+            />
             <v-text-field
-              v-model="newCourse.institution"
-              label="Institución Educativa"
+              v-model="newCourse.startDate"
+              label="Fecha de Inicio"
+              type="date"
               variant="outlined"
               :rules="[(v) => !!v || 'Requerido']"
             />
-            <v-combobox
-              v-model="newCourse.assignedGroups"
-              label="Grupos Asignados"
+            <v-text-field
+              v-model="newCourse.endDate"
+              label="Fecha de Fin"
+              type="date"
               variant="outlined"
-              multiple
-              chips
+              :rules="[(v) => !!v || 'Requerido']"
             />
+            <EntityAutocomplete
+              v-model="newCourse.protocolIds"
+              specific-type="protocol"
+              label="Protocolos Asociados"
+              multiple
+            ></EntityAutocomplete>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -73,8 +85,9 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useCourseStore } from "~/stores/courseStore";
 import CourseList from "~/components/CourseList.vue";
+import EntityAutocomplete from "~/components/EntityAutocomplete.vue";
 
-definePageMeta({});
+// definePageMeta({});
 
 const router = useRouter();
 const courseStore = useCourseStore();
@@ -82,8 +95,10 @@ const createCourseDialog = ref(false);
 const createCourseForm = ref();
 const newCourse = ref({
   name: "",
-  institution: "",
-  assignedGroups: [] as string[],
+  description: "",
+  startDate: "",
+  endDate: "",
+  protocolIds: [] as string[],
 });
 const snackbar = ref({
   show: false,
@@ -98,7 +113,13 @@ onMounted(() => {
 
 const openCreateCourseDialog = () => {
   createCourseDialog.value = true;
-  newCourse.value = { name: "", institution: "", assignedGroups: [] };
+  newCourse.value = {
+    name: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+    protocolIds: [],
+  };
 };
 
 const createCourse = async () => {
@@ -108,8 +129,10 @@ const createCourse = async () => {
   try {
     await courseStore.createCourse({
       name: newCourse.value.name,
-      institution: newCourse.value.institution,
-      assignedGroups: newCourse.value.assignedGroups,
+      description: newCourse.value.description,
+      startDate: newCourse.value.startDate,
+      endDate: newCourse.value.endDate,
+      protocolIds: newCourse.value.protocolIds,
     });
     snackbar.value = {
       show: true,
@@ -118,7 +141,13 @@ const createCourse = async () => {
       timeout: 3000,
     };
     createCourseDialog.value = false;
-    newCourse.value = { name: "", institution: "", assignedGroups: [] };
+    newCourse.value = {
+      name: "",
+      description: "",
+      startDate: "",
+      endDate: "",
+      protocolIds: [],
+    };
   } catch (error: any) {
     snackbar.value = {
       show: true,

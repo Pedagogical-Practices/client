@@ -8,29 +8,27 @@
         height="20"
         rounded
       >
-        <strong>{{ formsCompleted }} de {{ totalForms }} formularios completados ({{ progressPercentage.toFixed(0) }}%)</strong>
+        <strong>{{ protocolsCompleted }} de {{ totalProtocols }} protocolos completados ({{ progressPercentage.toFixed(0) }}%)</strong>
       </v-progress-linear>
     </v-card-text>
   </v-card>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { defineProps, computed } from 'vue';
+import { Practice } from '~/server/src/practice/schemas/practice.schema';
 
-const props = defineProps({
-  practice: {
-    type: Object,
-    required: true,
-  },
-});
+const props = defineProps<{
+  practice: Practice;
+}>();
 
-const totalForms = computed(() => props.practice.protocol.forms.length);
-const formsCompleted = computed(() => {
-  return props.practice.filledForms.filter(ff => ff.submission).length;
+const totalProtocols = computed(() => props.practice.protocols.length);
+const protocolsCompleted = computed(() => {
+  return props.practice.submissions.length;
 });
 
 const progressPercentage = computed(() => {
-  if (totalForms.value === 0) return 0;
-  return (formsCompleted.value / totalForms.value) * 100;
+  if (totalProtocols.value === 0) return 0;
+  return (protocolsCompleted.value / totalProtocols.value) * 100;
 });
 </script>

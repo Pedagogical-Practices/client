@@ -1,9 +1,17 @@
-mutation CreateSubmission($createSubmissionInput: CreateSubmissionInput!) {
-  submitProtocol(createSubmissionInput: $createSubmissionInput) {
-    _id
-    formId
-    data
-    submittedBy
+mutation CreateSubmission($input: CreateSubmissionInput!) {
+  createSubmission(input: $input) {
+    id
+    practice {
+      id
+    }
+    protocol {
+      id
+    }
+    formData
+    locationData
+    score
+    feedback
     createdAt
+    updatedAt
   }
 }

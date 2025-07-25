@@ -16,27 +16,33 @@
           </v-card-title>
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  label="Institución"
-                  :model-value="courseStore.currentCourse?.institution"
+              <v-col cols="12">
+                <v-textarea
+                  label="Descripción"
+                  :model-value="courseStore.currentCourse?.description"
                   readonly
                   variant="outlined"
                 />
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  label="Grupos Asignados"
-                  :model-value="
-                    courseStore.currentCourse?.assignedGroups.join(', ')
-                  "
+                  label="Fecha de Inicio"
+                  :model-value="courseStore.currentCourse?.startDate"
+                  readonly
+                  variant="outlined"
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Fecha de Fin"
+                  :model-value="courseStore.currentCourse?.endDate"
                   readonly
                   variant="outlined"
                 />
               </v-col>
             </v-row>
             <ProtocolList
-              :protocols="protocolStore.protocols"
+              :protocols="courseStore.currentCourse?.protocols || []"
               @view="viewProtocol"
               class="mt-4"
             />
@@ -55,32 +61,23 @@
               variant="outlined"
               :rules="[(v) => !!v || 'Requerido']"
             />
-            <v-select
-              v-model="newProtocol.module"
-              label="Módulo"
-              :items="[
-                'Módulo 1',
-                'Módulo 2',
-                'Módulo 3',
-                'Módulo 4',
-                'Módulo 5',
-                'Módulo 6',
-              ]"
+            <v-textarea
+              v-model="newProtocol.description"
+              label="Descripción"
               variant="outlined"
-              :rules="[(v) => !!v || 'Requerido']"
             />
-            <v-select
+            <EntityAutocomplete
               v-model="newProtocol.formId"
-              label="Formulario"
-              :items="
-                formStore.forms.map((f: any) => ({
-                  title: f.name,
-                  value: f._id,
-                }))
-              "
-              variant="outlined"
-              :rules="[(v) => !!v || 'Requerido']"
-            />
+              specific-type="form"
+              label="Formulario Asociado"
+              required
+            ></EntityAutocomplete>
+            <v-text-field
+              v-model="newProtocol.productType"
+              label="Tipo de Producto"
+              hint="Ej: INFORME_MAPEO, RECURSO_DIGITAL"
+              persistent-hint
+            ></v-text-field>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -109,28 +106,26 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-// import { useFormBuilderStore } from "~/stores/formBuilderStore";
 import { useCourseStore } from "~/stores/courseStore";
 import { useProtocolStore } from "~/stores/protocolStore";
-import { useFormStore } from "~/stores/formStores";
 import { useAuthStore } from "~/stores/authStore";
 import ProtocolList from "~/components/ProtocolList.vue";
+import EntityAutocomplete from "~/components/EntityAutocomplete.vue";
 
 definePageMeta({});
 
 const route = useRoute();
 const router = useRouter();
-// const formBuilderStore = useFormBuilderStore();
 const courseStore = useCourseStore();
 const protocolStore = useProtocolStore();
-const formStore = useFormStore();
 const authStore = useAuthStore();
 const createProtocolDialog = ref(false);
 const createProtocolForm = ref();
 const newProtocol = ref({
   name: "",
-  module: "",
+  description: "",
   formId: "",
+  productType: "",
 });
 const snackbar = ref({
   show: false,
@@ -142,13 +137,11 @@ const snackbar = ref({
 onMounted(async () => {
   const courseId = route.params.id as string;
   await courseStore.fetchCourse(courseId);
-  await protocolStore.fetchProtocols(courseId);
-  await formStore.fetchForms(); // Para el select de formularios
 });
 
 const openCreateProtocolDialog = () => {
   createProtocolDialog.value = true;
-  newProtocol.value = { name: "", module: "", formId: "" };
+  newProtocol.value = { name: "", description: "", formId: "", productType: "" };
 };
 
 const createProtocol = async () => {
@@ -158,7 +151,6 @@ const createProtocol = async () => {
   try {
     await protocolStore.createProtocol({
       ...newProtocol.value,
-      courseId: route.params.id as string,
     });
     snackbar.value = {
       show: true,
@@ -167,7 +159,8 @@ const createProtocol = async () => {
       timeout: 3000,
     };
     createProtocolDialog.value = false;
-    newProtocol.value = { name: "", module: "", formId: "" };
+    newProtocol.value = { name: "", description: "", formId: "", productType: "" };
+    await courseStore.fetchCourse(route.params.id as string); // Re-fetch course to update protocol list
   } catch (error: any) {
     snackbar.value = {
       show: true,
