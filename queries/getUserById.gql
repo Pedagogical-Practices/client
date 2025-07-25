@@ -1,6 +1,6 @@
-query GetUserById($id: String!) {
+query GetUserById($id: ID!) {
   user(id: $id) {
-    _id
+    id
     name
     email
     role

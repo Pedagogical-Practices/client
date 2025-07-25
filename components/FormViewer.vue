@@ -1,142 +1,109 @@
 <template>
   <v-container fluid>
-    <v-row v-for="(field, index) in formDefinition.fields" :key="field.id">
+    <v-row v-for="(field, index) in formDefinition.fields" :key="field.name">
       <v-col cols="12">
-        <template v-if="field.type === 'date-picker'">
-          <v-text-field
-            v-model="localFormData[field.variableName]"
-            :label="field.label"
-            :placeholder="field.placeholder"
-            :hint="field.hint"
-            :persistent-hint="true"
-            :required="field.required"
-            :disabled="field.disabled"
-            :readonly="field.readonly"
-            :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
-            variant="outlined"
-            density="compact"
-            type="date"
-          ></v-text-field>
-        </template>
-        <template v-else-if="field.type === 'select' && field.dataSource">
-          <DynamicSelect
-            v-model="localFormData[field.variableName]"
-            :dataSource="field.dataSource"
-            :label="field.label"
-            :options="field.options"
-            item-title="label"
-            item-value="value"
-            :required="field.required"
-            :disabled="field.disabled"
-            :readonly="field.readonly"
-            :hint="field.hint"
-            :persistent-hint="true"
-            :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
-          ></DynamicSelect>
-        </template>
-        <template v-else-if="field.dataSource">
-          <EntityAutocomplete
-            v-model="localFormData[field.variableName]"
-            :dataSource="field.dataSource"
-            :label="field.label"
-            :required="field.required"
-            :disabled="field.disabled"
-            :readonly="field.readonly"
-            :hint="field.hint"
-            :persistent-hint="true"
-            :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
-            variant="outlined"
-            density="compact"
-          ></EntityAutocomplete>
-        </template>
         <component
-          v-else
           :is="getComponentName(field.type)"
-          v-model="localFormData[field.variableName]"
+          v-model="localFormData[field.name]"
           :label="field.label"
-          :placeholder="field.placeholder"
-          :hint="field.hint"
-          :persistent-hint="true"
-          :required="field.required"
-          :disabled="field.disabled"
-          :readonly="field.readonly"
-          :items="field.options"
-          item-title="label"
-          item-value="value"
-          :multiple="field.multiple"
-          :rows="field.height ? Number(field.height) : undefined"
-          :rules="field.required ? [(v) => !!v || 'Requerido'] : []"
+          :rules="
+            field.rules
+              ? field.rules.map(
+                  (rule) => (v: any) =>
+                    !!v || rule !== 'required' || 'Campo requerido'
+                )
+              : []
+          "
+          v-bind="getComponentProps(field)"
           variant="outlined"
           density="compact"
-        >
-          <template v-if="field.type === 'radio-group'">
-            <v-radio
-              v-for="(option, i) in field.options"
-              :key="i"
-              :label="option.label"
-              :value="option.value"
-            ></v-radio>
-          </template>
-        </component>
+          class="mb-4"
+        ></component>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch } from "vue";
 import {
   VTextField,
   VTextarea,
-  VCheckbox,
   VSelect,
-  VRadioGroup,
-  VRadio,
-} from 'vuetify/components';
-import type { Form } from '~/types/form'; // Importar el tipo Form
-import EntityAutocomplete from '~/components/EntityAutocomplete.vue';
-import DynamicSelect from '~/components/forms/DynamicSelect.vue';
+  VDatePicker,
+} from "vuetify/components";
+import { FormFieldType, type FormField } from "~/types";
+
+export interface Form {
+  id?: string;
+  name: string;
+  description?: string;
+  fields: FormField[];
+}
+
+export interface Form {
+  id?: string;
+  name: string;
+  description?: string;
+  fields: FormField[];
+}
 
 const props = defineProps<{
   formDefinition: Form;
-  modelValue: Record<string, any>; // Usar modelValue para v-model
+  modelValue: Record<string, any>;
 }>();
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 
 const localFormData = ref<Record<string, any>>({});
 
-// Inicializar localFormData cuando formDefinition o modelValue cambien
-watch(() => props.formDefinition, (newVal) => {
-  if (newVal?.fields) {
-    const currentModelValue = props.modelValue || {};
-    localFormData.value = newVal.fields.reduce((acc, field) => {
-      if (field.variableName) {
-        acc[field.variableName] = currentModelValue[field.variableName] !== undefined
-          ? currentModelValue[field.variableName]
-          : (field.value !== undefined ? field.value : '');
-      }
-      return acc;
-    }, {});
-  }
-}, { immediate: true, deep: true });
-
-watch(localFormData, (newVal) => {
-  emit('update:modelValue', newVal);
-}, { deep: true });
-
-const componentMap: Record<string, any> = {
-  text: VTextField,
-  textarea: VTextarea,
-  checkbox: VCheckbox,
-  select: VSelect,
-  'radio-group': VRadioGroup,
-  'dynamic-select': DynamicSelect,
-  // 'date-picker': VDatePicker, // Eliminado de aquí, se maneja con VMenu y VTextField
-  // 'time-picker': VTextField, // Necesitará un componente específico o un VTextField con formato
+const componentMap: Record<FormFieldType, any> = {
+  [FormFieldType.TEXT]: VTextField,
+  [FormFieldType.TEXTAREA]: VTextarea,
+  [FormFieldType.SELECT]: VSelect,
+  [FormFieldType.DATE]: VDatePicker,
+  [FormFieldType.MAP]: VTextField, // Placeholder for map component
+  [FormFieldType.FILE_UPLOAD]: VTextField, // Placeholder for file upload
 };
 
-const getComponentName = (type: string): any => {
+const getComponentName = (type: FormFieldType): any => {
   return componentMap[type] || VTextField;
 };
+
+const getComponentProps = (field: any) => {
+  const props: Record<string, any> = {};
+
+  if (field.type === FormFieldType.SELECT) {
+    if (field.options && field.options.items) {
+      props.items = field.options.items;
+    }
+  }
+
+  return props;
+};
+
+watch(
+  () => props.formDefinition,
+  (newVal) => {
+    if (newVal?.fields) {
+      const currentModelValue = props.modelValue || {};
+      localFormData.value = newVal.fields.reduce((acc, field) => {
+        acc[field.name] =
+          currentModelValue[field.name] !== undefined
+            ? currentModelValue[field.name]
+            : null;
+        return acc;
+      }, {});
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+watch(
+  localFormData,
+  (newVal) => {
+    emit("update:modelValue", newVal);
+  },
+  { deep: true }
+);
 </script>

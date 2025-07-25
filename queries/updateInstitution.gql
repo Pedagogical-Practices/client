@@ -1,8 +1,0 @@
-mutation UpdateInstitution($updateInstitutionInput: UpdateInstitutionInput!) {
-  updateInstitution(updateInstitutionInput: $updateInstitutionInput) {
-    _id
-    name
-    address
-    phone
-  }
-}

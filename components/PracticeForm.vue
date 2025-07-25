@@ -3,50 +3,30 @@
     <v-card-title>{{ isEditMode ? 'Editar Práctica' : 'Asignar Nueva Práctica' }}</v-card-title>
     <v-card-text>
       <v-form ref="form">
-        <v-select
+        <EntityAutocomplete
+          v-model="practice.courseId"
+          specific-type="course"
+          label="Curso"
+          required
+        ></EntityAutocomplete>
+        <EntityAutocomplete
           v-model="practice.studentId"
-          :items="students"
-          item-title="name"
-          item-value="_id"
+          specific-type="student"
           label="Estudiante"
-          variant="outlined"
-          density="compact"
           required
-        ></v-select>
-        <v-select
-          v-model="practice.advisorId"
-          :items="advisors"
-          item-title="name"
-          item-value="_id"
+        ></EntityAutocomplete>
+        <EntityAutocomplete
+          v-model="practice.teacherId"
+          specific-type="teacher"
           label="Docente Asesor"
-          variant="outlined"
-          density="compact"
           required
-        ></v-select>
-        <v-select
-          v-model="practice.protocolId"
-          :items="protocols"
-          item-title="name"
-          item-value="_id"
-          label="Protocolo"
-          variant="outlined"
-          density="compact"
-          required
-        ></v-select>
-        <v-text-field
-          v-model="practice.institutionName"
-          label="Nombre de la Institución"
-          variant="outlined"
-          density="compact"
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="practice.courseName"
-          label="Nombre del Curso/Grado"
-          variant="outlined"
-          density="compact"
-          required
-        ></v-text-field>
+        ></EntityAutocomplete>
+        <EntityAutocomplete
+          v-model="practice.protocolIds"
+          specific-type="protocol"
+          label="Protocolos"
+          multiple
+        ></EntityAutocomplete>
         <v-select
           v-if="isEditMode"
           v-model="practice.status"
@@ -67,26 +47,22 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { PracticeStatus } from '~/types/practice';
-import type { CreatePracticeInput, UpdatePracticeInput } from '~/types/practice.input';
+import { PracticeStatus } from '~/server/src/common/enums/practice-status.enum';
+import EntityAutocomplete from './EntityAutocomplete.vue';
 
 const props = defineProps<{
-  initialPractice?: UpdatePracticeInput;
+  initialPractice?: any; // Use any for now, will define specific types later
   isEditMode: boolean;
-  students: Array<{ _id: string; name: string }>;
-  advisors: Array<{ _id: string; name: string }>;
-  protocols: Array<{ _id: string; name: string }>;
 }>();
 
 const emit = defineEmits(['save', 'cancel']);
 
-const practice = ref<CreatePracticeInput | UpdatePracticeInput>(props.initialPractice || {
+const practice = ref<any>(props.initialPractice || {
+  courseId: '',
   studentId: '',
-  advisorId: '',
-  protocolId: '',
-  institutionName: '',
-  courseName: '',
-  status: PracticeStatus.ASSIGNED,
+  teacherId: '',
+  protocolIds: [],
+  status: PracticeStatus.PENDING,
 });
 
 watch(() => props.initialPractice, (newVal) => {

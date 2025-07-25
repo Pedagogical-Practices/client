@@ -54,9 +54,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "~/stores/authStore";
-import { useRouter } from "vue-router";
 
-const router = useRouter();
 const authStore = useAuthStore();
 const name = ref(authStore.user?.name || "");
 const email = ref(authStore.user?.email || "");
@@ -69,14 +67,17 @@ const snackbar = ref({
 });
 
 onMounted(() => {
-  if (!authStore.isAuthenticated) router.push("/login");
+  if (!authStore.isAuthenticated) navigateTo("/login");
 });
 
 const handleUpdateProfile = async () => {
   try {
+    if (!authStore.user?.id) {
+      throw new Error("User ID not found.");
+    }
     const updateInput: any = { name: name.value, email: email.value };
     if (password.value) updateInput.password = password.value;
-    await authStore.updateProfile(updateInput);
+    await authStore.updateUser(authStore.user.id, updateInput);
     snackbar.value = {
       show: true,
       text: "¡Perfil actualizado!",
@@ -95,7 +96,6 @@ const handleUpdateProfile = async () => {
 
 const logout = () => {
   authStore.logout();
-  router.push("/login");
 };
 </script>
 

@@ -1,14 +1,15 @@
-query Course($id: String!) {
+query Course($id: ID!) {
   course(id: $id) {
-    _id
+    id
     name
-    institution
-    assignedGroups
-    createdBy {
-      _id
+    description
+    startDate
+    endDate
+    protocols {
+      id
       name
-      email
     }
     createdAt
+    updatedAt
   }
 }

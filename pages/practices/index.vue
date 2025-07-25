@@ -1,15 +1,21 @@
 <template>
   <v-container>
     <div v-if="authStore.user">
-      <div v-if="authStore.user.role === 'student'">
+      <div v-if="authStore.user.role === UserRole.STUDENT">
         <h2>Mis Prácticas</h2>
-        <StudentPracticeList :practices="practiceStore.practices" />
+        <PracticeList
+          :practices="practiceStore.practices"
+          :is-advisor-view="false"
+        />
       </div>
-      <div v-else-if="authStore.user.role === 'teacher_directive'">
+      <div v-else-if="authStore.user.role === UserRole.TEACHER_DIRECTIVE">
         <h2>Prácticas Asesoradas</h2>
-        <AdvisorPracticeList :practices="practiceStore.practices" />
+        <PracticeList
+          :practices="practiceStore.practices"
+          :is-advisor-view="true"
+        />
       </div>
-      <div v-else-if="authStore.user.role === 'family'">
+      <div v-else-if="authStore.user.role === UserRole.FAMILY">
         <h2>Progreso del Estudiante</h2>
         <p>Aquí se mostrará el progreso del estudiante asociado.</p>
       </div>
@@ -25,26 +31,25 @@
   </v-container>
 </template>
 
-<script setup>
-definePageMeta({
-  middleware: ['redirect-admin-from-practices'],
-});
-import { onMounted } from 'vue';
-import { useAuthStore } from '~/stores/authStore';
-import { usePracticeStore } from '~/stores/practiceStore';
-import StudentPracticeList from '~/components/practices/StudentPracticeList.vue';
-import AdvisorPracticeList from '~/components/practices/AdvisorPracticeList.vue';
-
-console.log("practices.vue: Script setup started.");
+<script setup lang="ts">
+import { onMounted } from "vue";
+import { useAuthStore } from "~/stores/authStore";
+import { usePracticeStore } from "~/stores/practiceStore";
+import PracticeList from "~/components/practices/PracticeList.vue";
+import { UserRole } from "~/types";
 
 const authStore = useAuthStore();
 const practiceStore = usePracticeStore();
 
 onMounted(async () => {
   try {
-    await practiceStore.fetchMyPractices();
+    if (authStore.user?.role === UserRole.STUDENT) {
+      await practiceStore.fetchMyPractices();
+    } else if (authStore.user?.role === UserRole.TEACHER_DIRECTIVE) {
+      await practiceStore.findPracticesByTeacher(authStore.user.id);
+    }
   } catch (error) {
-    console.error("Failed to fetch user practices:", error);
+    console.error("Failed to fetch practices:", error);
     // Optionally, show an error message to the user
   }
 });

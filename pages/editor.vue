@@ -63,13 +63,13 @@
               <ul>
                 <li
                   v-for="(element, index) in formElementStore.formElements"
-                  :key="element.id"
+                  :key="element.name"
                   class="form-element-item pa-3"
                   :class="{
                     'selected-element':
-                      formElementStore.selectedElementId === element.id,
+                      formElementStore.selectedElementName === element.name,
                   }"
-                  @click="selectElementForEditing(element.id)"
+                  @click="selectElementForEditing(element.name)"
                 >
                   <div class="element-content">
                     <v-row>
@@ -81,30 +81,20 @@
                       </v-col>
                       <v-col cols="10">
                         <component
-                          :is="getComponentName(element)"
-                          :model-value="element.value"
-                          @update:model-value="
-                            (newValue) =>
-                              handleValueUpdate(element.id, newValue)
-                          "
+                          :is="getComponentName(element.type)"
+                          :model-value="element.label"
                           :label="element.label"
-                          :placeholder="element.placeholder"
-                          :hint="element.hint"
-                          :persistent-hint="true"
-                          :required="element.required"
-                          :disabled="false"
-                          :readonly="false"
-                          :options="element.options"
-                          :specific-type="element.specificType"
-                          :height="element.height"
-                          :color="element.color"
                           :rules="
-                            element.required
-                              ? [(v: any) => !!v || 'Requerido']
+                            element.rules
+                              ? element.rules.map(
+                                  (rule) => (v: any) =>
+                                    !!v ||
+                                    rule !== 'required' ||
+                                    'Campo requerido'
+                                )
                               : []
                           "
-                          :multiple="element.multiple"
-                          :dataSource="element.dataSource"
+                          v-bind="getComponentProps(element)"
                           class="component-preview"
                           variant="outlined"
                         />
@@ -116,7 +106,7 @@
                             variant="text"
                             color="grey-darken-1"
                             @click.stop="
-                              formElementStore.moveElementUp(element.id)
+                              formElementStore.moveElementUp(element.name)
                             "
                             title="Move Up"
                             icon="mdi-arrow-up-bold-outline"
@@ -126,7 +116,7 @@
                             size="x-small"
                             variant="text"
                             color="primary"
-                            @click.stop="selectElementForEditing(element.id)"
+                            @click.stop="selectElementForEditing(element.name)"
                             title="Edit Element"
                             icon="mdi-pencil-outline"
                           ></v-btn>
@@ -134,7 +124,7 @@
                             size="x-small"
                             variant="text"
                             color="error"
-                            @click.stop="removeElement(element.id)"
+                            @click.stop="removeElement(element.name)"
                             title="Delete Element"
                             icon="mdi-delete-outline"
                           ></v-btn>
@@ -143,7 +133,7 @@
                             variant="text"
                             color="grey-darken-1"
                             @click.stop="
-                              formElementStore.moveElementDown(element.id)
+                              formElementStore.moveElementDown(element.name)
                             "
                             title="Move Down"
                             icon="mdi-arrow-down-bold-outline"
@@ -190,7 +180,6 @@
             <div v-show="show">
               <v-divider></v-divider>
               <v-card-text class="pa-2">
-                <!-- Reemplazar con el componente de editor JSON -->
                 <v-card-text class="pa-2">
                   <v-textarea
                     v-model="editableFormJsonString"
@@ -236,7 +225,10 @@
         </v-card-title>
         <v-card-text>
           <FormViewer
-            :formDefinition="{ fields: formElementStore.formElements }"
+            :formDefinition="{
+              name: formStore.formName,
+              fields: formElementStore.formElements,
+            }"
             :modelValue="{}"
           />
         </v-card-text>
@@ -248,11 +240,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import {
-  useFormElementStore,
-  type FormElement,
-} from "~/stores/formElementStore";
-import { useFormStore } from "~/stores/formStores";
+import { useFormElementStore } from "~/stores/formElementStore";
+import { useFormStore } from "~/stores/formStore";
 import { useAuthStore } from "~/stores/authStore";
 import AvailableElements from "~/components/AvailableElements.vue";
 import {
@@ -260,31 +249,28 @@ import {
   type AvailableElementDefinition,
 } from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
-import EntityAutocomplete from "~/components/EntityAutocomplete.vue"; // Import EntityAutocomplete
-import FormViewer from "~/components/FormViewer.vue"; // Import FormViewer
-import { useMutation } from "@vue/apollo-composable"; // Import useMutation
-import CreateFormMutation from "~/queries/createForm.gql";
-import UpdateFormMutation from "~/queries/updateForm.gql"; // Import CreateFormMutation
+import FormViewer from "~/components/FormViewer.vue";
+import { useMutation } from "@vue/apollo-composable";
+import { gql } from "graphql-tag";
 import {
   VTextField,
   VTextarea,
-  VCheckbox,
   VSelect,
-  VBtn,
-  VRadioGroup,
   VDatePicker,
 } from "vuetify/components";
+import { definePageMeta } from "#imports";
+import { FormFieldType, type FormField } from "~/types"; // Corrected import
 
 definePageMeta({});
 
 const router = useRouter();
-const route = useRoute(); // Added useRoute
+const route = useRoute();
 const formElementStore = useFormElementStore();
 const formStore = useFormStore();
 const authStore = useAuthStore();
 const show = ref<boolean>(false);
 const isDragOver = ref<boolean>(false);
-const showPreview = ref<boolean>(false); // Reactive variable for preview dialog
+const showPreview = ref<boolean>(false);
 const snackbar = ref<{
   show: boolean;
   text: string;
@@ -297,7 +283,6 @@ const snackbar = ref<{
   timeout: 3000,
 });
 
-// Watch for changes in route.params.id to load the form
 watch(
   () => route.params.id,
   async (newId) => {
@@ -309,7 +294,6 @@ watch(
           "Error loading form by ID, resetting to new form:",
           error
         );
-        // If form not found or error, reset to create new form
         formStore.clearEditingFormId();
         formElementStore.initializeForm([]);
         formStore.formName = "";
@@ -321,58 +305,56 @@ watch(
         };
       }
     } else {
-      // If no ID in route, ensure it's a new form
       formStore.clearEditingFormId();
       formElementStore.initializeForm([]);
       formStore.formName = "";
     }
   },
   { immediate: true }
-); // Run immediately on component mount
+);
 
-import DynamicSelect from "~/components/forms/DynamicSelect.vue";
-
-const componentMap: Record<string, any> = {
-  text: VTextField,
-  textarea: VTextarea,
-  checkbox: VCheckbox,
-  select: VSelect,
-  button: VBtn,
-  "radio-group": VRadioGroup,
-  "date-picker": VDatePicker,
+const componentMap: Record<FormFieldType, any> = {
+  [FormFieldType.TEXT]: VTextField,
+  [FormFieldType.TEXTAREA]: VTextarea,
+  [FormFieldType.SELECT]: VSelect,
+  [FormFieldType.DATE]: VDatePicker,
+  [FormFieldType.MAP]: VTextField, // Placeholder for map component
+  [FormFieldType.FILE_UPLOAD]: VTextField, // Placeholder for file upload
 };
 
-const getComponentName = (element: FormElement): any => {
-  if (
-    element.type === "select" &&
-    element.dataSource &&
-    element.dataSource.length > 0
-  ) {
-    return DynamicSelect;
+const getComponentName = (type: FormFieldType): any => {
+  return componentMap[type] || VTextField;
+};
+
+const getComponentProps = (field: FormField) => {
+  const props: Record<string, any> = {};
+
+  if (field.type === FormFieldType.SELECT) {
+    if (field.options && field.options.items) {
+      props.items = field.options.items;
+    }
   }
-  return componentMap[element.type] || VTextField;
+
+  return props;
 };
 
-const getElementIcon = (type: string): string => {
+const getElementIcon = (type: FormFieldType): string => {
   const def = availableElements.find(
     (d: AvailableElementDefinition) => d.type === type
   );
   return def ? def.icon : "mdi-help-box";
 };
 
-const selectElementForEditing = (elementId: string): void => {
-  formElementStore.setSelectedElement(elementId);
+const selectElementForEditing = (elementName: string): void => {
+  console.log("Editor: selectElementForEditing called for:", elementName);
+  formElementStore.setSelectedElement(elementName);
 };
 
-const removeElement = (elementId: string): void => {
-  formElementStore.removeElement(elementId);
-  if (formElementStore.selectedElementId === elementId) {
+const removeElement = (elementName: string): void => {
+  formElementStore.removeElement(elementName);
+  if (formElementStore.selectedElementName === elementName) {
     formElementStore.setSelectedElement(null);
   }
-};
-
-const handleValueUpdate = (elementId: string, newValue: any) => {
-  formElementStore.updateElementValue({ elementId, value: newValue });
 };
 
 const handleDragOver = (event: DragEvent): void => {
@@ -392,17 +374,20 @@ const handleDrop = (event: DragEvent): void => {
 
   const rawData = event.dataTransfer.getData("application/json");
   try {
-    const { type: elementType } = JSON.parse(rawData) as { type: string };
+    const { type: elementType, name: elementName } = JSON.parse(rawData) as {
+      type: FormFieldType;
+      name: string;
+    };
     const elementDef = availableElements.find(
       (def: AvailableElementDefinition) => def.type === elementType
     );
     if (!elementDef) {
       throw new Error(`Tipo de elemento no encontrado: ${elementType}`);
     }
-    const newElement: FormElement = {
+    const newElement: FormField = {
       ...elementDef.defaultConfig,
-      id: generateUniqueId(),
-      type: elementDef.type,
+      name: elementName,
+      type: elementType as FormFieldType,
     };
     formElementStore.addElement(newElement);
   } catch (error: any) {
@@ -416,13 +401,10 @@ const handleDrop = (event: DragEvent): void => {
   }
 };
 
-const generateUniqueId = (): string =>
-  Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-
 const createNewForm = (): void => {
   formElementStore.initializeForm([]);
   formStore.formName = "";
-  formStore.clearEditingFormId(); // Clear the editing ID
+  formStore.clearEditingFormId();
   formElementStore.setSelectedElement(null);
   editableFormJsonString.value = JSON.stringify(
     { name: "", fields: [] },
@@ -440,53 +422,14 @@ const createNewForm = (): void => {
 const transformedFormJson = computed(() => {
   return {
     name: formStore.formName,
-    fields: formElementStore.formElements.map((el: FormElement) => {
-      const outputEl: Record<string, any> = {
-        id: el.id, // Keep id for internal editor use
-        type: el.type,
-        label: el.label,
-        value: el.value,
-        variableName: el.variableName,
-        placeholder: el.placeholder,
-        hint: el.hint,
-        required: el.required, // Boolean
-        chapter: el.chapter,
-        question: el.question,
-        questionNumber: el.questionNumber,
-        consistencyCondition: el.consistencyCondition,
-        inconsistencyMessage: el.inconsistencyMessage,
-        errorType: el.errorType,
-        description: el.description,
-        requirementLevel: el.requirementLevel, // String (Required/Optional)
-        rules: el.rules,
+    fields: formElementStore.formElements.map((el: FormField) => {
+      const outputEl: FormField = {
         name: el.name,
-        disabled: el.disabled,
-        readonly: el.readonly,
-        specificType: el.specificType,
-        dataSource: el.dataSource, // Add dataSource to the output
+        label: el.label,
+        type: el.type,
+        options: el.options,
+        rules: el.rules,
       };
-      if (el.type === "select" || el.type === "radio-group") {
-        outputEl.options = el.options;
-        outputEl.multiple = el.multiple ?? false;
-      }
-      if (el.type === "textarea" && el.height) {
-        outputEl.height = el.height;
-      }
-      if (el.type === "button" && el.color) {
-        outputEl.color = el.color;
-      }
-      // Clean up undefined/null/empty array values, but keep false and empty strings
-      Object.keys(outputEl).forEach((key) => {
-        if (
-          outputEl[key] === undefined ||
-          outputEl[key] === null ||
-          (Array.isArray(outputEl[key]) && outputEl[key].length === 0)
-        ) {
-          if (outputEl[key] !== false && outputEl[key] !== "") {
-            delete outputEl[key];
-          }
-        }
-      });
       return outputEl;
     }),
   };
@@ -526,64 +469,22 @@ const updateFormFromJson = async (): Promise<void> => {
   try {
     const parsedJson = JSON.parse(editableFormJsonString.value) as {
       name: string;
-      fields: any[];
+      fields: FormField[];
     };
     if (!parsedJson.name || !Array.isArray(parsedJson.fields)) {
       throw new Error("El JSON debe contener 'name' y 'fields' como array");
     }
     const validElements = parsedJson.fields.every(
-      (el: any) =>
-        el.type && // Now expects 'type' (English)
-        [
-          "text",
-          "textarea",
-          "checkbox",
-          "select",
-          "button",
-          "radio-group",
-          "date-picker",
-          "time-picker", // Added time-picker
-        ].includes(el.type)
+      (el: FormField) =>
+        Object.values(FormFieldType).includes(el.type as FormFieldType) &&
+        el.name &&
+        el.label
     );
     if (!validElements) {
       throw new Error("El JSON contiene elementos inválidos en 'fields'");
     }
     formStore.formName = parsedJson.name;
-    formElementStore.initializeForm(
-      parsedJson.fields.map((el: any): FormElement => {
-        return {
-          id: el.id || generateUniqueId(), // Use existing id or generate new
-          type: el.type,
-          label: el.label ?? "",
-          value: el.value ?? "",
-          variableName: el.variableName ?? "",
-          placeholder: el.placeholder ?? "",
-          hint: el.hint ?? "",
-          requirementLevel: el.required ? "Required" : "Optional", // Map boolean to string
-          chapter: el.chapter ?? "",
-          question: el.question ?? "",
-          questionNumber: el.questionNumber ?? "",
-          consistencyCondition: el.consistencyCondition ?? "",
-          inconsistencyMessage: el.inconsistencyMessage ?? "",
-          errorType: el.errorType ?? "Soft",
-          description: el.description ?? "",
-          name: el.name ?? "",
-          disabled: !!el.disabled,
-          readonly: !!el.readonly,
-          options:
-            el.options?.map((opt: any) => ({
-              label: opt.label ?? opt.text ?? "", // Handle both 'label' and 'text'
-              value: opt.value ?? "",
-            })) ?? [],
-          specificType: el.specificType ?? "",
-          height: el.height ? String(el.height) : undefined, // Ensure string for height
-          color: el.color ?? "",
-          rules: el.rules ?? [],
-          multiple: !!el.multiple,
-          dataSource: el.dataSource !== undefined ? el.dataSource : null, // Ensure dataSource is always present, even if null
-        };
-      })
-    );
+    formElementStore.initializeForm(parsedJson.fields);
     snackbar.value = {
       show: true,
       text: "¡Formulario actualizado desde JSON!",
@@ -600,7 +501,6 @@ const updateFormFromJson = async (): Promise<void> => {
     };
   }
 };
-
 const saveFormToBackend = async (): Promise<void> => {
   try {
     if (!authStore.isAuthenticated) {
@@ -612,89 +512,38 @@ const saveFormToBackend = async (): Promise<void> => {
       throw new Error("El nombre del formulario es obligatorio.");
     }
 
-    const { mutate: createForm } = useMutation(CreateFormMutation);
-    const { mutate: updateForm } = useMutation(UpdateFormMutation);
-
     let result;
-    console.log("Guardando formulario con los siguientes datos:", {
-      fields: formElementStore.formElements,
-    });
     const formFields = formElementStore.formElements.map(
-      (element: FormElement) => ({
+      (element: FormField) => ({
+        name: element.name,
+        label: element.label,
         type: element.type,
-        label: element.label ?? "",
-        value:
-          element.value !== undefined && element.value !== null
-            ? String(element.value)
-            : null,
-        variableName: element.variableName ?? "",
-        placeholder: element.placeholder ?? "",
-        hint: element.hint ?? "",
-        height: element.height ? String(element.height) : null,
-        required: !!element.required,
-        chapter: element.chapter ?? null,
-        question: element.question ?? null,
-        questionNumber: element.questionNumber ?? null,
-        consistencyCondition: element.consistencyCondition ?? null,
-        inconsistencyMessage: element.inconsistencyMessage ?? null,
-        errorType: element.errorType ?? null,
-        description: element.description ?? null,
-        requirementLevel: element.requirementLevel ?? "Optional",
-        options:
-          element.options?.map((opt: any) =>
-            typeof opt === "string"
-              ? { value: opt, label: opt }
-              : { value: opt.value, label: opt.text ?? opt.value }
-          ) ?? [],
-        disabled: !!element.disabled,
-        readonly: !!element.readonly,
-        name: element.name ?? null,
-        specificType: element.specificType ?? null,
-        color: element.color ?? null,
-        rules: element.rules ?? [],
-        multiple: !!element.multiple,
-        dataSource: element.dataSource ?? null,
+        options: element.options,
+        rules: element.rules,
       })
     );
 
     if (formStore.editingFormId) {
-      console.log(
-        "Attempting to UPDATE form. editingFormId:",
-        formStore.editingFormId
-      );
-      const updateInput = {
-        id: formStore.editingFormId,
+      result = await formStore.updateForm(formStore.editingFormId, {
         name: formStore.formName,
         fields: formFields,
-      };
-      console.log("Update input:", updateInput);
-      result = await updateForm({
-        updateFormInput: updateInput,
       });
     } else {
-      console.log("Attempting to CREATE new form.");
-      const createInput = {
+      result = await formStore.createForm({
         name: formStore.formName,
         fields: formFields,
-      };
-      console.log("Create input:", createInput);
-      result = await createForm({
-        createFormInput: createInput,
       });
     }
 
-    if (result?.errors) {
-      throw new Error(result.errors[0]?.message ?? "Error en la mutación");
+    if (!result) {
+      throw new Error("Error al guardar el formulario en el backend.");
     }
 
-    // If a new form was created, store its ID
-    if (!formStore.editingFormId && result?.data?.createForm?._id) {
-      formStore.editingFormId = result.data.createForm._id;
+    if (!formStore.editingFormId && result?.id) {
+      formStore.editingFormId = result.id;
     }
 
-    // Clear editingFormId after successful save (create or update)
     formStore.clearEditingFormId();
-
     formElementStore.initializeForm([]);
     formStore.formName = "";
     snackbar.value = {

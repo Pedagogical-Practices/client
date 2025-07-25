@@ -2,23 +2,23 @@
   <v-container fluid class="pa-4">
     <v-row>
       <v-col cols="12">
-        <h1>Detalles del Formulario: {{ form?.name }}</h1>
+        <h1>Detalles del Formulario: {{ formStore.currentForm?.name }}</h1>
       </v-col>
     </v-row>
-    <v-row v-if="form">
+    <v-row v-if="formStore.currentForm">
       <v-col cols="12">
         <v-card>
           <v-card-title>Información General</v-card-title>
           <v-card-text>
-            <p><strong>Nombre:</strong> {{ form.name }}</p>
-            <p>
-              <strong>Creado por:</strong> {{ form.createdBy.name }} ({{
-                form.createdBy.email
-              }})
-            </p>
+            <p><strong>Nombre:</strong> {{ formStore.currentForm.name }}</p>
+            <p><strong>Descripción:</strong> {{ formStore.currentForm.description }}</p>
             <p>
               <strong>Fecha de creación:</strong>
-              {{ new Date(form.createdAt).toLocaleString() }}
+              {{ new Date(formStore.currentForm.createdAt).toLocaleString() }}
+            </p>
+            <p>
+              <strong>Última actualización:</strong>
+              {{ new Date(formStore.currentForm.updatedAt).toLocaleString() }}
             </p>
           </v-card-text>
         </v-card>
@@ -27,7 +27,7 @@
         <v-card>
           <v-card-title>Campos del Formulario</v-card-title>
           <v-card-text>
-            <FormViewer :formDefinition="{ fields: form.fields }" :modelValue="{}" />
+            <FormViewer :formDefinition="formStore.currentForm" :modelValue="{}" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -54,17 +54,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-// import { useFormBuilderStore } from "~/stores/formBuilderStore";
 import { useFormStore } from "~/stores/formStores";
 import { useAuthStore } from "~/stores/authStore";
 import FormViewer from "~/components/FormViewer.vue";
 
 const route = useRoute();
 const router = useRouter();
-// const formBuilderStore = useFormBuilderStore();
 const formStore = useFormStore();
 const authStore = useAuthStore();
-const form = ref(formStore.currentForm);
 const snackbar = ref({
   show: false,
   text: "",
@@ -85,8 +82,7 @@ onMounted(async () => {
     } else {
       const formId = route.params.id as string;
       await formStore.fetchForm(formId);
-      form.value = formStore.currentForm;
-      if (!form.value) {
+      if (!formStore.currentForm) {
         snackbar.value = {
           show: true,
           text: "Formulario no encontrado.",

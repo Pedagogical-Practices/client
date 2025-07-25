@@ -10,20 +10,8 @@
             <span class="ml-2">Gestionar Usuarios</span>
           </v-card-title>
           <v-card-text>
-            Crear, editar y eliminar usuarios del sistema. Asignar roles y gestionar perfiles.
-          </v-card-text>
-        </v-card>
-      </v-col>
-
-      <!-- Tarjeta para Gestionar Instituciones -->
-      <v-col cols="12" md="4">
-        <v-card to="/admin/institutions" hover class="pa-2">
-          <v-card-title>
-            <v-icon left>mdi-bank</v-icon>
-            <span class="ml-2">Gestionar Instituciones</span>
-          </v-card-title>
-          <v-card-text>
-            Añadir o editar las instituciones educativas asociadas a las prácticas pedagógicas.
+            Crear, editar y eliminar usuarios del sistema. Asignar roles y
+            gestionar perfiles.
           </v-card-text>
         </v-card>
       </v-col>
@@ -36,20 +24,41 @@
             <span class="ml-2">Gestionar Protocolos</span>
           </v-card-title>
           <v-card-text>
-            Definir y organizar los protocolos que contienen los formularios para las prácticas.
+            Definir y organizar los protocolos que contienen los formularios
+            para las prácticas.
           </v-card-text>
         </v-card>
       </v-col>
 
+      <v-col cols="12" md="4">
+        <v-card to="/courses" hover class="pa-2">
+          <v-card-title>
+            <v-icon left>mdi-book-open-page-variant</v-icon>
+            <span class="ml-2">Gestionar Cursos</span>
+          </v-card-title>
+          <v-card-text>
+            Crear, editar y eliminar cursos de práctica.
+          </v-card-text>
+        </v-card>
+      </v-col>
+
+      <v-col cols="12" md="4">
+        <v-card to="/forms" hover class="pa-2">
+          <v-card-title>
+            <v-icon left>mdi-form-select</v-icon>
+            <span class="ml-2">Gestionar Formularios</span>
+          </v-card-title>
+          <v-card-text>
+            Crear, editar y eliminar plantillas de formularios dinámicos.
+          </v-card-text>
+        </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup lang="ts">
 // Middleware de ruta para proteger el panel de administración
-definePageMeta({
-  middleware: 'admin'
-});
 </script>
 
 <style scoped>
@@ -59,6 +68,6 @@ definePageMeta({
 }
 .v-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 </style>

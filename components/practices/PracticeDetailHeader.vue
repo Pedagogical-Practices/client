@@ -4,13 +4,17 @@
     <v-card-text>
       <v-row>
         <v-col cols="12" md="6">
-          <p class="text-subtitle-1"><strong>Curso:</strong> {{ practice.courseName }}</p>
-          <p class="text-subtitle-1"><strong>Institución:</strong> {{ practice.institutionName }}</p>
-          <p class="text-subtitle-1"><strong>Protocolo:</strong> {{ practice.protocol.name }}</p>
+          <p class="text-subtitle-1"><strong>Curso:</strong> {{ practice.course.name }}</p>
+          <p class="text-subtitle-1"><strong>Protocolo:</strong>
+            <span v-if="practice.protocols && practice.protocols.length > 0">
+              {{ practice.protocols[0].name }}
+            </span>
+            <span v-else>N/A</span>
+          </p>
         </v-col>
         <v-col cols="12" md="6">
           <p class="text-subtitle-1"><strong>Estudiante:</strong> {{ practice.student.name }}</p>
-          <p class="text-subtitle-1"><strong>Asesor:</strong> {{ practice.advisor.name }}</p>
+          <p class="text-subtitle-1"><strong>Asesor:</strong> {{ practice.teacher.name }}</p>
           <p class="text-subtitle-1"><strong>Estado:</strong>
             <v-chip :color="statusColor(practice.status)" dark class="ml-2">{{ practice.status }}</v-chip>
           </p>
@@ -20,22 +24,21 @@
   </v-card>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { defineProps } from 'vue';
+import { Practice } from '~/server/src/practice/schemas/practice.schema';
+import { PracticeStatus } from '~/server/src/common/enums/practice-status.enum';
 
-const props = defineProps({
-  practice: {
-    type: Object,
-    required: true,
-  },
-});
+const props = defineProps<{
+  practice: Practice;
+}>();
 
-const statusColor = (status) => {
+const statusColor = (status: PracticeStatus) => {
   switch (status) {
-    case 'ASSIGNED': return 'blue';
-    case 'IN_PROGRESS': return 'orange';
-    case 'COMPLETED': return 'green';
-    case 'REVIEWED': return 'purple';
+    case PracticeStatus.PENDING: return 'blue';
+    case PracticeStatus.IN_PROGRESS: return 'orange';
+    case PracticeStatus.COMPLETED: return 'green';
+    case PracticeStatus.ARCHIVED: return 'grey';
     default: return 'grey';
   }
 };

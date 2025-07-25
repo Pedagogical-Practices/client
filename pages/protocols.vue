@@ -12,26 +12,25 @@
       </v-col>
       <v-col
         v-for="protocol in store.protocols"
-        :key="protocol._id"
+        :key="protocol.id"
         cols="12"
       >
         <v-card class="mb-4" hover height="300">
           <v-card-title>{{ protocol.name }}</v-card-title>
-          <v-card-subtitle v-if="protocol.module">Módulo: {{ protocol.module }}</v-card-subtitle>
+          <v-card-subtitle v-if="protocol.productType">Tipo de Producto: {{ protocol.productType }}</v-card-subtitle>
           <v-card-text>
             <p v-if="protocol.description">{{ protocol.description }}</p>
-            <div v-if="protocol.forms && protocol.forms.length > 0" class="mt-4">
-              <strong>Formularios asociados:</strong>
+            <div v-if="protocol.form" class="mt-4">
+              <strong>Formulario asociado:</strong>
               <v-list density="compact" class="bg-transparent" style="max-height: 150px; overflow-y: auto;">
                 <v-list-item
-                  v-for="form in protocol.forms"
-                  :key="form._id"
+                  :key="protocol.form.id"
                   density="compact"
                 >
                   <template v-slot:prepend>
                     <v-icon>mdi-file-document-outline</v-icon>
                   </template>
-                  <v-list-item-title>{{ form.name }}</v-list-item-title>
+                  <v-list-item-title>{{ protocol.form.name }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </div>

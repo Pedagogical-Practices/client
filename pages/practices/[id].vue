@@ -1,19 +1,16 @@
 <template>
   <v-container v-if="practiceStore.currentPractice">
-    <v-row>
-      <v-col cols="12">
-        <PracticeDetailHeader :practice="practiceStore.currentPractice" />
-      </v-col>
-      <v-col cols="12">
-        <PracticeProgress :practice="practiceStore.currentPractice" />
-      </v-col>
-      <v-col cols="12">
-        <PracticeFormList
-          :practice="practiceStore.currentPractice"
-          :userRole="authStore.user?.role"
-        />
-      </v-col>
-    </v-row>
+    <v-col cols="12">
+      <PracticeDetailHeader :practice="practiceStore.currentPractice" />
+    </v-col>
+    <v-col cols="12">
+      <PracticeProgress :practice="practiceStore.currentPractice" />
+    </v-col>
+    <v-col cols="12">
+      <PracticeFormList
+        :practice="practiceStore.currentPractice"
+      />
+    </v-col>
   </v-container>
   <v-container v-else>
     <v-row>
@@ -24,36 +21,24 @@
   </v-container>
 </template>
 
-<script setup>
-definePageMeta({
-  middleware: ["redirect-admin-from-practices"],
-});
+<script setup lang="ts">
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { usePracticeStore } from "~/stores/practiceStore";
-import { useAuthStore } from "~/stores/authStore"; // Importar useAuthStore
+import { useAuthStore } from "~/stores/authStore";
 import PracticeDetailHeader from "~/components/practices/PracticeDetailHeader.vue";
 import PracticeProgress from "~/components/practices/PracticeProgress.vue";
 import PracticeFormList from "~/components/practices/PracticeFormList.vue";
 
-console.log("practices/[id].vue: Script setup started.");
-
 const route = useRoute();
 const practiceStore = usePracticeStore();
-const authStore = useAuthStore(); // Inicializar authStore
-
-console.log("practices/[id].vue: userRole being passed:", authStore.user?.role);
+const authStore = useAuthStore();
 
 onMounted(async () => {
-  const practiceId = route.params.id;
-  console.log("practices/[id].vue: onMounted - practiceId:", practiceId);
+  const practiceId = route.params.id as string;
   if (practiceId) {
     try {
       await practiceStore.fetchPractice(practiceId);
-      console.log(
-        "practices/[id].vue: Practice fetched:",
-        practiceStore.currentPractice
-      );
     } catch (error) {
       console.error(
         "practices/[id].vue: Error fetching practice details:",

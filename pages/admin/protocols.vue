@@ -16,6 +16,9 @@
         :loading="store.loading"
         class="elevation-1"
       >
+        <template v-slot:item.form.name="{ item }">
+          {{ item.form.name }}
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-icon small class="mr-2" @click="openEditModal(item)"
             >mdi-pencil</v-icon
@@ -33,7 +36,6 @@
             isEditing ? "Editar Protocolo" : "Crear Protocolo"
           }}</span>
         </v-card-title>
-        {{ editableProtocol }}
         <v-card-text>
           <v-container>
             <v-row>
@@ -51,21 +53,18 @@
                 ></v-textarea>
               </v-col>
               <v-col cols="12">
-                <v-text-field
-                  v-model="editableProtocol.module"
-                  label="Módulo"
-                ></v-text-field>
+                <EntityAutocomplete
+                  v-model="editableProtocol.formId"
+                  specific-type="form"
+                  label="Formulario Asociado"
+                  required
+                ></EntityAutocomplete>
               </v-col>
               <v-col cols="12">
-                <v-select
-                  v-model="editableProtocol.formIds"
-                  :items="store.forms"
-                  item-title="name"
-                  item-value="_id"
-                  label="Formularios"
-                  multiple
-                  chips
-                ></v-select>
+                <v-text-field
+                  v-model="editableProtocol.productType"
+                  label="Tipo de Producto"
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -105,6 +104,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useProtocolStore } from "~/stores/protocolStore";
+import { Protocol } from "~/types/protocol"; // Adjust the import path as necessary
+import EntityAutocomplete from "~/components/EntityAutocomplete.vue";
 
 // Middleware de ruta
 definePageMeta({
@@ -116,6 +117,8 @@ const store = useProtocolStore();
 const headers = [
   { title: "Nombre", value: "name" },
   { title: "Descripción", value: "description" },
+  { title: "Formulario", value: "form.name" },
+  { title: "Tipo de Producto", value: "productType" },
   { title: "Acciones", value: "actions", sortable: false },
 ];
 
@@ -127,7 +130,6 @@ const protocolToDelete = ref<any>(null);
 
 onMounted(() => {
   store.fetchProtocols();
-  store.fetchFormsForSelect();
 });
 
 const openCreateModal = () => {
@@ -135,25 +137,22 @@ const openCreateModal = () => {
   editableProtocol.value = {
     name: "",
     description: "",
-    module: "",
-    formIds: [],
+    formId: "",
+    productType: "",
   };
   dialog.value = true;
 };
 
-const openEditModal = async (protocol: any) => {
-  await store.fetchProtocol(protocol._id); // Carga el protocolo completo
+const openEditModal = async (protocol: Protocol) => {
+  await store.fetchProtocol(protocol.id);
   isEditing.value = true;
-  // Usa el currentProtocol del store, que está completo
   if (store.currentProtocol) {
-    const formIds = store.currentProtocol.forms
-      ? store.currentProtocol.forms.map((f: any) => f._id)
-      : [];
-    editableProtocol.value = { ...store.currentProtocol, formIds };
+    editableProtocol.value = {
+      ...store.currentProtocol,
+      formId: store.currentProtocol.form?.id || "",
+    };
   } else {
-    // Fallback por si acaso
-    const formIds = protocol.forms ? protocol.forms.map((f: any) => f._id) : [];
-    editableProtocol.value = { ...protocol, formIds };
+    editableProtocol.value = { ...protocol, formId: protocol.form?.id || "" };
   }
   dialog.value = true;
 };
@@ -165,22 +164,22 @@ const closeModal = () => {
 
 const saveProtocol = async () => {
   if (isEditing.value) {
-    const { _id, ...dataToUpdate } = editableProtocol.value;
-    await store.updateProtocol(_id, dataToUpdate);
+    const { id, ...dataToUpdate } = editableProtocol.value;
+    await store.updateProtocol(id, dataToUpdate);
   } else {
     await store.createProtocol(editableProtocol.value);
   }
   closeModal();
 };
 
-const confirmDelete = (protocol: any) => {
+const confirmDelete = (protocol: Protocol) => {
   protocolToDelete.value = protocol;
   deleteDialog.value = true;
 };
 
 const deleteProtocolConfirmed = async () => {
   if (protocolToDelete.value) {
-    await store.deleteProtocol(protocolToDelete.value._id);
+    await store.deleteProtocol(protocolToDelete.value.id);
   }
   deleteDialog.value = false;
   protocolToDelete.value = null;

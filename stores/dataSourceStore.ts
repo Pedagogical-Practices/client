@@ -1,13 +1,12 @@
 import { defineStore } from "pinia";
 import { gql } from "graphql-tag";
 import { useApolloClient } from "@vue/apollo-composable";
-import { useAuthStore } from "~/stores/authStore"; // Importar authStore
-import { usePracticeStore } from "~/stores/practiceStore"; // Importar practiceStore
+import { useAuthStore } from "~/stores/authStore";
+import { UserRole } from "~/types";
 
 export const useDataSourceStore = defineStore("dataSource", () => {
   const { client } = useApolloClient();
-  const authStore = useAuthStore(); // Inicializar authStore
-  const practiceStore = usePracticeStore(); // Inicializar practiceStore
+  const authStore = useAuthStore();
 
   const fetchFormattedOptions = async (dataSource: string): Promise<string> => {
     console.log(
@@ -19,40 +18,62 @@ export const useDataSourceStore = defineStore("dataSource", () => {
     let query;
     let dataKey = dataSource;
 
-    // Lógica para autocompletar estudiante e institución
     if (dataSource === "students") {
-      if (authStore.user?.role === "student") {
-        // Autocompletar con el estudiante logueado
+      if (authStore.user?.role === UserRole.STUDENT) {
         const studentName = authStore.user.name || authStore.user.email;
-        return `${authStore.user._id}|${studentName}`; // Formato ID|Nombre
+        return `${authStore.user.id}|${studentName}`;
       }
-      // Si no es el estudiante logueado, procede a buscar todos los estudiantes
       query = gql`
         query GetUsers {
           users {
-            _id
+            id
             name
             role
           }
         }
       `;
       dataKey = "users";
-    } else if (dataSource === "institutions") {
-      if (practiceStore.currentPractice?.institutionName) {
-        // Autocompletar con la institución de la práctica actual
-        // Asumimos que el ID de la institución no es necesario para el autocompletado inicial
-        // y que el nombre es suficiente para la visualización.
-        // Si se necesita el ID, habría que buscar la institución por nombre en el backend.
-        return `|${practiceStore.currentPractice.institutionName}`; // Formato ID|Nombre (ID vacío si no se tiene)
-      }
-      // Si no hay institución en la práctica actual, procede a buscar todas las instituciones
-      const queryName =
-        dataSource.charAt(0).toUpperCase() + dataSource.slice(1);
-      query = gql`query Get${queryName} { ${dataSource} { _id name } }`;
+    } else if (dataSource === "teachers") {
+      query = gql`
+        query GetUsers {
+          users {
+            id
+            name
+            role
+          }
+        }
+      `;
+      dataKey = "users";
+    } else if (dataSource === "forms") {
+      query = gql`
+        query GetForms {
+          forms {
+            id
+            name
+          }
+        }
+      `;
+    } else if (dataSource === "protocols") {
+      query = gql`
+        query GetProtocols {
+          protocols {
+            id
+            name
+          }
+        }
+      `;
+    } else if (dataSource === "courses") {
+      query = gql`
+        query GetCourses {
+          courses {
+            id
+            name
+          }
+        }
+      `;
     } else {
-      const queryName =
-        dataSource.charAt(0).toUpperCase() + dataSource.slice(1);
-      query = gql`query Get${queryName} { ${dataSource} { _id name } }`;
+      console.warn("dataSourceStore: Unknown dataSource", dataSource);
+      return "";
     }
 
     console.log("dataSourceStore: Generated query:", query);
@@ -72,19 +93,18 @@ export const useDataSourceStore = defineStore("dataSource", () => {
         let items = data[dataKey];
         if (dataSource === "teachers") {
           items = items.filter(
-            (user: any) => user.role === "teacher_directive"
+            (user: any) => user.role === UserRole.TEACHER_DIRECTIVE
           );
         } else if (dataSource === "students") {
-          items = items.filter((user: any) => user.role === "student");
+          items = items.filter((user: any) => user.role === UserRole.STUDENT);
         }
         const formatted = items
-          .map((item: any) => `${item._id}|${item.name}`)
+          .map((item: any) => `${item.id}|${item.name}`)
           .join("\n");
         console.log("dataSourceStore: Formatted options", formatted);
         return formatted;
       }
-    }
- catch (err) {
+    } catch (err) {
       console.error(`Error fetching data for ${dataSource}:`, err);
     }
 

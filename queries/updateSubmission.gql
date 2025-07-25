@@ -1,6 +1,11 @@
-mutation UpdateSubmission($updateSubmissionInput: UpdateSubmissionInput!) {
-  updateSubmission(updateSubmissionInput: $updateSubmissionInput) {
-    _id
-    data
+mutation UpdateSubmission($id: ID!, $input: UpdateSubmissionInput!) {
+  updateSubmission(id: $id, input: $input) {
+    id
+    formData
+    locationData
+    score
+    feedback
+    createdAt
+    updatedAt
   }
 }

@@ -1,82 +1,117 @@
 import { defineStore } from "pinia";
-import { useApolloClient } from '@vue/apollo-composable';
-import type { Submission, CreateSubmissionInput, UpdateSubmissionInput } from "~/types/submission";
-
-// Import GQL documents
-import CreateSubmissionMutation from "~/queries/createSubmission.gql";
-import UpdateSubmissionMutation from "~/queries/updateSubmission.gql";
-import SubmissionQuery from "~/queries/submission.gql";
+import { ref } from 'vue';
+import { useApolloClient, useMutation } from '@vue/apollo-composable';
+import { gql } from 'graphql-tag';
+import { Submission } from "~/server/src/submission/schemas/submission.schema";
 
 interface SubmissionState {
   submissions: Submission[];
   currentSubmission: Submission | null;
 }
 
-export const useSubmissionStore = defineStore("submission", {
-  state: (): SubmissionState => ({
-    submissions: [],
-    currentSubmission: null,
-  }),
-  actions: {
-    setCurrentSubmission(submission: Submission | null) {
-      this.currentSubmission = submission;
-    },
-    async createSubmission(practiceId: string, formId: string, data: Record<string, any>): Promise<Submission | null> {
-      const { client } = useApolloClient();
-      const input: CreateSubmissionInput = { protocolId: practiceId, formId, data, practiceId };
-      try {
-        const result = await client.mutate({
-          mutation: CreateSubmissionMutation,
-          variables: { createSubmissionInput: input },
-        });
-        if (result?.errors) {
-          throw new Error(result.errors[0]?.message || "Error creating submission");
-        }
+export const useSubmissionStore = defineStore("submission", () => {
+  const { client } = useApolloClient();
 
-        const newSubmission = result?.data?.submitProtocol;
-        if (newSubmission) {
-          const practiceStore = usePracticeStore();
-          await practiceStore.registerFormSubmission({
-            practiceId: practiceId,
-            formId: formId,
-            submissionId: newSubmission._id,
-          });
-        }
-        return newSubmission || null;
-      } catch (error: any) {
-        console.error("Error creating submission:", error);
-        throw error;
+  // State
+  const submissions = ref<Submission[]>([]);
+  const currentSubmission = ref<Submission | null>(null);
+
+  // Actions
+  const setCurrentSubmission = (submission: Submission | null) => {
+    currentSubmission.value = submission;
+  };
+
+  const createSubmission = async (input: any): Promise<Submission | null> => {
+    const { mutate } = useMutation(gql`mutation CreateSubmission($input: CreateSubmissionInput!) { createSubmission(input: $input) { id practice { id } protocol { id } formData locationData score feedback createdAt updatedAt } }`);
+    try {
+      const result = await mutate({ input });
+      if (result?.errors) {
+        throw new Error(result.errors[0]?.message || "Error creating submission");
       }
-    },
-    async updateSubmission(id: string, data: Record<string, any>): Promise<Submission | null> {
-      const { client } = useApolloClient();
-      const input: UpdateSubmissionInput = { id, data };
-      try {
-        const result = await client.mutate({
-          mutation: UpdateSubmissionMutation,
-          variables: { updateSubmissionInput: input },
-        });
-        if (result?.errors) {
-          throw new Error(result.errors[0]?.message || "Error updating submission");
-        }
-        return result?.data?.updateSubmission || null;
-      } catch (error: any) {
-        console.error("Error updating submission:", error);
-        throw error;
+      return result?.data?.createSubmission || null;
+    } catch (error: any) {
+      console.error("submissionStore: Error creating submission:", error);
+      throw new Error(error.message || "Error desconocido al crear entrega.");
+    }
+  };
+
+  const updateSubmission = async (id: string, input: any): Promise<Submission | null> => {
+    const { mutate } = useMutation(gql`mutation UpdateSubmission($id: ID!, $input: UpdateSubmissionInput!) { updateSubmission(id: $id, input: $input) { id formData locationData score feedback createdAt updatedAt } }`);
+    try {
+      const result = await mutate({ id, input });
+      if (result?.errors) {
+        throw new Error(result.errors[0]?.message || "Error updating submission");
       }
-    },
-    async fetchSubmission(id: string): Promise<Submission | null> {
-      const { data, error } = await useAsyncQuery(SubmissionQuery, { id });
-      if (error.value) {
-        console.error("Error fetching submission:", error.value);
-        throw error.value;
+      return result?.data?.updateSubmission || null;
+    } catch (error: any) {
+      console.error("submissionStore: Error updating submission:", error);
+      throw new Error(error.message || "Error desconocido al actualizar entrega.");
+    }
+  };
+
+  const fetchSubmission = async (id: string): Promise<Submission | null> => {
+    try {
+      const { data, errors } = await client.query({ query: gql`query Submission($id: ID!) { submission(id: $id) { id practice { id student { id name } teacher { id name } } protocol { id name form { id name fields { name label type options rules } } } formData locationData score feedback createdAt updatedAt } }`, variables: { id }, fetchPolicy: 'network-only' });
+      if (errors) throw errors;
+      currentSubmission.value = data.submission;
+      return data.submission;
+    } catch (error: any) {
+      console.error("submissionStore: Error fetching submission:", error);
+      throw new Error(error.message || "Error desconocido al cargar entrega.");
+    }
+  };
+
+  const fetchSubmissions = async (): Promise<Submission[]> => {
+    try {
+      const { data, errors } = await client.query({ query: gql`query Submissions { submissions { id practice { id student { id name } teacher { id name } } protocol { id name } formData locationData score feedback createdAt updatedAt } }`, fetchPolicy: 'network-only' });
+      if (errors) throw errors;
+      submissions.value = data.submissions;
+      return data.submissions;
+    } catch (error: any) {
+      console.error("submissionStore: Error fetching submissions:", error);
+      throw new Error(error.message || "Error desconocido al cargar entregas.");
+    }
+  };
+
+  const evaluateSubmission = async (id: string, score: number, feedback: string): Promise<Submission | null> => {
+    const { mutate } = useMutation(gql`mutation EvaluateSubmission($id: ID!, $score: Float!, $feedback: String!) { evaluateSubmission(id: $id, score: $score, feedback: $feedback) { id score feedback } }`);
+    try {
+      const result = await mutate({ id, score, feedback });
+      if (result?.errors) {
+        throw new Error(result.errors[0]?.message || "Error al evaluar la entrega");
       }
-      if (data.value?.submission) {
-        this.currentSubmission = data.value.submission;
-        return data.value.submission;
+      return result?.data?.evaluateSubmission || null;
+    } catch (error: any) {
+      console.error("submissionStore: Error evaluating submission:", error);
+      throw new Error(error.message || "Error desconocido al evaluar entrega.");
+    }
+  };
+
+  const generateSubmissionPdf = async (submissionId: string): Promise<string | null> => {
+    const { mutate } = useMutation(gql`mutation GenerateSubmissionPdf($submissionId: ID!) { generateSubmissionPdf(submissionId: $submissionId) }`);
+    try {
+      const result = await mutate({ submissionId });
+      if (result?.errors) {
+        throw new Error(result.errors[0]?.message || "Error al generar PDF");
       }
-      return null;
-    },
-  },
+      return result?.data?.generateSubmissionPdf || null;
+    } catch (error: any) {
+      console.error("submissionStore: Error generating PDF:", error);
+      throw new Error(error.message || "Error desconocido al generar PDF.");
+    }
+  };
+
+  return {
+    submissions,
+    currentSubmission,
+    setCurrentSubmission,
+    createSubmission,
+    updateSubmission,
+    fetchSubmission,
+    fetchSubmissions,
+    evaluateSubmission,
+    generateSubmissionPdf,
+  };
+}, {
   persist: true,
 });

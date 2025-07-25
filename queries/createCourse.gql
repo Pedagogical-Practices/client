@@ -1,14 +1,15 @@
-mutation CreateCourse($createCourseInput: CreateCourseInput!) {
-  createCourse(createCourseInput: $createCourseInput) {
-    _id
+mutation CreateCourse($input: CreateCourseInput!) {
+  createCourse(input: $input) {
+    id
     name
-    institution
-    assignedGroups
-    createdBy {
-      _id
+    description
+    startDate
+    endDate
+    protocols {
+      id
       name
-      email
     }
     createdAt
+    updatedAt
   }
 }

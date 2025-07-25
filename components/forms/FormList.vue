@@ -10,7 +10,7 @@
         size="small"
         variant="text"
         color="primary"
-        @click.stop="$emit('view-form', item._id)"
+        @click.stop="$emit('view-form', item.id)"
         title="Ver Detalles"
         icon="mdi-eye"
       ></v-btn>
@@ -18,7 +18,7 @@
         size="small"
         variant="text"
         color="secondary"
-        @click.stop="$emit('edit-form', item._id)"
+        @click.stop="$emit('edit-form', item.id)"
         title="Editar Formulario"
         icon="mdi-pencil"
       ></v-btn>
@@ -26,7 +26,7 @@
         size="small"
         variant="text"
         color="error"
-        @click.stop="$emit('delete-form', item._id)"
+        @click.stop="$emit('delete-form', item.id)"
         title="Eliminar Formulario"
         icon="mdi-delete"
       ></v-btn>
@@ -36,8 +36,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-
-import type { Form } from "~/stores/formStores";
+import type { Form } from "~/types";
 
 defineProps<{
   forms: Form[];
@@ -51,13 +50,15 @@ const emit = defineEmits<{
 
 const headers = ref([
   { title: "Nombre", key: "name" },
-  { title: "Creado Por", key: "createdBy.name" },
+  { title: "Descripción", key: "description" },
   { title: "Fecha Creación", key: "createdAt" },
   { title: "Acciones", key: "actions", sortable: false },
 ]);
 
 const handleRowClick = (_: any, { item }: { item: Form }) => {
-  emit("view-form", item._id);
+  if (item.id) {
+    emit("view-form", item.id);
+  }
 };
 </script>
 

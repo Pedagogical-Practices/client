@@ -1,39 +1,16 @@
-mutation CreateForm($createFormInput: CreateFormInput!) {
-  createForm(createFormInput: $createFormInput) {
-    _id
+mutation CreateForm($input: CreateFormInput!) {
+  createForm(input: $input) {
+    id
     name
+    description
     fields {
-      type
-      label
-      value
-      variableName
-      placeholder
-      hint
-      height
-      required
-      chapter
-      question
-      questionNumber
-      consistencyCondition
-      inconsistencyMessage
-      errorType
-      description
-      requirementLevel
-      options {
-        label
-        value
-      }
-      disabled
-      readonly
       name
-      specificType
-      color
+      label
+      type
+      options
       rules
     }
-    createdBy {
-      name
-      email
-    }
     createdAt
+    updatedAt
   }
 }

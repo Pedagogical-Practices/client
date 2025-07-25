@@ -1,5 +1,5 @@
-query Me {
-  me {
+query GetUsers {
+  users {
     id
     name
     email

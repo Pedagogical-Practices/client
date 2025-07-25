@@ -1,5 +1,5 @@
-query MyPracticesQuery {
-  myPractices {
+query PracticesByStudentQuery($studentId: ID!) {
+  practicesByStudent(studentId: $studentId) {
     id
     course {
       id

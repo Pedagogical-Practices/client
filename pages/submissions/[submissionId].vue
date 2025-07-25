@@ -2,7 +2,7 @@
   <v-container v-if="submissionStore.currentSubmission">
     <v-card class="pa-4">
       <v-card-title class="text-h5 primary--text">Reporte de Entrega</v-card-title>
-      <v-card-subtitle>Formulario: {{ formStore.currentForm?.name }}</v-card-subtitle>
+      <v-card-subtitle>Protocolo: {{ submissionStore.currentSubmission.protocol.name }}</v-card-subtitle>
       <v-card-text>
         <v-list dense>
           <v-list-item v-for="(value, key) in displayData" :key="key">
@@ -10,6 +10,13 @@
             <v-list-item-subtitle>{{ value }}</v-list-item-subtitle>
           </v-list-item>
         </v-list>
+
+        <v-divider class="my-4"></v-divider>
+
+        <h3 class="text-h6">Evaluación</h3>
+        <p><strong>Puntuación:</strong> {{ submissionStore.currentSubmission.score ?? 'N/A' }}</p>
+        <p><strong>Retroalimentación:</strong> {{ submissionStore.currentSubmission.feedback ?? 'N/A' }}</p>
+
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -22,10 +29,10 @@
         </v-btn>
         <v-btn
           color="secondary"
-          @click="printReport"
+          @click="generatePdf"
         >
-          <v-icon left>mdi-printer</v-icon>
-          Imprimir
+          <v-icon left>mdi-file-pdf-box</v-icon>
+          Generar PDF
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -40,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, reactive } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useSubmissionStore } from '~/stores/submissionStore';
 import { useFormStore } from '~/stores/formStores';
@@ -52,40 +59,28 @@ const submissionStore = useSubmissionStore();
 const formStore = useFormStore();
 const authStore = useAuthStore();
 
-const userNames = reactive<{ [key: string]: string }>({});
-
 onMounted(async () => {
   const submissionId = route.params.submissionId as string;
   if (submissionId) {
     await submissionStore.fetchSubmission(submissionId);
-    if (submissionStore.currentSubmission?.formId) {
-      await formStore.fetchForm(submissionStore.currentSubmission.formId);
+    if (submissionStore.currentSubmission?.protocol?.form?.id) {
+      await formStore.fetchForm(submissionStore.currentSubmission.protocol.form.id);
     }
-    // Fetch all users to populate userNames map
-    await authStore.fetchUsers();
-    authStore.users.forEach(user => {
-      userNames[user._id] = user.name;
-    });
   }
 });
 
 const formatKey = (key: string) => {
-  // Simple formatting: capitalize first letter and replace camelCase with spaces
   return key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
 };
 
 const formatValue = (key: string, value: any) => {
   if (key === 'docenteFormacion' && value) {
-    return userNames[value] || value; // Return name if found, otherwise ID
+    // Assuming value is a user ID and we have user data available
+    const user = authStore.users.find(u => u.id === value);
+    return user ? user.name : value;
   }
 
   if (typeof value === 'object' && value !== null) {
-    // Handle dates
-    if (value.hasOwnProperty('$date')) {
-      const date = new Date(value.$date.$numberLong ? parseInt(value.$date.$numberLong) : value.$date);
-      return date.toLocaleDateString(); // Formato solo año, mes y día
-    }
-    // Handle other objects (e.g., arrays, nested objects) as JSON string for now
     return JSON.stringify(value);
   }
   return value;
@@ -93,9 +88,9 @@ const formatValue = (key: string, value: any) => {
 
 const displayData = computed(() => {
   const data: Record<string, any> = {};
-  if (submissionStore.currentSubmission?.data) {
-    for (const key in submissionStore.currentSubmission.data) {
-      data[key] = formatValue(key, submissionStore.currentSubmission.data[key]);
+  if (submissionStore.currentSubmission?.formData) {
+    for (const key in submissionStore.currentSubmission.formData) {
+      data[key] = formatValue(key, submissionStore.currentSubmission.formData[key]);
     }
   }
   return data;
@@ -103,14 +98,29 @@ const displayData = computed(() => {
 
 const editSubmission = () => {
   if (submissionStore.currentSubmission) {
-    const { formId, _id: submissionId } = submissionStore.currentSubmission;
-    // Use route.params.practiceId as a fallback if submission.practiceId is null
-    const practiceId = submissionStore.currentSubmission.practiceId || route.params.practiceId;
+    const { id: submissionId, practice, protocol } = submissionStore.currentSubmission;
+    const practiceId = practice.id;
+    const formId = protocol.form.id;
     router.push(`/fill-form/${practiceId}/${formId}?submissionId=${submissionId}`);
   }
 };
 
-const printReport = () => {
-  window.print();
+const generatePdf = async () => {
+  if (submissionStore.currentSubmission?.id) {
+    try {
+      const pdfBase64 = await submissionStore.generateSubmissionPdf(submissionStore.currentSubmission.id);
+      if (pdfBase64) {
+        const link = document.createElement('a');
+        link.href = `data:application/pdf;base64,${pdfBase64}`;
+        link.download = `reporte_${submissionStore.currentSubmission.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      // Optionally, show an error message to the user
+    }
+  }
 };
 </script>

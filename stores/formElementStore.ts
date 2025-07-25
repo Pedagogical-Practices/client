@@ -1,89 +1,113 @@
 import { defineStore } from "pinia";
-import type { FormElement } from "~/types/form";
+import { ref, computed } from "vue";
+import type { FormField } from "~/types"; // Asegúrate de que esta ruta sea correcta
 
-export const useFormElementStore = defineStore("formElement", {
-  state: (): FormElementState => ({
-    formElements: [],
-    selectedElementId: null,
-  }),
-  actions: {
-    addElement(element: FormElement) {
-      if (!element.id) {
-        element.id =
-          Date.now().toString() + Math.random().toString(36).substring(2, 9);
-      }
-      this.formElements.push(element);
-    },
-    removeElement(elementId: string) {
-      this.formElements = this.formElements.filter(
-        (el: any) => el.id !== elementId
+// Definición local de FormField
+/*export interface FormField {
+  name: string;
+  label: string;
+  type: FormFieldType;
+  options?: Record<string, any>;
+  rules?: string[];
+  defaultValue?: string;
+}*/
+
+interface FormElementState {
+  formElements: FormField[];
+  selectedElementName: string | null;
+}
+
+export const useFormElementStore = defineStore("formElement", () => {
+  // State
+  const formElements = ref<FormField[]>([]);
+  const selectedElementName = ref<string | null>(null);
+
+  // Actions
+  const addElement = (element: FormField) => {
+    formElements.value.push(element);
+  };
+
+  const removeElement = (elementName: string) => {
+    formElements.value = formElements.value.filter(
+      (el) => el.name !== elementName
+    );
+    if (selectedElementName.value === elementName) {
+      selectedElementName.value = null;
+    }
+  };
+
+  const updateElement = (updatedElement: FormField) => {
+    const index = formElements.value.findIndex(
+      (el) => el.name === updatedElement.name
+    );
+
+    if (index !== -1) {
+      Object.assign(formElements.value[index], updatedElement);
+    } else {
+      console.error(
+        "Update failed: Element with name",
+        updatedElement.name,
+        "not found in store."
       );
-      if (this.selectedElementId === elementId) {
-        this.selectedElementId = null;
-      }
-    },
-    updateElement(updatedElement: FormElement) {
-      console.log('Attempting to update element with ID:', updatedElement.id);
-      console.log('Data received for update:', JSON.parse(JSON.stringify(updatedElement)));
+    }
+  };
 
-      const index = this.formElements.findIndex(
-        (el) => el.id === updatedElement.id
-      );
+  const setSelectedElement = (elementName: string | null) => {
+    console.log("formElementStore: Setting selected element to:", elementName);
+    selectedElementName.value = elementName;
+  };
 
-      if (index !== -1) {
-        console.log('Found element at index:', index);
-        console.log('State BEFORE update:', JSON.parse(JSON.stringify(this.formElements[index])));
-        
-        // Use Object.assign to merge properties into the existing object
-        // This preserves the object reference, helping Vue's reactivity.
-        Object.assign(this.formElements[index], updatedElement);
-        
-        console.log('State AFTER update:', JSON.parse(JSON.stringify(this.formElements[index])));
-      } else {
-        console.error('Update failed: Element with ID', updatedElement.id, 'not found in store.');
+  const initializeForm = (elements: FormField[]) => {
+    formElements.value = elements;
+    selectedElementName.value = null;
+  };
+
+  const moveElementUp = (elementName: string) => {
+    const index = formElements.value.findIndex((el) => el.name === elementName);
+    if (index > 0) {
+      const element = formElements.value[index];
+      formElements.value.splice(index, 1);
+      formElements.value.splice(index - 1, 0, element);
+    }
+  };
+
+  const moveElementDown = (elementName: string) => {
+    const index = formElements.value.findIndex((el) => el.name === elementName);
+    if (index !== -1 && index < formElements.value.length - 1) {
+      const element = formElements.value[index];
+      formElements.value.splice(index, 1);
+      formElements.value.splice(index + 1, 0, element);
+    }
+  };
+
+  // Getters
+  const getElement = computed(
+    () =>
+      (elementName: string): FormField | undefined => {
+        return formElements.value.find((el) => el.name === elementName);
       }
-    },
-    setSelectedElement(elementId: string | null) {
-      this.selectedElementId = elementId;
-    },
-    initializeForm(elements: FormElement[]) {
-      this.formElements = elements;
-      this.selectedElementId = null;
-    },
-    moveElementUp(elementId: string) {
-      const index = this.formElements.findIndex((el) => el.id === elementId);
-      if (index > 0) {
-        const element = this.formElements[index];
-        this.formElements.splice(index, 1);
-        this.formElements.splice(index - 1, 0, element);
-      }
-    },
-    moveElementDown(elementId: string) {
-      const index = this.formElements.findIndex((el) => el.id === elementId);
-      if (index !== -1 && index < this.formElements.length - 1) {
-        const element = this.formElements[index];
-        this.formElements.splice(index, 1);
-        this.formElements.splice(index + 1, 0, element);
-      }
-    },
-    updateElementValue({ elementId, value }: { elementId: string, value: any }) {
-      const element = this.formElements.find(el => el.id === elementId);
-      if (element) {
-        element.value = value;
-      }
-    },
-  },
-  getters: {
-    getElement:
-      (state) =>
-      (elementId: string): FormElement | undefined =>
-        state.formElements.find((el: any) => el.id === elementId),
-    getFormElements: (state): FormElement[] => state.formElements,
-    getSelectedElement: (state): FormElement | undefined =>
-      state.selectedElementId
-        ? state.formElements.find(
-            (el: any) => el.id === state.selectedElementId
-          )
-        : undefined,
-  },
+  );
+
+  const getFormElements = computed(() => formElements.value);
+
+  const getSelectedElement = computed(() => {
+    return selectedElementName.value
+      ? formElements.value.find((el) => el.name === selectedElementName.value)
+      : undefined;
   });
+
+  return {
+    formElements,
+    selectedElementName,
+    addElement,
+    removeElement,
+    updateElement,
+    setSelectedElement,
+    initializeForm,
+    moveElementUp,
+    moveElementDown,
+    getElement,
+    getFormElements,
+    getSelectedElement,
+  };
+});

@@ -108,16 +108,7 @@
               density="compact"
               :rules="[(v) => !!v || 'Protocolo es requerido']"
             ></v-select>
-            <v-select
-              v-model="newPractice.institutionName"
-              :items="institutionStore.institutions || []"
-              item-title="name"
-              item-value="name"
-              label="Nombre de la Institución"
-              variant="outlined"
-              density="compact"
-              :rules="[(v) => !!v || 'Institución es requerida']"
-            ></v-select>
+            
             <v-text-field
               v-model="newPractice.courseName"
               label="Nombre del Curso"
@@ -187,16 +178,14 @@ import { useRouter } from "vue-router";
 import { usePracticeStore } from "~/stores/practiceStore";
 import { useAuthStore } from "~/stores/authStore";
 import { useProtocolStore } from "~/stores/protocolStore";
-import { PracticeStatus } from "~/types/practice";
-import { useInstitutionStore } from "~/stores/institutionStore";
+import { PracticeStatus } from "~/types";
 
-definePageMeta({});
 
 const router = useRouter();
 const practiceStore = usePracticeStore();
 const authStore = useAuthStore();
 const protocolStore = useProtocolStore();
-const institutionStore = useInstitutionStore();
+
 
 const dialog = ref(false);
 const practiceFormRef = ref<HTMLFormElement | null>(null);
@@ -205,7 +194,6 @@ const newPractice = ref({
   studentId: "",
   advisorId: "",
   protocolId: "",
-  institutionName: "",
   courseName: "",
   status: PracticeStatus.ASSIGNED, // Default para nueva práctica
 });
@@ -224,7 +212,7 @@ const headers = ref([
   { title: "Estudiante", key: "student" },
   { title: "Asesor", key: "advisor" },
   { title: "Protocolo", key: "protocol" },
-  { title: "Institución", key: "institutionName" },
+  
   { title: "Curso", key: "courseName" },
   { title: "Estado", key: "status" },
   { title: "Acciones", key: "actions", sortable: false },
@@ -238,8 +226,7 @@ onMounted(async () => {
   console.log("practices/index.vue: protocols fetched.");
   await authStore.fetchUsers(); // Cargar todos los usuarios
   console.log("practices/index.vue: users fetched.");
-  await institutionStore.fetchInstitutions(); // Cargar instituciones
-  console.log("practices/index.vue: institutions fetched.");
+  
 });
 
 const students = computed(() => {
@@ -311,7 +298,6 @@ const savePractice = async () => {
         studentId: newPractice.value.studentId,
         advisorId: newPractice.value.advisorId,
         protocolId: newPractice.value.protocolId,
-        institutionName: newPractice.value.institutionName,
         courseName: newPractice.value.courseName,
       });
       snackbar.value = {
@@ -347,7 +333,6 @@ const editPractice = (id: string) => {
       studentId: practice.student._id,
       advisorId: practice.advisor._id,
       protocolId: practice.protocol._id,
-      institutionName: practice.institutionName,
       courseName: practice.courseName,
       status: practice.status,
     };

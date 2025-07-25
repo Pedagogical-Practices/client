@@ -1,0 +1,3 @@
+mutation DeletePracticeMutation($id: ID!) {
+  deletePractice(id: $id)
+}

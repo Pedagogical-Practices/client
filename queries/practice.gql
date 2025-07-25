@@ -1,40 +1,44 @@
-query Practice($id: String!) {
+query PracticeQuery($id: ID!) {
   practice(id: $id) {
-    _id
+    id
+    course {
+      id
+      name
+      description
+      startDate
+      endDate
+    }
     student {
-      _id
+      id
       name
+      email
     }
-    advisor {
-      _id
+    teacher {
+      id
       name
+      email
     }
-    protocol {
-      _id
-      name
-      module
-      forms {
-        _id
-        name
-      }
-    }
-    institutionName
-    courseName
     status
-    filledForms {
+    protocols {
+      id
+      name
+      description
       form {
-        _id
+        id
         name
       }
-      submission {
-        _id
-        data
-      }
+      productType
     }
-    createdBy {
-      _id
-      name
+    submissions {
+      id
+      formData
+      locationData
+      score
+      feedback
+      createdAt
+      updatedAt
     }
     createdAt
+    updatedAt
   }
 }

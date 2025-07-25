@@ -1,14 +1,15 @@
 query Courses {
   courses {
-    _id
+    id
     name
-    institution
-    assignedGroups
-    createdBy {
-      _id
+    description
+    startDate
+    endDate
+    protocols {
+      id
       name
-      email
     }
     createdAt
+    updatedAt
   }
 }

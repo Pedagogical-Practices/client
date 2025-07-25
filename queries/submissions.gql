@@ -1,10 +1,26 @@
-query Submissions($protocolId: String!) {
-  submissions(protocolId: $protocolId) {
-    _id
-    protocolId
-    formId
-    data
-    submittedBy
+query Submissions {
+  submissions {
+    id
+    practice {
+      id
+      student {
+        id
+        name
+      }
+      teacher {
+        id
+        name
+      }
+    }
+    protocol {
+      id
+      name
+    }
+    formData
+    locationData
+    score
+    feedback
     createdAt
+    updatedAt
   }
 }

@@ -1,14 +1,14 @@
-mutation CreateProtocol($createProtocolInput: CreateProtocolInput!) {
-  createProtocol(createProtocolInput: $createProtocolInput) {
-    _id
+mutation CreateProtocol($input: CreateProtocolInput!) {
+  createProtocol(input: $input) {
+    id
     name
-    module
-    forms { # Seleccionar los campos del formulario
-      _id
+    description
+    form {
+      id
       name
-      # Otros campos de Form que necesites, ej: fields { ... }
     }
-    createdBy
+    productType
     createdAt
+    updatedAt
   }
 }

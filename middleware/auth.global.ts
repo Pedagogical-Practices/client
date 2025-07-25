@@ -22,7 +22,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   }
 
   // Define public routes that do not require authentication
-  const publicRoutes = ['/login', '/register'];
+  const publicRoutes = ['/login'];
   const isPublicRoute = publicRoutes.includes(to.path);
 
   // If trying to access a protected route and not authenticated, redirect to login
@@ -30,8 +30,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     return navigateTo('/login');
   }
 
-  // If authenticated and trying to access login/register, redirect to editor
+  // If authenticated and trying to access login/register, redirect to home
   if (authStore.isAuthenticated && isPublicRoute) {
-    return navigateTo('/editor');
+    return navigateTo('/');
   }
 });

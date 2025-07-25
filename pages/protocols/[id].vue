@@ -14,11 +14,11 @@
             </v-btn>
           </v-card-title>
           <v-card-text>
-            <!--FormViewer
-              v-if="formBuilderStore.currentForm"
-              :form="formBuilderStore.currentForm"
-              v-model="submissionData"
-            /-->
+            <FormFiller
+              v-if="formStore.currentForm"
+              :formDefinition="formStore.currentForm"
+              v-model="formData"
+            />
           </v-card-text>
         </v-card>
       </v-col>
@@ -40,21 +40,20 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-// import { useFormBuilderStore } from "~/stores/formBuilderStore";
 import { useFormStore } from "~/stores/formStores";
 import { useProtocolStore } from "~/stores/protocolStore";
 import { useSubmissionStore } from "~/stores/submissionStore";
+import FormFiller from "~/components/FormFiller.vue";
 
 definePageMeta({});
 
 const route = useRoute();
 const router = useRouter();
-// const formBuilderStore = useFormBuilderStore();
 
 const formStore = useFormStore();
 const protocolStore = useProtocolStore();
 const submissionStore = useSubmissionStore();
-const submissionData = ref({});
+const formData = ref({});
 const snackbar = ref({
   show: false,
   text: "",
@@ -65,17 +64,17 @@ const snackbar = ref({
 onMounted(async () => {
   const protocolId = route.params.id as string;
   await protocolStore.fetchProtocol(protocolId);
-  if (protocolStore.currentProtocol?.formId) {
-    await formStore.fetchForm(protocolStore.currentProtocol.formId);
+  if (protocolStore.currentProtocol?.form?.id) {
+    await formStore.fetchForm(protocolStore.currentProtocol.form.id);
   }
 });
 
 const submitProtocol = async () => {
   try {
-    await submissionStore.submitProtocol({
+    await submissionStore.createSubmission({
+      practiceId: "", // This needs to be dynamically set based on the context of the practice
       protocolId: route.params.id as string,
-      formId: protocolStore.currentProtocol?.formId || "",
-      data: submissionData.value,
+      formData: formData.value,
     });
     snackbar.value = {
       show: true,
@@ -83,7 +82,7 @@ const submitProtocol = async () => {
       color: "success",
       timeout: 3000,
     };
-    router.push(`/courses/${protocolStore.currentProtocol?.courseId}`);
+    router.back(); // Go back to the previous page
   } catch (error: any) {
     snackbar.value = {
       show: true,

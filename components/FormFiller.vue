@@ -3,24 +3,13 @@
     <v-card-title class="text-h5">{{ formDefinition.name }}</v-card-title>
     <v-card-text>
       <v-form ref="formRef">
-        <div v-for="field in formDefinition.fields" :key="field.variableName">
+        <div v-for="field in formDefinition.fields" :key="field.name">
           <component
             :is="getComponentName(field)"
-            v-model="formData[field.variableName]"
+            v-model="formData[field.name]"
             :label="field.label"
-            :placeholder="field.placeholder"
-            :hint="field.hint"
-            :persistent-hint="true"
-            :required="field.required"
-            :disabled="field.disabled"
-            :readonly="field.readonly"
-            :options="field.options"
-            :specific-type="field.specificType"
-            :height="field.height"
-            :color="field.color"
-            :rules="field.required ? [(v: any) => !!v || 'Campo requerido'] : []"
-            :multiple="field.multiple"
-            :dataSource="field.dataSource"
+            :rules="field.rules ? field.rules.map(rule => (v: any) => (!!v || rule !== 'required') || 'Campo requerido') : []"
+            v-bind="getComponentProps(field)"
             class="mb-4"
             variant="outlined"
           />
@@ -39,13 +28,11 @@ import { ref, reactive, onMounted, watch } from 'vue';
 import {
   VTextField,
   VTextarea,
-  VCheckbox,
   VSelect,
-  VBtn,
-  VRadioGroup,
   VDatePicker,
 } from "vuetify/components";
-import DynamicSelect from "~/components/forms/DynamicSelect.vue";
+import { FormFieldType } from "~/server/src/common/enums/form-field-type.enum";
+import { useDataSourceStore } from "~/stores/dataSourceStore";
 
 const props = defineProps<{
   formDefinition: any;
@@ -57,22 +44,31 @@ const emit = defineEmits(['submit', 'update']);
 
 const formRef = ref<HTMLFormElement | null>(null);
 const formData = reactive<Record<string, any>>({});
+const dataSourceStore = useDataSourceStore();
 
-const componentMap: Record<string, any> = {
-  text: VTextField,
-  textarea: VTextarea,
-  checkbox: VCheckbox,
-  select: VSelect,
-  button: VBtn,
-  "radio-group": VRadioGroup,
-  "date-picker": VDatePicker,
+const componentMap: Record<FormFieldType, any> = {
+  [FormFieldType.TEXT]: VTextField,
+  [FormFieldType.TEXTAREA]: VTextarea,
+  [FormFieldType.SELECT]: VSelect,
+  [FormFieldType.DATE]: VDatePicker,
+  [FormFieldType.MAP]: VTextField, // Placeholder for map component
+  [FormFieldType.FILE_UPLOAD]: VTextField, // Placeholder for file upload
 };
 
 const getComponentName = (field: any): any => {
-  if (field.type === "select" && field.dataSource) {
-    return DynamicSelect;
-  }
   return componentMap[field.type] || VTextField;
+};
+
+const getComponentProps = (field: any) => {
+  const props: Record<string, any> = {};
+
+  if (field.type === FormFieldType.SELECT) {
+    if (field.options && field.options.items) {
+      props.items = field.options.items;
+    }
+  }
+
+  return props;
 };
 
 const initializeForm = () => {
@@ -85,12 +81,7 @@ const initializeForm = () => {
   }
 
   props.formDefinition.fields.forEach((field: any) => {
-    formData[field.variableName] = data[field.variableName] !== undefined ? data[field.variableName] : (field.value !== undefined ? field.value : null);
-    if (field.type === 'checkbox') {
-      formData[field.variableName] = data[field.variableName] || field.value || false;
-    } else if (field.type === 'select' && field.multiple) {
-      formData[field.variableName] = data[field.variableName] || field.value || [];
-    }
+    formData[field.name] = data[field.name] !== undefined ? data[field.name] : null;
   });
 };
 

@@ -15,11 +15,6 @@
           </v-card-title>
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="4">
-                <FormFilter v-model="filter" @update:filter="updateFilter" />
-              </v-col>
-            </v-row>
-            <v-row>
               <v-col cols="12">
                 <FormList
                   :forms="filteredForms"
@@ -48,11 +43,21 @@
     <v-dialog v-model="showDeleteConfirm" max-width="500">
       <v-card>
         <v-card-title class="headline">Confirmar Eliminación</v-card-title>
-        <v-card-text>¿Estás seguro de que quieres eliminar este formulario? Esta acción no se puede deshacer.</v-card-text>
+        <v-card-text
+          >¿Estás seguro de que quieres eliminar este formulario? Esta acción no
+          se puede deshacer.</v-card-text
+        >
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="grey-darken-1" variant="text" @click="showDeleteConfirm = false">Cancelar</v-btn>
-          <v-btn color="error" variant="text" @click="deleteForm">Eliminar</v-btn>
+          <v-btn
+            color="grey-darken-1"
+            variant="text"
+            @click="showDeleteConfirm = false"
+            >Cancelar</v-btn
+          >
+          <v-btn color="error" variant="text" @click="deleteForm"
+            >Eliminar</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -62,19 +67,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-// import { useFormBuilderStore } from "~/stores/formBuilderStore";
-import { useFormStore } from "~/stores/formStores";
+import { useFormStore } from "~/stores/formStore";
 import { useFormElementStore } from "~/stores/formElementStore";
 import { useAuthStore } from "~/stores/authStore";
 import FormList from "~/components/forms/FormList.vue";
-import FormFilter from "~/components/forms/FormFilter.vue";
+import type { Form } from "~/types";
 
-definePageMeta({});
+// definePageMeta({});
 
 const router = useRouter();
 const formStore = useFormStore();
 const formElementStore = useFormElementStore();
-// const formBuilderStore = useFormBuilderStore();
 const authStore = useAuthStore();
 const filter = ref("");
 const snackbar = ref({
@@ -129,6 +132,7 @@ const deleteForm = async () => {
     };
     showDeleteConfirm.value = false;
     formToDeleteId.value = null;
+    await formStore.fetchForms(); // Re-fetch forms after deletion
   } catch (error: any) {
     console.error("Error al eliminar formulario:", error);
     snackbar.value = {
@@ -141,10 +145,10 @@ const deleteForm = async () => {
 };
 
 const filteredForms = computed(() => {
-  const forms = formStore.forms.filter((form) =>
+  const forms = formStore.forms.filter((form: Form) =>
     form.name.toLowerCase().includes(filter.value.toLowerCase())
   );
-  return forms.sort((a, b) => {
+  return forms.sort((a: any, b: any) => {
     const dateA = new Date(a.createdAt);
     const dateB = new Date(b.createdAt);
     return dateB.getTime() - dateA.getTime();
@@ -160,12 +164,13 @@ const viewForm = (formId: string) => {
 };
 
 const editForm = (formId: string) => {
-  router.push(`/forms/edit/${formId}`);
+  router.push(`/editor?id=${formId}`);
 };
 
 const createNewForm = () => {
   formElementStore.initializeForm([]);
   formStore.formName = "";
+  formStore.editingFormId = null;
   formElementStore.setSelectedElement(null);
   router.push("/editor");
 };

@@ -1,10 +1,37 @@
-query Submission($id: String!) {
+query Submission($id: ID!) {
   submission(id: $id) {
-    _id
-    formId
-    practiceId
-    data
-    submittedBy
+    id
+    practice {
+      id
+      student {
+        id
+        name
+      }
+      teacher {
+        id
+        name
+      }
+    }
+    protocol {
+      id
+      name
+      form {
+        id
+        name
+        fields {
+          name
+          label
+          type
+          options
+          rules
+        }
+      }
+    }
+    formData
+    locationData
+    score
+    feedback
     createdAt
+    updatedAt
   }
 }
