@@ -116,6 +116,7 @@ import { UserRole } from "~/types";
 
 const store = useUserAdminStore();
 
+// Reactive state variables
 const userRoles = Object.values(UserRole);
 const loading = ref(true);
 const dialog = ref(false);
@@ -125,26 +126,14 @@ const editableUser = ref<any>({});
 const userToDelete = ref<any>(null);
 const passwordVisible = ref(false);
 
-const headers = [
-  { title: "Nombre", value: "name" },
-  { title: "Email", value: "email" },
-  { title: "Rol", value: "role" },
-  { title: "Acciones", value: "actions", sortable: false },
-];
-
-const formTitle = computed(() => {
-  return isEditing.value ? "Editar Usuario" : "Crear Usuario";
+const snackbar = ref({
+  show: false,
+  text: "",
+  color: "success",
+  timeout: 3000,
 });
 
-onMounted(async () => {
-  try {
-    await store.fetchUsers();
-  } catch (error: any) {
-  } finally {
-    loading.value = false;
-  }
-});
-
+// Functions
 const openCreateModal = () => {
   isEditing.value = false;
   editableUser.value = {
@@ -158,25 +147,38 @@ const openCreateModal = () => {
 
 const openEditModal = (user: any) => {
   isEditing.value = true;
-  editableUser.value = { ...user };
+  editableUser.value = { ...user, password: "" }; // Initialize password to empty string
   dialog.value = true;
 };
 
 const closeModal = () => {
   dialog.value = false;
   editableUser.value = {};
+  passwordVisible.value = false; // Reset password visibility
 };
 
 const saveUser = async () => {
   try {
     if (isEditing.value) {
-      await store.updateUser(editableUser.value.id, editableUser.value);
+      // Only send password if it's not empty
+      const userToUpdate = { ...editableUser.value };
+      if (userToUpdate.password === "") {
+        delete userToUpdate.password;
+      }
+      await store.updateUser(userToUpdate.id, userToUpdate);
+      showSnackbar("¡Usuario actualizado exitosamente!", "success");
     } else {
       await store.createUser(editableUser.value);
+      showSnackbar("¡Usuario creado exitosamente!", "success");
     }
     closeModal();
+    await store.fetchUsers(); // Refresh the list
   } catch (error: any) {
-    // Handle error, maybe show a snackbar
+    console.error("Error al guardar usuario:", error);
+    showSnackbar(
+      `Error al guardar usuario: ${error.message || "Error desconocido"}`,
+      "error"
+    );
   }
 };
 
@@ -189,12 +191,51 @@ const deleteUserConfirmed = async () => {
   try {
     if (userToDelete.value) {
       await store.deleteUser(userToDelete.value.id);
+      showSnackbar("¡Usuario eliminado exitosamente!", "success");
     }
   } catch (error: any) {
-    // Handle error
+    console.error("Error al eliminar usuario:", error);
+    showSnackbar(
+      `Error al eliminar usuario: ${error.message || "Error desconocido"}`,
+      "error"
+    );
   } finally {
     deleteDialog.value = false;
     userToDelete.value = null;
+    await store.fetchUsers(); // Refresh the list
   }
 };
+
+const showSnackbar = (text: string, color: string) => {
+  snackbar.value.text = text;
+  snackbar.value.color = color;
+  snackbar.value.show = true;
+};
+
+// Computed properties
+const headers = [
+  { title: "Nombre", value: "name" },
+  { title: "Email", value: "email" },
+  { title: "Rol", value: "role" },
+  { title: "Acciones", value: "actions", sortable: false },
+];
+
+const formTitle = computed(() => {
+  return isEditing.value ? "Editar Usuario" : "Crear Usuario";
+});
+
+// Lifecycle hooks
+onMounted(async () => {
+  try {
+    await store.fetchUsers();
+  } catch (error: any) {
+    console.error("Failed to fetch users:", error);
+    showSnackbar(
+      `Error al cargar usuarios: ${error.message || "Error desconocido"}`,
+      "error"
+    );
+  } finally {
+    loading.value = false;
+  }
+});
 </script>
