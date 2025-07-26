@@ -2,7 +2,7 @@
   "name": "Informe de Práctica Docente (Matriz DOFA)",
   "fields": [
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Docente en Formación",
       "value": "",
       "variableName": "docenteFormacion",
@@ -15,15 +15,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482925459_1xua6ht",
       "disabled": false,
       "readonly": false,
       "dataSource": "students",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Institución Educativa",
       "value": "",
       "variableName": "institucionEducativa",
@@ -36,15 +38,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482929394_9nvt3zg",
       "disabled": false,
       "readonly": false,
       "dataSource": "institutions",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Período",
       "value": "",
       "variableName": "periodo",
@@ -58,13 +62,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482930579_frk62al",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Fortalezas",
       "value": "",
       "variableName": "fortalezas",
@@ -78,13 +82,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482931349_s870ebc",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Debilidades",
       "value": "",
       "variableName": "debilidades",
@@ -98,13 +102,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482932125_m2gqpxr",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Oportunidades",
       "value": "",
       "variableName": "oportunidades",
@@ -118,13 +122,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Amenazas",
       "value": "",
       "variableName": "amenazas",
@@ -138,13 +142,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482933607_7k2p1qr",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Firma del Docente en Formación",
       "value": "",
       "variableName": "firmaDocenteFormacion",
@@ -157,11 +161,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482934348_8m1n2o3",
       "disabled": false,
       "readonly": false,
       "dataSource": "students",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     }
   ]

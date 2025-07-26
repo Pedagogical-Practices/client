@@ -2,11 +2,10 @@
   "name": "Formato de Evaluación de la Práctica Pedagógica del Maestro en Formación",
   "fields": [
     {
-      "type": "text",
+      "type": "SELECT",
       "label": "Institución Educativa",
       "value": "",
       "variableName": "institucionEducativa",
-      "placeholder": "Nombre de la institución educativa",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -16,17 +15,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482925459_1xua6ht",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "institutions",
+      "options": {
+        "items": []
+      },
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "SELECT",
       "label": "Docente Asesor",
       "value": "",
       "variableName": "docenteAsesor",
-      "placeholder": "Nombre del docente asesor",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -36,17 +38,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482929394_9nvt3zg",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "teachers",
+      "options": {
+        "items": []
+      },
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "SELECT",
       "label": "Maestro en Formación",
       "value": "",
       "variableName": "maestroFormacion",
-      "placeholder": "Nombre del maestro en formación",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -56,17 +61,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482930579_frk62al",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "students",
+      "options": {
+        "items": []
+      },
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "SELECT",
       "label": "Programa",
       "value": "",
       "variableName": "programa",
-      "placeholder": "Nombre del programa",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -76,13 +84,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482931349_s870ebc",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "courses",
+      "options": {
+        "items": []
+      },
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Semestre",
       "value": "",
       "variableName": "semestre",
@@ -96,17 +108,16 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482932125_m2gqpxr",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "text",
+      "type": "SELECT",
       "label": "Sede",
       "value": "",
       "variableName": "sede",
-      "placeholder": "Sede de la institución",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
@@ -116,33 +127,40 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "institutions",
+      "options": {
+        "items": []
+      },
+      "multiple": false
     },
     {
-      "type": "text",
+      "type": "SELECT",
       "label": "Curso",
       "value": "",
       "variableName": "curso",
-      "placeholder": "Curso asignado",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
       "question": "",
       "questionNumber": "",
       "consistencyCondition": "",
-      "mensajeInconsistencia": "",
-      "tipoError": "Soft",
-      "descripcion": "",
-      "name": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482933607_7k2p1qr",
       "disabled": false,
-      "soloLectura": false,
-      "subtipo": "text"
+      "readonly": false,
+      "dataSource": "courses",
+      "options": {
+        "items": []
+      },
+      "multiple": false
     },
     {
-      "type": "date-picker",
+      "type": "DATE_PICKER",
       "label": "Fecha de la Evaluación",
       "value": "",
       "variableName": "fechaEvaluacion",
@@ -156,12 +174,12 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482934348_8m1n2o3",
       "disabled": false,
       "readonly": false
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Objetivos",
       "value": "Valorar el desempeño personal y profesional (actitudes, valores, motivaciones) de los maestros en formación, e identificar fortalezas y debilidades para establecer estrategias de mejoramiento.",
       "variableName": "objetivos",
@@ -175,13 +193,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482935089_4p5q6r7",
       "disabled": true,
       "readonly": true,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Instrucciones",
       "value": "Marque con una X en la escala de valoración cualitativa (Excelente - E, Bueno - B, Regular - D) frente a cada indicador. Al final, asigne una valoración cuantitativa general (0 a 5) para el reporte de calificación.",
       "variableName": "instrucciones",
@@ -195,13 +213,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482935830_9s0t1u2",
       "disabled": true,
       "readonly": true,
       "height": "4"
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Dominio de contenidos",
       "variableName": "dominioContenidos",
       "placeholder": "",
@@ -214,18 +232,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482936571_3v4w5x6",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "E", "value": "E" },
-        { "label": "B", "value": "B" },
-        { "label": "R", "value": "R" },
-        { "label": "D", "value": "D" }
-      ]
+      "options": {
+        "items": [
+          { "label": "E", "value": "E" },
+          { "label": "B", "value": "B" },
+          { "label": "R", "value": "R" },
+          { "label": "D", "value": "D" }
+        ]
+      }
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Planeación y organización académica",
       "variableName": "planeacionOrganizacion",
       "placeholder": "",
@@ -238,18 +258,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482937312_7y8z9a0",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "E", "value": "E" },
-        { "label": "B", "value": "B" },
-        { "label": "R", "value": "R" },
-        { "label": "D", "value": "D" }
-      ]
+      "options": {
+        "items": [
+          { "label": "E", "value": "E" },
+          { "label": "B", "value": "B" },
+          { "label": "R", "value": "R" },
+          { "label": "D", "value": "D" }
+        ]
+      }
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Pedagógica y didáctica",
       "variableName": "pedagogicaDidactica",
       "placeholder": "",
@@ -262,18 +284,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482938053_1b2c3d4",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "E", "value": "E" },
-        { "label": "B", "value": "B" },
-        { "label": "R", "value": "R" },
-        { "label": "D", "value": "D" }
-      ]
+      "options": {
+        "items": [
+          { "label": "E", "value": "E" },
+          { "label": "B", "value": "B" },
+          { "label": "R", "value": "R" },
+          { "label": "D", "value": "D" }
+        ]
+      }
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Evaluación del aprendizaje",
       "variableName": "evaluacionAprendizaje",
       "placeholder": "",
@@ -286,18 +310,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482938794_5e6f7g8",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "E", "value": "E" },
-        { "label": "B", "value": "B" },
-        { "label": "R", "value": "R" },
-        { "label": "D", "value": "D" }
-      ]
+      "options": {
+        "items": [
+          { "label": "E", "value": "E" },
+          { "label": "B", "value": "B" },
+          { "label": "R", "value": "R" },
+          { "label": "D", "value": "D" }
+        ]
+      }
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Liderazgo",
       "variableName": "liderazgo",
       "placeholder": "",
@@ -310,18 +336,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482939535_9h0i1j2",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "E", "value": "E" },
-        { "label": "B", "value": "B" },
-        { "label": "R", "value": "R" },
-        { "label": "D", "value": "D" }
-      ]
+      "options": {
+        "items": [
+          { "label": "E", "value": "E" },
+          { "label": "B", "value": "B" },
+          { "label": "R", "value": "R" },
+          { "label": "D", "value": "D" }
+        ]
+      }
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Comunicación y relaciones interpersonales",
       "variableName": "comunicacionRelaciones",
       "placeholder": "",
@@ -334,18 +362,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482940276_3k4l5m6",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "E", "value": "E" },
-        { "label": "B", "value": "B" },
-        { "label": "R", "value": "R" },
-        { "label": "D", "value": "D" }
-      ]
+      "options": {
+        "items": [
+          { "label": "E", "value": "E" },
+          { "label": "B", "value": "B" },
+          { "label": "R", "value": "R" },
+          { "label": "D", "value": "D" }
+        ]
+      }
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Trabajo en equipo",
       "variableName": "trabajoEquipo",
       "placeholder": "",
@@ -358,18 +388,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482941017_7n8o9p0",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "E", "value": "E" },
-        { "label": "B", "value": "B" },
-        { "label": "R", "value": "R" },
-        { "label": "D", "value": "D" }
-      ]
+      "options": {
+        "items": [
+          { "label": "E", "value": "E" },
+          { "label": "B", "value": "B" },
+          { "label": "R", "value": "R" },
+          { "label": "D", "value": "D" }
+        ]
+      }
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Negociación y mediación",
       "variableName": "negociacionMediacion",
       "placeholder": "",
@@ -382,18 +414,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482941758_1q2r3s4",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "E", "value": "E" },
-        { "label": "B", "value": "B" },
-        { "label": "R", "value": "R" },
-        { "label": "D", "value": "D" }
-      ]
+      "options": {
+        "items": [
+          { "label": "E", "value": "E" },
+          { "label": "B", "value": "B" },
+          { "label": "R", "value": "R" },
+          { "label": "D", "value": "D" }
+        ]
+      }
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Compromiso social e institucional",
       "variableName": "compromisoInstitucional",
       "placeholder": "",
@@ -406,18 +440,20 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482942499_5t6u7v8",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "E", "value": "E" },
-        { "label": "B", "value": "B" },
-        { "label": "R", "value": "R" },
-        { "label": "D", "value": "D" }
-      ]
+      "options": {
+        "items": [
+          { "label": "E", "value": "E" },
+          { "label": "B", "value": "B" },
+          { "label": "R", "value": "R" },
+          { "label": "D", "value": "D" }
+        ]
+      }
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Observaciones",
       "value": "",
       "variableName": "observaciones",
@@ -431,13 +467,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482943240_9w0x1y2",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Valoración Cuantitativa General (0 a 5)",
       "value": "",
       "variableName": "valoracionCuantitativa",
@@ -451,30 +487,33 @@
       "inconsistencyMessage": "La valoración debe estar entre 0 y 5",
       "errorType": "Hard",
       "description": "",
-      "name": "",
+      "name": "field_1753482943981_3z4a5b6",
       "disabled": false,
       "readonly": false,
       "specificType": "number"
     },
     {
-      "type": "text",
-      "label": "Firma del Docente Asesor",
+      "type": "SELECT",
+      "label": "Firma Docente Asesor",
       "value": "",
-      "variableName": "firmaDocenteAsesor",
-      "placeholder": "Firma del docente asesor",
+      "variableName": "firmaAsesor",
       "hint": "",
       "required": true,
       "chapter": "Firmas",
       "question": "",
       "questionNumber": "",
       "consistencyCondition": "",
-      "mensajeInconsistencia": "",
-      "tipoError": "Soft",
-      "descripcion": "",
-      "name": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482944722_7c8d9e0",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "dataSource": "teachers",
+      "options": {
+        "items": []
+      },
+      "multiple": false
     }
   ]
 }

@@ -2,51 +2,106 @@
   "name": "Diario de Campo (Práctica Docente)",
   "fields": [
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Docente en Formación",
       "value": "",
       "variableName": "docenteFormacion",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
-      "dataSource": "students"
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482925459_1xua6ht",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "students",
+      "options": {
+        "items": []
+      },
+      "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Institución Educativa",
       "value": "",
       "variableName": "institucionEducativa",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
-      "dataSource": "institutions"
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482929394_9nvt3zg",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "institutions",
+      "options": {
+        "items": []
+      },
+      "multiple": false
     },
     {
-      "type": "date-picker",
+      "type": "DATE_PICKER",
       "label": "Fecha",
       "value": "",
       "variableName": "fecha",
       "hint": "",
       "required": true,
-      "chapter": "Identificación"
+      "chapter": "Identificación",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482930579_frk62al",
+      "disabled": false,
+      "readonly": false
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Observaciones y Reflexiones",
       "value": "",
       "variableName": "observacionesReflexiones",
       "placeholder": "Registre sus observaciones, reflexiones y hallazgos preliminares.",
+      "hint": "",
       "required": true,
-      "chapter": "Contenido"
+      "chapter": "Contenido",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482931349_s870ebc",
+      "disabled": false,
+      "readonly": false
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Anécdotas y Situaciones Relevantes",
       "value": "",
       "variableName": "anecdotas",
       "placeholder": "",
+      "hint": "",
       "required": false,
-      "chapter": "Contenido"
+      "chapter": "Contenido",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482932125_m2gqpxr",
+      "disabled": false,
+      "readonly": false
     }
   ]
 }

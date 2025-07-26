@@ -53,10 +53,22 @@
                 <v-text-field
                   v-model="editableUser.password"
                   label="Contraseña"
+                  :type="passwordVisible ? 'text' : 'password'"
+                  :required="!isEditing"
+                  :append-inner-icon="
+                    passwordVisible ? 'mdi-eye' : 'mdi-eye-off'
+                  "
+                  @click:append-inner="passwordVisible = !passwordVisible"
+                ></v-text-field>
+              </v-col>
+              <!--v-col cols="12" v-if="!isEditing">
+                <v-text-field
+                  v-model="editableUser.password"
+                  label="Contraseña"
                   type="password"
                   required
                 ></v-text-field>
-              </v-col>
+              </v-col-->
               <v-col cols="12">
                 <v-select
                   v-model="editableUser.role"
@@ -111,6 +123,7 @@ const deleteDialog = ref(false);
 const isEditing = ref(false);
 const editableUser = ref<any>({});
 const userToDelete = ref<any>(null);
+const passwordVisible = ref(false);
 
 const headers = [
   { title: "Nombre", value: "name" },

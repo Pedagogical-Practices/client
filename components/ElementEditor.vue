@@ -14,7 +14,7 @@
         class="d-flex justify-space-between align-center headline-bar"
       >
         <span class="text-h6 font-weight-medium"
-          >Edit: {{ editableElement.label || editableElement.name }}</span
+          >Edit: {{ editableElement.label || editableElement.type }}</span
         >
 
         <v-btn
@@ -30,6 +30,8 @@
         <v-tabs v-model="currentTab" color="primary" grow class="editor-tabs">
           <v-tab value="general" :slim="true">General</v-tab>
           <v-tab value="behavior" :slim="true">Behavior & Validation</v-tab>
+          <v-tab value="metadata" :slim="true">Metadata</v-tab>
+          <v-tab value="advanced" :slim="true">Advanced</v-tab>
         </v-tabs>
         <v-divider></v-divider>
 
@@ -45,6 +47,7 @@
                   persistent-hint
                   density="compact"
                   variant="filled"
+                  @update:model-value="handleTypeChange"
                 ></v-select>
               </v-col>
               <v-col cols="12" md="6">
@@ -59,19 +62,147 @@
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="editableElement.name"
-                  label="Field Name (Unique)"
-                  hint="Unique programmatic name for the field."
+                  v-model="editableElement.variableName"
+                  label="Variable Name"
+                  hint="Unique ID for data/logic (e.g., nombreVariable)."
                   persistent-hint
                   density="compact"
                   variant="filled"
                 ></v-text-field>
               </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="editableElement.placeholder"
+                  label="Placeholder"
+                  hint="Placeholder text."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="editableElement.hint"
+                  label="Hint / Helper Text"
+                  hint="Small text under input."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="editableElement.value"
+                  label="Default Value"
+                  hint="Initial value."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6" v-if="editableElement.type === 'text'">
+                <v-select
+                  v-model="editableElement.specificType"
+                  :items="[
+                    'text',
+                    'number',
+                    'email',
+                    'password',
+                    'tel',
+                    'url',
+                    'date',
+                  ]"
+                  label="Input Type"
+                  hint="HTML input type (for text fields)."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                ></v-select>
+              </v-col>
+              <v-col
+                cols="12"
+                md="6"
+                v-if="editableElement.type === 'textarea'"
+              >
+                <v-text-field
+                  type="number"
+                  v-model.number="editableElement.height"
+                  label="Height (rows)"
+                  hint="Number of rows for textarea."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6" v-if="editableElement.type === 'button'">
+                <v-text-field
+                  v-model="editableElement.color"
+                  label="Button Color"
+                  hint="e.g., primary, success, #FF0000"
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                ></v-text-field>
+              </v-col>
+              <v-col
+                cols="12"
+                md="6"
+                v-if="
+                  editableElement.type === FormFieldType.SELECT ||
+                  editableElement.type === FormFieldType.AUTOCOMPLETE
+                "
+              >
+                <v-select
+                  v-model="editableElement.dataSource"
+                  :items="[
+                    'institutions',
+                    'teachers',
+                    'students',
+                    'courses',
+                    'forms',
+                    'protocols',
+                    'users',
+                  ]"
+                  label="Data Source"
+                  hint="Source for dynamic options (e.g., institutions, teachers)."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                  clearable
+                ></v-select>
+              </v-col>
             </v-row>
           </v-window-item>
-
+          {{ editableElement }} - {{ selectedElement }}
           <v-window-item value="behavior" class="tab-pane">
             <v-row dense>
+              <v-col cols="12" sm="4">
+                <v-switch
+                  v-model="editableElement.required"
+                  label="Required"
+                  color="primary"
+                  density="compact"
+                  inset
+                ></v-switch>
+              </v-col>
+              <v-col cols="12" sm="4">
+                <v-switch
+                  v-model="editableElement.disabled"
+                  label="Disabled"
+                  color="primary"
+                  density="compact"
+                  inset
+                ></v-switch>
+              </v-col>
+              <v-col cols="12" sm="4">
+                <v-switch
+                  v-model="editableElement.readonly"
+                  label="Read-only"
+                  color="primary"
+                  density="compact"
+                  inset
+                ></v-switch>
+              </v-col>
               <v-col cols="12">
                 <v-textarea
                   v-model="rulesText"
@@ -83,12 +214,21 @@
                   variant="filled"
                 ></v-textarea>
               </v-col>
-              <template v-if="editableElement.type === FormFieldType.SELECT">
+              <template
+                v-if="
+                  editableElement.type === 'select' ||
+                  editableElement.type === 'radio-group'
+                "
+              >
                 <v-col cols="12">
                   <v-textarea
-                    v-model="optionsText"
-                    label="Options (JSON string)"
-                    hint="Enter options as a JSON string, e.g., {'items': ['Option 1', 'Option 2']}"
+                    v-model="selectItemsText"
+                    :label="
+                      editableElement.type === 'select'
+                        ? 'Dropdown Options (one per line)'
+                        : 'Radio Options (one per line)'
+                    "
+                    hint="Format: Item Label or value|Item Label. If only value, it's used as label too."
                     persistent-hint
                     rows="3"
                     density="compact"
@@ -96,6 +236,104 @@
                   ></v-textarea>
                 </v-col>
               </template>
+            </v-row>
+          </v-window-item>
+
+          <v-window-item value="metadata" class="tab-pane">
+            <v-row dense>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="editableElement.chapter"
+                  label="Chapter (capitulo)"
+                  density="compact"
+                  variant="filled"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="editableElement.questionNumber"
+                  label="Question Number (numeroPregunta)"
+                  density="compact"
+                  variant="filled"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-textarea
+                  v-model="editableElement.question"
+                  label="Question Text (pregunta)"
+                  rows="2"
+                  density="compact"
+                  variant="filled"
+                ></v-textarea>
+              </v-col>
+              <v-col cols="12">
+                <v-textarea
+                  v-model="editableElement.description"
+                  label="Description (descripcion)"
+                  hint="Internal notes."
+                  persistent-hint
+                  rows="2"
+                  density="compact"
+                  variant="filled"
+                ></v-textarea>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="editableElement.requirementLevel"
+                  :items="['Required', 'Optional', 'Conditional']"
+                  label="Requirement Level (obligatoriedad)"
+                  hint="Semantic requirement level."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="editableElement.name"
+                  label="HTML Name Attribute"
+                  hint="For form submissions (name)."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-window-item>
+
+          <v-window-item value="advanced" class="tab-pane">
+            <v-row dense>
+              <v-col cols="12">
+                <v-textarea
+                  v-model="editableElement.consistencyCondition"
+                  label="Consistency Condition (condicionConsistencia)"
+                  rows="2"
+                  density="compact"
+                  hint="Logic for consistency checks."
+                  variant="filled"
+                ></v-textarea>
+              </v-col>
+              <v-col cols="12">
+                <v-textarea
+                  v-model="editableElement.inconsistencyMessage"
+                  label="Inconsistency Message (mensajeInconsistencia)"
+                  rows="2"
+                  density="compact"
+                  hint="Message if check fails."
+                  variant="filled"
+                ></v-textarea>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="editableElement.errorType"
+                  :items="['Soft', 'Hard']"
+                  label="Error Type (tipoError)"
+                  hint="Severity of inconsistency."
+                  persistent-hint
+                  density="compact"
+                  variant="filled"
+                ></v-select>
+              </v-col>
             </v-row>
           </v-window-item>
         </v-window>
@@ -116,25 +354,44 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+  <v-dialog v-model="showPreview" fullscreen>
+    <v-card>
+      <v-card-title
+        class="d-flex justify-space-between align-center headline-bar"
+      >
+        <span class="text-h6 font-weight-medium">Form Preview</span>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          @click="showPreview = false"
+        ></v-btn>
+      </v-card-title>
+      <v-card-text>
+        <FormViewer
+          :formDefinition="{ fields: formElement.getFormElements() }"
+        />
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed, toRaw, reactive } from "vue";
 import { useFormElementStore } from "~/stores/formElementStore";
+import { useDataSourceStore } from "~/stores/dataSourceStore";
+import FormViewer from "~/components/FormViewer.vue";
 import { availableElements } from "./formElementDefinitions";
-import { type FormField, FormFieldType } from "~/types";
+import { type FormField, FormFieldType } from "~/components/formElementDefinitions";
 
 const formElement = useFormElementStore();
+const dataSourceStore = useDataSourceStore();
 
-const selectedElement = computed(() => {
-  const element = formElement.getSelectedElement;
-  console.log("ElementEditor: selectedElement computed value:", element);
-  return element;
-});
+const selectedElement = computed(() => formElement.getSelectedElement);
 const editableElement = ref<FormField | null>(null);
 const currentTab = ref("general");
+const showPreview = ref(false);
 
-const optionsText = ref("");
+const selectItemsText = ref("");
 const rulesText = ref("");
 
 const elementTypes = computed(() =>
@@ -146,22 +403,113 @@ const elementTypes = computed(() =>
 
 watch(
   selectedElement,
-  (newVal) => {
+  async (newVal) => {
     if (newVal) {
       editableElement.value = reactive(toRaw(newVal));
+      // Aseguramos que dataSource sea un string simple para el v-select
+      if (typeof editableElement.value.dataSource !== "string") {
+        editableElement.value.dataSource = String(
+          editableElement.value.dataSource || ""
+        );
+      }
+      console.log("ElementEditor: selectedElement newVal", newVal);
+      console.log(
+        "ElementEditor: editableElement.value after copy",
+        editableElement.value
+      );
+      console.log(
+        "ElementEditor: dataSource value",
+        editableElement.value?.dataSource
+      );
       rulesText.value = Array.isArray(editableElement.value?.rules)
         ? editableElement.value!.rules.join(",")
         : "";
-      optionsText.value = editableElement.value?.options
-        ? JSON.stringify(editableElement.value.options, null, 2)
-        : "";
       currentTab.value = "general";
+
+      if (editableElement.value?.dataSource) {
+        selectItemsText.value = await dataSourceStore.fetchFormattedOptions(
+          editableElement.value.dataSource
+        );
+      } else if (Array.isArray(editableElement.value?.options)) {
+        selectItemsText.value = editableElement
+          .value!.options.map((opt) => {
+            if (typeof opt === "string") return opt;
+            // Correctly handle both {text, value} and {label, value}
+            return `${opt.value}|${opt.label || opt.text}`;
+          })
+          .join("\n");
+      } else {
+        selectItemsText.value = "";
+      }
     } else {
       editableElement.value = null;
     }
   },
   { deep: true, immediate: true }
 );
+
+watch(
+  () => editableElement.value?.dataSource,
+  async (newDataSource) => {
+    if (
+      editableElement.value?.type === "select" ||
+      editableElement.value?.type === "autocomplete"
+    ) {
+      selectItemsText.value = newDataSource
+        ? await dataSourceStore.fetchFormattedOptions(newDataSource)
+        : "";
+    }
+  }
+);
+
+const handleTypeChange = (newType: string) => {
+  if (!editableElement.value || editableElement.value.type === newType) return;
+
+  const newElementDef = availableElements.find((el) => el.type === newType);
+  if (!newElementDef) return;
+
+  const oldElement = editableElement.value;
+  const newDefaultConfig = JSON.parse(
+    JSON.stringify(newElementDef.defaultConfig)
+  );
+
+  // Preserve common properties
+  const preservedProps = {
+    id: oldElement.id,
+    label: oldElement.label,
+    variableName: oldElement.variableName,
+    hint: oldElement.hint,
+    required: oldElement.required,
+    disabled: oldElement.disabled,
+    readonly: oldElement.readonly,
+    rules: oldElement.rules,
+    chapter: oldElement.chapter,
+    question: oldElement.question,
+    questionNumber: oldElement.questionNumber,
+    description: oldElement.description,
+    requirementLevel: oldElement.requirementLevel,
+  };
+
+  // Create the new element state by merging defaults and preserved props
+  editableElement.value = {
+    ...newDefaultConfig,
+    ...preservedProps,
+    type: newType, // Ensure the new type is set
+    // Ensure dataSource is preserved or initialized for select/dynamic-select types
+    dataSource:
+      newType === "select" ||
+      newType === "dynamic-select" ||
+      newType === "autocomplete"
+        ? oldElement.dataSource || ""
+        : undefined,
+  };
+
+  // Reset specific text fields
+  rulesText.value = Array.isArray(editableElement.value.rules)
+    ? editableElement.value.rules.join(",")
+    : "";
+  selectItemsText.value = "";
+};
 
 const handleDialogClose = (value: boolean) => {
   if (!value) closeEditor();
@@ -174,24 +522,33 @@ const closeEditor = () => {
 
 const saveChanges = () => {
   if (!editableElement.value) return;
-
+  console.log(
+    "ElementEditor: Saving changes. editableElement.value BEFORE stringify:",
+    JSON.parse(JSON.stringify(editableElement.value))
+  );
+  if (
+    editableElement.value.type === "select" ||
+    editableElement.value.type === "radio-group"
+  ) {
+    if (editableElement.value.dataSource) {
+      editableElement.value.options = [];
+    } else {
+      editableElement.value.options = selectItemsText.value
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line)
+        .map((line) => {
+          const parts = line.split("|");
+          if (parts.length === 2)
+            return { value: parts[0].trim(), label: parts[1].trim() };
+          return { value: line, label: line };
+        });
+    }
+  }
   editableElement.value.rules = rulesText.value
     .split(",")
     .map((r) => r.trim())
     .filter((r) => r);
-
-  if (optionsText.value) {
-    try {
-      editableElement.value.options = JSON.parse(optionsText.value);
-    } catch (e) {
-      console.error("Error parsing options JSON:", e);
-      // Handle error, maybe show a user-friendly message
-      return;
-    }
-  } else {
-    editableElement.value.options = undefined;
-  }
-
   formElement.updateElement(JSON.parse(JSON.stringify(editableElement.value)));
 };
 </script>

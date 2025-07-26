@@ -31,15 +31,13 @@ import {
   VTextarea,
   VSelect,
   VDatePicker,
+  VCheckbox,
+  VRadioGroup,
 } from "vuetify/components";
-import { FormFieldType, type FormField } from "~/types";
-
-export interface Form {
-  id?: string;
-  name: string;
-  description?: string;
-  fields: FormField[];
-}
+import {
+  FormFieldType,
+  type FormField,
+} from "~/components/formElementDefinitions";
 
 export interface Form {
   id?: string;
@@ -64,19 +62,49 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.DATE]: VDatePicker,
   [FormFieldType.MAP]: VTextField, // Placeholder for map component
   [FormFieldType.FILE_UPLOAD]: VTextField, // Placeholder for file upload
+  [FormFieldType.CHECKBOX]: VCheckbox,
+  [FormFieldType.DATE_PICKER]: VDatePicker,
 };
 
 const getComponentName = (type: FormFieldType): any => {
   return componentMap[type] || VTextField;
 };
 
-const getComponentProps = (field: any) => {
-  const props: Record<string, any> = {};
+const getComponentProps = (field: FormField) => {
+  const props: Record<string, any> = {
+    label: field.label,
+    placeholder: field.placeholder,
+    hint: field.hint,
+    required: field.required,
+    disabled: field.disabled,
+    readonly: field.readonly,
+  };
 
   if (field.type === FormFieldType.SELECT) {
-    if (field.options && field.options.items) {
-      props.items = field.options.items;
+    if (field.options) {
+      props.items = field.options.items || [];
+      props.multiple = field.multiple || false;
     }
+    if (field.dataSource) {
+      props.dataSource = field.dataSource;
+    }
+  }
+
+  if (field.type === FormFieldType.TEXTAREA) {
+    props.rows = field.height || 4;
+  }
+
+  if (field.type === FormFieldType.CHECKBOX) {
+    props.modelValue = field.value || false;
+  }
+
+  if (field.rules && field.rules.length > 0) {
+    props.rules = field.rules.map((rule: string) => {
+      if (rule === "required") {
+        return (v: any) => !!v || "Campo requerido";
+      }
+      return true; // Default for other rules
+    });
   }
 
   return props;
