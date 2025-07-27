@@ -381,7 +381,8 @@ import { useFormElementStore } from "~/stores/formElementStore";
 import { useDataSourceStore } from "~/stores/dataSourceStore";
 import FormViewer from "~/components/FormViewer.vue";
 import { availableElements } from "./formElementDefinitions";
-import { type FormField, FormFieldType } from "~/components/formElementDefinitions";
+import { type FormField, FormFieldType } from "~/types";
+//"~/components/formElementDefinitions";
 
 const formElement = useFormElementStore();
 const dataSourceStore = useDataSourceStore();
@@ -452,8 +453,8 @@ watch(
   () => editableElement.value?.dataSource,
   async (newDataSource) => {
     if (
-      editableElement.value?.type === "select" ||
-      editableElement.value?.type === "autocomplete"
+      editableElement.value?.type === "SELECT" ||
+      editableElement.value?.type === "AUTOCOMPLETE"
     ) {
       selectItemsText.value = newDataSource
         ? await dataSourceStore.fetchFormattedOptions(newDataSource)
@@ -487,7 +488,6 @@ const handleTypeChange = (newType: string) => {
     question: oldElement.question,
     questionNumber: oldElement.questionNumber,
     description: oldElement.description,
-    requirementLevel: oldElement.requirementLevel,
   };
 
   // Create the new element state by merging defaults and preserved props
@@ -497,16 +497,16 @@ const handleTypeChange = (newType: string) => {
     type: newType, // Ensure the new type is set
     // Ensure dataSource is preserved or initialized for select/dynamic-select types
     dataSource:
-      newType === "select" ||
-      newType === "dynamic-select" ||
-      newType === "autocomplete"
+      newType === "SELECT" ||
+      newType === "DYNAMIC-SLECT" ||
+      newType === "AUTOCOMPLETE"
         ? oldElement.dataSource || ""
         : undefined,
   };
 
   // Reset specific text fields
-  rulesText.value = Array.isArray(editableElement.value.rules)
-    ? editableElement.value.rules.join(",")
+  rulesText.value = Array.isArray(editableElement.value?.rules)
+    ? editableElement.value?.rules.join(",")
     : "";
   selectItemsText.value = "";
 };
@@ -527,8 +527,8 @@ const saveChanges = () => {
     JSON.parse(JSON.stringify(editableElement.value))
   );
   if (
-    editableElement.value.type === "select" ||
-    editableElement.value.type === "radio-group"
+    editableElement.value.type === "SELECT" ||
+    editableElement.value.type === "RADIO_GROUP"
   ) {
     if (editableElement.value.dataSource) {
       editableElement.value.options = [];

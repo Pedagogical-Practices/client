@@ -1,43 +1,31 @@
-export enum FormFieldType {
-  TEXT = 'TEXT',
-  TEXTAREA = 'TEXTAREA',
-  SELECT = 'SELECT',
-  DATE = 'DATE',
-  MAP = 'MAP',
-  FILE_UPLOAD = 'FILE_UPLOAD',
-  CHECKBOX = 'CHECKBOX',
-  DATE_PICKER = 'DATE_PICKER',
-  RADIO_GROUP = 'RADIO_GROUP',
-  TIME_PICKER = 'TIME_PICKER',
-  BUTTON = 'BUTTON',
-}
+import { FormFieldType } from "@/types";
 
 export interface FormField {
   name: string;
   label: string;
-  type: FormFieldType | string; // Allow string for flexibility during parsing
-  options?: Record<string, any> | any[]; // Allow array for select options
+  type: FormFieldType | string;
+  options?: Record<string, any> | any[];
   rules?: string[];
   defaultValue?: string;
-  value?: any; // Added from JSON
-  variableName?: string; // Added from JSON
-  hint?: string; // Added from JSON
-  required?: boolean; // Added from JSON
-  chapter?: string; // Added from JSON
-  question?: string; // Added from JSON
-  questionNumber?: string; // Added from JSON
-  consistencyCondition?: string; // Added from JSON
-  inconsistencyMessage?: string; // Added from JSON
-  errorType?: string; // Added from JSON
-  description?: string; // Added from JSON
-  disabled?: boolean; // Added from JSON
-  readonly?: boolean; // Added from JSON
-  dataSource?: string; // Added from JSON
-  multiple?: boolean; // Added from JSON
-  placeholder?: string; // Added from JSON
-  specificType?: string; // Added from JSON
-  height?: string; // Added from JSON
-  color?: string; // Added for button
+  value?: any;
+  variableName?: string;
+  hint?: string;
+  required?: boolean;
+  chapter?: string;
+  question?: string;
+  questionNumber?: string;
+  consistencyCondition?: string;
+  inconsistencyMessage?: string;
+  errorType?: string;
+  description?: string;
+  disabled?: boolean;
+  readonly?: boolean;
+  dataSource?: string;
+  multiple?: boolean;
+  placeholder?: string;
+  specificType?: string;
+  height?: string;
+  color?: string;
 }
 
 export interface AvailableElementDefinition {
@@ -55,7 +43,7 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Text Input",
       type: FormFieldType.TEXT,
-      options: null,
+      options: [],
       rules: [],
       value: "",
       variableName: "",
@@ -81,7 +69,7 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Text Area",
       type: FormFieldType.TEXTAREA,
-      options: null,
+      options: [],
       rules: [],
       value: "",
       variableName: "",
@@ -134,7 +122,7 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Select Date",
       type: FormFieldType.DATE,
-      options: null,
+      options: [],
       rules: [],
       value: "",
       variableName: "",
@@ -159,9 +147,9 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Location",
       type: FormFieldType.MAP,
-      options: null,
+      options: [],
       rules: [],
-      value: null, // Assuming map value is an object/null
+      value: null,
       variableName: "",
       hint: "",
       required: false,
@@ -183,9 +171,9 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Upload File",
       type: FormFieldType.FILE_UPLOAD,
-      options: null,
+      options: [],
       rules: [],
-      value: null, // Assuming file upload value is a string/null
+      value: null,
       variableName: "",
       hint: "",
       required: false,
@@ -207,7 +195,7 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Checkbox",
       type: FormFieldType.CHECKBOX,
-      options: null,
+      options: [],
       rules: [],
       value: false,
       variableName: "",
@@ -231,7 +219,7 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Date",
       type: FormFieldType.DATE_PICKER,
-      options: null,
+      options: [],
       rules: [],
       value: "",
       variableName: "",
@@ -280,7 +268,7 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Select Time",
       type: FormFieldType.TIME_PICKER,
-      options: null,
+      options: [],
       rules: [],
       value: "",
       variableName: "",
@@ -305,7 +293,7 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Button",
       type: FormFieldType.BUTTON,
-      options: null,
+      options: [],
       rules: [],
       value: "",
       variableName: "",

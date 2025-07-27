@@ -9,7 +9,7 @@
           :rules="
             field.rules
               ? field.rules.map(
-                  (rule) => (v: any) =>
+                  (rule: any) => (v: any) =>
                     !!v || rule !== 'required' || 'Campo requerido'
                 )
               : []
@@ -34,10 +34,7 @@ import {
   VCheckbox,
   VRadioGroup,
 } from "vuetify/components";
-import {
-  FormFieldType,
-  type FormField,
-} from "~/components/formElementDefinitions";
+import { FormFieldType, type FormField } from "~/types";
 
 export interface Form {
   id?: string;
@@ -64,6 +61,13 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.FILE_UPLOAD]: VTextField, // Placeholder for file upload
   [FormFieldType.CHECKBOX]: VCheckbox,
   [FormFieldType.DATE_PICKER]: VDatePicker,
+  [FormFieldType.RADIO_GROUP]: VRadioGroup,
+  [FormFieldType.TIME_PICKER]: VTextField, // Placeholder for time picker
+  [FormFieldType.BUTTON]: VTextField, // Placeholder for button component
+  [FormFieldType.AUTOCOMPLETE]: VTextField, // Placeholder for autocomplete
+  [FormFieldType.NUMBER]: VTextField,
+  [FormFieldType.EMAIL]: VTextField,
+  [FormFieldType.PASSWORD]: VTextField,
 };
 
 const getComponentName = (type: FormFieldType): any => {
@@ -82,7 +86,11 @@ const getComponentProps = (field: FormField) => {
 
   if (field.type === FormFieldType.SELECT) {
     if (field.options) {
-      props.items = field.options.items || [];
+      if (Array.isArray(field.options)) {
+        props.items = field.options;
+      } else {
+        props.items = field.options.items || [];
+      }
       props.multiple = field.multiple || false;
     }
     if (field.dataSource) {
@@ -115,13 +123,16 @@ watch(
   (newVal) => {
     if (newVal?.fields) {
       const currentModelValue = props.modelValue || {};
-      localFormData.value = newVal.fields.reduce((acc, field) => {
-        acc[field.name] =
-          currentModelValue[field.name] !== undefined
-            ? currentModelValue[field.name]
-            : null;
-        return acc;
-      }, {});
+      localFormData.value = newVal.fields.reduce(
+        (acc: Record<string, any>, field) => {
+          acc[field.name] =
+            currentModelValue[field.name] !== undefined
+              ? currentModelValue[field.name]
+              : null;
+          return acc;
+        },
+        {} as Record<string, any>
+      );
     }
   },
   { immediate: true, deep: true }
