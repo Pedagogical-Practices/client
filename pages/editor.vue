@@ -87,7 +87,7 @@
                           :rules="
                             element.rules
                               ? element.rules.map(
-                                  (rule) => (v: any) =>
+                                  (rule: any) => (v: any) =>
                                     !!v ||
                                     rule !== 'required' ||
                                     'Campo requerido'
@@ -250,8 +250,8 @@ import {
 } from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
 import FormViewer from "~/components/FormViewer.vue";
-import { useMutation } from "@vue/apollo-composable";
-import { gql } from "graphql-tag";
+// import { useMutation } from "@vue/apollo-composable";
+// import { gql } from "graphql-tag";
 import {
   VTextField,
   VTextarea,
@@ -259,7 +259,7 @@ import {
   VDatePicker,
 } from "vuetify/components";
 import { definePageMeta } from "#imports";
-import { FormFieldType, type FormField } from "~/types"; // Corrected import
+import { FormFieldType, type FormField } from "~/types";
 
 definePageMeta({});
 
@@ -318,8 +318,17 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXTAREA]: VTextarea,
   [FormFieldType.SELECT]: VSelect,
   [FormFieldType.DATE]: VDatePicker,
-  [FormFieldType.MAP]: VTextField, // Placeholder for map component
-  [FormFieldType.FILE_UPLOAD]: VTextField, // Placeholder for file upload
+  [FormFieldType.MAP]: VTextField,
+  [FormFieldType.FILE_UPLOAD]: VTextField,
+  [FormFieldType.CHECKBOX]: VTextField,
+  [FormFieldType.DATE_PICKER]: VDatePicker,
+  [FormFieldType.RADIO_GROUP]: VTextField,
+  [FormFieldType.TIME_PICKER]: VTextField,
+  [FormFieldType.BUTTON]: VTextField,
+  [FormFieldType.AUTOCOMPLETE]: VTextField,
+  [FormFieldType.NUMBER]: VTextField,
+  [FormFieldType.EMAIL]: VTextField,
+  [FormFieldType.PASSWORD]: VTextField,
 };
 
 const getComponentName = (type: FormFieldType): any => {
@@ -330,8 +339,13 @@ const getComponentProps = (field: FormField) => {
   const props: Record<string, any> = {};
 
   if (field.type === FormFieldType.SELECT) {
-    if (field.options && field.options.items) {
-      props.items = field.options.items;
+    if (
+      field.options &&
+      typeof field.options === "object" &&
+      !Array.isArray(field.options) &&
+      "items" in field.options
+    ) {
+      props.items = (field.options as { items: any[] }).items;
     }
   }
 
@@ -467,19 +481,23 @@ const copyJsonToClipboard = async (): Promise<void> => {
 
 const updateFormFromJson = async (): Promise<void> => {
   try {
+    console.log("Updating form from JSON:", editableFormJsonString.value);
     const parsedJson = JSON.parse(editableFormJsonString.value) as {
       name: string;
       fields: FormField[];
     };
+    console.log("Parsed JSON:", parsedJson);
     if (!parsedJson.name || !Array.isArray(parsedJson.fields)) {
       throw new Error("El JSON debe contener 'name' y 'fields' como array");
     }
+
     const validElements = parsedJson.fields.every(
       (el: FormField) =>
         Object.values(FormFieldType).includes(el.type as FormFieldType) &&
         el.name &&
         el.label
     );
+
     if (!validElements) {
       throw new Error("El JSON contiene elementos inválidos en 'fields'");
     }

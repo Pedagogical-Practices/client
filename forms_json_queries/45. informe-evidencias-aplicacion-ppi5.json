@@ -2,60 +2,125 @@
   "name": "Informe de Evidencias de Aplicación (PPI5)",
   "fields": [
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Docente en Formación",
       "value": "",
       "variableName": "docenteFormacion",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
-      "dataSource": "students"
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482925459_1xua6ht",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "students",
+      "options": {
+        "items": []
+      },
+      "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Institución Educativa",
       "value": "",
       "variableName": "institucionEducativa",
       "hint": "",
       "required": true,
       "chapter": "Identificación",
-      "dataSource": "institutions"
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482929394_9nvt3zg",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "institutions",
+      "options": {
+        "items": []
+      },
+      "multiple": false
     },
     {
-      "type": "date-picker",
+      "type": "DATE_PICKER",
       "label": "Fecha de Informe",
       "value": "",
       "variableName": "fechaInforme",
       "hint": "",
       "required": true,
-      "chapter": "Identificación"
+      "chapter": "Identificación",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482930579_frk62al",
+      "disabled": false,
+      "readonly": false
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Descripción de la Implementación de la Estrategia Didáctica",
       "value": "",
       "variableName": "descripcionImplementacion",
       "placeholder": "Describa la implementación de la estrategia didáctica sesión por sesión.",
+      "hint": "",
       "required": true,
-      "chapter": "Contenido del Informe"
+      "chapter": "Contenido del Informe",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482931349_s870ebc",
+      "disabled": false,
+      "readonly": false
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Progreso de los Estudiantes en Scratch",
       "value": "",
       "variableName": "progresoScratch",
       "placeholder": "Describa el progreso de los estudiantes en Scratch.",
+      "hint": "",
       "required": true,
-      "chapter": "Contenido del Informe"
+      "chapter": "Contenido del Informe",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482932125_m2gqpxr",
+      "disabled": false,
+      "readonly": false
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Evidencias Visuales (Fotos/Videos)",
       "value": "",
       "variableName": "evidenciasVisuales",
       "placeholder": "Describa las evidencias visuales (fotos, videos) que documentan el proceso.",
+      "hint": "",
       "required": false,
-      "chapter": "Contenido del Informe"
+      "chapter": "Contenido del Informe",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1753482932866_3j4tp1q",
+      "disabled": false,
+      "readonly": false
     }
   ]
 }

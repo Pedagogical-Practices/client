@@ -1,0 +1,3 @@
+mutation DeleteInstitution($id: ID!) {
+  removeInstitution(id: $id)
+}

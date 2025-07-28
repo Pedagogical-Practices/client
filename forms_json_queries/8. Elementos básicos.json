@@ -2,7 +2,7 @@
   "name": "Formato de Control de Asistencia",
   "fields": [
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Text Input",
       "value": "",
       "variableName": "textInputVar",
@@ -16,13 +16,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482925459_1xua6ht",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Text Area",
       "value": "",
       "variableName": "textAreaVar",
@@ -36,13 +36,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482929394_9nvt3zg",
       "disabled": false,
       "readonly": false,
       "height": "3"
     },
     {
-      "type": "checkbox",
+      "type": "CHECKBOX",
       "label": "Checkbox Label",
       "value": false,
       "variableName": "checkboxVar",
@@ -56,12 +56,12 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482930579_frk62al",
       "disabled": false,
       "readonly": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Select Option",
       "variableName": "selectVar",
       "placeholder": "Choose an option",
@@ -74,26 +74,28 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482931349_s870ebc",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "Option 1", "value": "Option 1" },
-        { "label": "Option 2", "value": "Option 2" },
-        { "label": "Option 3", "value": "Option 3" }
-      ],
+      "options": {
+        "items": [
+          { "label": "Option 1", "value": "Option 1" },
+          { "label": "Option 2", "value": "Option 2" },
+          { "label": "Option 3", "value": "Option 3" }
+        ]
+      },
       "multiple": false
     },
     {
-      "type": "button",
+      "type": "BUTTON",
       "label": "Click Me",
       "variableName": "buttonVar",
       "description": "A clickable button.",
-      "specificType": "button",
+      "name": "field_1753482932125_m2gqpxr",
       "color": "primary"
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Choose an option",
       "variableName": "radioGroupVar",
       "placeholder": "",
@@ -106,17 +108,19 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "Option A", "value": "A" },
-        { "label": "Option B", "value": "B" }
-      ],
+      "options": {
+        "items": [
+          { "label": "Option A", "value": "A" },
+          { "label": "Option B", "value": "B" }
+        ]
+      },
       "multiple": false
     },
     {
-      "type": "date-picker",
+      "type": "DATE_PICKER",
       "label": "Select Date",
       "value": "",
       "variableName": "datePickerVar",
@@ -130,7 +134,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482933607_7k2p1qr",
       "disabled": false,
       "readonly": false
     }
