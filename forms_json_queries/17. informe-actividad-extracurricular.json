@@ -65,7 +65,7 @@
       "name": "field_1753482930579_frk62al",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "DATE_PICKER",

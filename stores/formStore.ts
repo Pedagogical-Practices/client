@@ -2,11 +2,11 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useMutation, useApolloClient } from "@vue/apollo-composable";
 import { useAsyncQuery } from "#imports";
-import { gql } from "graphql-tag";
 import type { Form } from "~/types";
 
 // Importar queries/mutations
 import CreateFormMutation from "~/queries/createForm.gql";
+import CreateManyFormsMutation from "~/queries/createManyForms.gql";
 import UpdateFormMutation from "~/queries/updateForm.gql";
 import GetFormQuery from "~/queries/form.gql";
 import GetFormsQuery from "~/queries/forms.gql"; // Nueva importación
@@ -25,6 +25,12 @@ export const useFormStore = defineStore("form", () => {
     const { mutate } = useMutation(CreateFormMutation);
     const result = await mutate({ input });
     return result?.data?.createForm;
+  };
+
+  const createManyForms = async (createFormInputs: any) => {
+    const { mutate } = useMutation(CreateManyFormsMutation);
+    const result = await mutate({ createFormInputs });
+    return result?.data?.createManyForms;
   };
 
   const updateForm = async (id: string, input: any) => {
@@ -88,12 +94,13 @@ export const useFormStore = defineStore("form", () => {
   return {
     formName,
     editingFormId,
-    forms, // Exponer forms
+    forms,
     createForm,
+    createManyForms,
     updateForm,
     fetchFormById,
-    fetchForms, // Exponer fetchForms
-    deleteForm, // Exponer deleteForm
+    fetchForms,
+    deleteForm,
     clearEditingFormId,
   };
 });
