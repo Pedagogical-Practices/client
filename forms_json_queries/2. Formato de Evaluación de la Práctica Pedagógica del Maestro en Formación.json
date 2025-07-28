@@ -2,7 +2,7 @@
   "name": "Formato de Evaluación de la Práctica Pedagógica del Maestro en Formación",
   "fields": [
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Institución Educativa",
       "value": "",
       "variableName": "institucionEducativa",
@@ -15,7 +15,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "dataSource": "institutions",
@@ -23,7 +23,7 @@
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Docente Asesor",
       "value": "",
       "variableName": "docenteAsesor",
@@ -36,7 +36,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "dataSource": "teachers",
@@ -44,7 +44,7 @@
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Maestro en Formación",
       "value": "",
       "variableName": "maestroFormacion",
@@ -57,7 +57,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "dataSource": "students",
@@ -65,7 +65,7 @@
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Programa",
       "value": "",
       "variableName": "programa",
@@ -78,7 +78,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "dataSource": "courses",
@@ -86,7 +86,7 @@
       "multiple": false
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Semestre",
       "value": "",
       "variableName": "semestre",
@@ -100,13 +100,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Sede",
       "value": "",
       "variableName": "sede",
@@ -116,18 +116,18 @@
       "question": "",
       "questionNumber": "",
       "consistencyCondition": "",
-      "mensajeInconsistencia": "",
-      "tipoError": "Soft",
-      "descripcion": "",
-      "name": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
-      "soloLectura": false,
+      "readonly": false,
       "dataSource": "institutions",
       "options": [],
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Curso",
       "value": "",
       "variableName": "curso",
@@ -137,18 +137,18 @@
       "question": "",
       "questionNumber": "",
       "consistencyCondition": "",
-      "mensajeInconsistencia": "",
-      "tipoError": "Soft",
-      "descripcion": "",
-      "name": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
-      "soloLectura": false,
+      "readonly": false,
       "dataSource": "courses",
       "options": [],
       "multiple": false
     },
     {
-      "type": "date-picker",
+      "type": "DATE_PICKER",
       "label": "Fecha de la Evaluación",
       "value": "",
       "variableName": "fechaEvaluacion",
@@ -162,12 +162,12 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Objetivos",
       "value": "Valorar el desempeño personal y profesional (actitudes, valores, motivaciones) de los maestros en formación, e identificar fortalezas y debilidades para establecer estrategias de mejoramiento.",
       "variableName": "objetivos",
@@ -181,13 +181,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": true,
       "readonly": true,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Instrucciones",
       "value": "Marque con una X en la escala de valoración cualitativa (Excelente - E, Bueno - B, Regular - D) frente a cada indicador. Al final, asigne una valoración cuantitativa general (0 a 5) para el reporte de calificación.",
       "variableName": "instrucciones",
@@ -201,13 +201,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": true,
       "readonly": true,
       "height": "4"
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Dominio de contenidos",
       "variableName": "dominioContenidos",
       "placeholder": "",
@@ -220,7 +220,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "options": [
@@ -231,7 +231,7 @@
       ]
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Planeación y organización académica",
       "variableName": "planeacionOrganizacion",
       "placeholder": "",
@@ -244,7 +244,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "options": [
@@ -255,7 +255,7 @@
       ]
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Pedagógica y didáctica",
       "variableName": "pedagogicaDidactica",
       "placeholder": "",
@@ -268,7 +268,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "options": [
@@ -279,7 +279,7 @@
       ]
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Evaluación del aprendizaje",
       "variableName": "evaluacionAprendizaje",
       "placeholder": "",
@@ -292,7 +292,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "options": [
@@ -303,7 +303,7 @@
       ]
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Liderazgo",
       "variableName": "liderazgo",
       "placeholder": "",
@@ -316,7 +316,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "options": [
@@ -327,7 +327,7 @@
       ]
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Comunicación y relaciones interpersonales",
       "variableName": "comunicacionRelaciones",
       "placeholder": "",
@@ -340,7 +340,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "options": [
@@ -351,7 +351,7 @@
       ]
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Trabajo en equipo",
       "variableName": "trabajoEquipo",
       "placeholder": "",
@@ -364,7 +364,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "options": [
@@ -375,7 +375,7 @@
       ]
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Negociación y mediación",
       "variableName": "negociacionMediacion",
       "placeholder": "",
@@ -388,7 +388,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "options": [
@@ -399,7 +399,7 @@
       ]
     },
     {
-      "type": "radio-group",
+      "type": "RADIO_GROUP",
       "label": "Compromiso social e institucional",
       "variableName": "compromisoInstitucional",
       "placeholder": "",
@@ -412,7 +412,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "options": [
@@ -423,7 +423,7 @@
       ]
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Valoración Cuantitativa General",
       "value": "",
       "variableName": "valoracionCuantitativa",
@@ -437,13 +437,13 @@
       "inconsistencyMessage": "La valoración debe estar entre 0 y 5",
       "errorType": "Hard",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
-      "specificType": "number"
+      "specificType": "NUMBER"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Observaciones",
       "value": "",
       "variableName": "observaciones",
@@ -457,13 +457,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Firma Docente Asesor",
       "value": "",
       "variableName": "firmaAsesor",
@@ -476,7 +476,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1722192142528_j3z7z3p",
       "disabled": false,
       "readonly": false,
       "dataSource": "teachers",

@@ -42,7 +42,15 @@
                 color="info"
                 @click="showPreview = true"
                 icon="mdi-eye"
+                class="mr-2"
                 title="Previsualizar Formulario"
+              ></v-btn>
+              <v-btn
+                color="success"
+                @click="showBulkUpload = true"
+                icon="mdi-upload-multiple"
+                class="mr-2"
+                title="Cargar Formularios"
               ></v-btn>
             </div>
           </v-card-title>
@@ -234,6 +242,22 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="showBulkUpload" max-width="800px">
+      <v-card>
+        <v-card-title class="d-flex justify-space-between align-center">
+          <span>Carga Masiva de Formularios</span>
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            @click="showBulkUpload = false"
+          ></v-btn>
+        </v-card-title>
+        <v-card-text>
+          <BulkFormUploader />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -250,6 +274,7 @@ import {
 } from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
 import FormViewer from "~/components/FormViewer.vue";
+import BulkFormUploader from "~/components/forms/BulkFormUploader.vue";
 // import { useMutation } from "@vue/apollo-composable";
 // import { gql } from "graphql-tag";
 import {
@@ -271,6 +296,7 @@ const authStore = useAuthStore();
 const show = ref<boolean>(false);
 const isDragOver = ref<boolean>(false);
 const showPreview = ref<boolean>(false);
+const showBulkUpload = ref<boolean>(false);
 const snackbar = ref<{
   show: boolean;
   text: string;
@@ -437,14 +463,7 @@ const transformedFormJson = computed(() => {
   return {
     name: formStore.formName,
     fields: formElementStore.formElements.map((el: FormField) => {
-      const outputEl: FormField = {
-        name: el.name,
-        label: el.label,
-        type: el.type,
-        options: el.options,
-        rules: el.rules,
-      };
-      return outputEl;
+      return el;
     }),
   };
 });

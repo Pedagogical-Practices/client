@@ -1,0 +1,18 @@
+mutation CreateManyForms($createFormInputs: [CreateFormInput!]!) {
+  createManyForms(createFormInputs: $createFormInputs) {
+    id
+    name
+    description
+    fields {
+      id
+      name
+      label
+      type
+      rules
+      options
+      defaultValue
+    }
+    createdAt
+    updatedAt
+  }
+}

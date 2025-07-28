@@ -6,7 +6,7 @@
       "label": "Text Input",
       "value": "",
       "variableName": "textInputVar",
-      "placeholder": "Enter text...",
+      "placeholder": "Enter TEXT...",
       "hint": "",
       "required": false,
       "chapter": "",
@@ -19,14 +19,14 @@
       "name": "field_1753482925459_1xua6ht",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXTAREA",
       "label": "Text Area",
       "value": "",
       "variableName": "textAreaVar",
-      "placeholder": "Enter multi-line text...",
+      "placeholder": "Enter multi-line TEXT...",
       "hint": "",
       "required": false,
       "chapter": "",

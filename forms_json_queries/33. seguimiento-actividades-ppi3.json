@@ -88,7 +88,7 @@
       "name": "field_1753482931349_s870ebc",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "DATE_PICKER",
@@ -127,13 +127,13 @@
       "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXTAREA",
       "label": "Descripción",
       "value": "",
-      "variableName": "descripcion",
+      "variableName": "description",
       "placeholder": "Descripción detallada de la actividad",
       "hint": "",
       "required": true,
@@ -167,7 +167,7 @@
       "name": "field_1753482934348_8m1n2o3",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXTAREA",

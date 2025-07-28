@@ -102,7 +102,7 @@
       "name": "field_1753482932125_m2gqpxr",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXT",
@@ -122,7 +122,7 @@
       "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXT",
@@ -142,7 +142,7 @@
       "name": "field_1753482933607_7k2p1qr",
       "disabled": false,
       "readonly": false,
-      "specificType": "number"
+      "specificType": "NUMBER"
     },
     {
       "type": "TEXTAREA",

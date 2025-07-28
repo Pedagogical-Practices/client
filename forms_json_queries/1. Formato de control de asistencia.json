@@ -111,7 +111,7 @@
       "name": "field_1753482932125_m2gqpxr",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXT",
@@ -131,7 +131,7 @@
       "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "DATE_PICKER",
@@ -170,7 +170,7 @@
       "name": "field_1753482934348_8m1n2o3",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXT",
@@ -190,7 +190,7 @@
       "name": "field_1753482935089_4p5q6r7",
       "disabled": false,
       "readonly": false,
-      "specificType": "number"
+      "specificType": "NUMBER"
     },
     {
       "type": "SELECT",
@@ -337,7 +337,7 @@
       "name": "field_1753482940276_3k4l5m6",
       "disabled": true,
       "readonly": true,
-      "specificType": "text"
+      "specificType": "TEXT"
     }
   ]
 }

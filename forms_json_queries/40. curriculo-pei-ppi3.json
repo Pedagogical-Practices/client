@@ -121,7 +121,7 @@
       "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXT",
@@ -141,13 +141,13 @@
       "name": "field_1753482933607_7k2p1qr",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXTAREA",
       "label": "Descripción",
       "value": "",
-      "variableName": "descripcion",
+      "variableName": "description",
       "placeholder": "Síntesis de aspectos importantes",
       "hint": "",
       "required": true,

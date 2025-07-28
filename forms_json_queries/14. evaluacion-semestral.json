@@ -88,7 +88,7 @@
       "name": "field_1753482931349_s870ebc",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "RADIO_GROUP",
@@ -212,7 +212,7 @@
       "name": "field_1753482935089_4p5q6r7",
       "disabled": false,
       "readonly": false,
-      "specificType": "number"
+      "specificType": "NUMBER"
     },
     {
       "type": "TEXTAREA",
