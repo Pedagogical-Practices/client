@@ -65,7 +65,7 @@
       "name": "field_1753482930579_frk62al",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXT",
@@ -85,7 +85,7 @@
       "name": "field_1753482931349_s870ebc",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TIME_PICKER",

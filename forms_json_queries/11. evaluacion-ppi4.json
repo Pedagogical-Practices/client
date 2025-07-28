@@ -88,7 +88,7 @@
       "name": "field_1753482931349_s870ebc",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "DATE_PICKER",
@@ -251,7 +251,7 @@
       "name": "field_1753482936571_3v4w5x6",
       "disabled": false,
       "readonly": false,
-      "specificType": "number"
+      "specificType": "NUMBER"
     },
     {
       "type": "TEXTAREA",

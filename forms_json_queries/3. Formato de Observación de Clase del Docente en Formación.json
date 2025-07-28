@@ -19,7 +19,7 @@
       "name": "field_1753482925459_1xua6ht",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXT",
@@ -39,7 +39,7 @@
       "name": "field_1753482929394_9nvt3zg",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXT",
@@ -59,7 +59,7 @@
       "name": "field_1753482930579_frk62al",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "DATE_PICKER",
@@ -81,7 +81,7 @@
       "readonly": false
     },
     {
-      "type": "TIME_PICKER",
+      "type": "DATE_PICKER",
       "label": "Hora",
       "value": "",
       "variableName": "hora",
@@ -117,7 +117,7 @@
       "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXT",
@@ -137,7 +137,7 @@
       "name": "field_1753482933607_7k2p1qr",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXT",
@@ -157,7 +157,7 @@
       "name": "field_1753482934348_8m1n2o3",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "SELECT",
@@ -277,7 +277,7 @@
       "name": "field_1753482938053_1b2c3d4",
       "disabled": false,
       "readonly": false,
-      "specificType": "text"
+      "specificType": "TEXT"
     },
     {
       "type": "TEXTAREA",

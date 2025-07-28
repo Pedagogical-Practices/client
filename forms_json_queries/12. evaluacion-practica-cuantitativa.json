@@ -107,7 +107,7 @@
       "name": "field_1753482932125_m2gqpxr",
       "disabled": false,
       "readonly": false,
-      "specificType": "number"
+      "specificType": "NUMBER"
     },
     {
       "type": "TEXT",
@@ -127,7 +127,7 @@
       "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false,
-      "specificType": "number"
+      "specificType": "NUMBER"
     },
     {
       "type": "TEXT",
@@ -147,7 +147,7 @@
       "name": "field_1753482933607_7k2p1qr",
       "disabled": false,
       "readonly": false,
-      "specificType": "number"
+      "specificType": "NUMBER"
     },
     {
       "type": "TEXT",
@@ -167,7 +167,7 @@
       "name": "field_1753482934348_8m1n2o3",
       "disabled": false,
       "readonly": false,
-      "specificType": "number"
+      "specificType": "NUMBER"
     },
     {
       "type": "TEXT",
@@ -187,7 +187,7 @@
       "name": "field_1753482935089_4p5q6r7",
       "disabled": false,
       "readonly": false,
-      "specificType": "number"
+      "specificType": "NUMBER"
     },
     {
       "type": "SELECT",

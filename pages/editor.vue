@@ -245,7 +245,11 @@
       <v-card>
         <v-card-title class="d-flex justify-space-between align-center">
           <span>Carga Masiva de Formularios</span>
-          <v-btn icon="mdi-close" variant="text" @click="showBulkUpload = false"></v-btn>
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            @click="showBulkUpload = false"
+          ></v-btn>
         </v-card-title>
         <v-card-text>
           <BulkFormUploader />
@@ -268,7 +272,7 @@ import {
 } from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
 import FormViewer from "~/components/FormViewer.vue";
-import BulkFormUploader from '~/components/forms/BulkFormUploader.vue';
+import BulkFormUploader from "~/components/forms/BulkFormUploader.vue";
 // import { useMutation } from "@vue/apollo-composable";
 // import { gql } from "graphql-tag";
 import {
