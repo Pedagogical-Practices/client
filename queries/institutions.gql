@@ -1,5 +1,5 @@
-query Institution($id: ID!) {
-  institution(id: $id) {
+query Institutions {
+  institutions {
     id
     name
     address

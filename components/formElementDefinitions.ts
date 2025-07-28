@@ -1,19 +1,31 @@
-export enum FormFieldType {
-  TEXT = 'TEXT',
-  TEXTAREA = 'TEXTAREA',
-  SELECT = 'SELECT',
-  DATE = 'DATE',
-  MAP = 'MAP',
-  FILE_UPLOAD = 'FILE_UPLOAD',
-}
+import { FormFieldType } from "@/types";
 
 export interface FormField {
   name: string;
   label: string;
-  type: FormFieldType;
-  options?: Record<string, any>;
+  type: FormFieldType | string;
+  options?: Record<string, any> | any[];
   rules?: string[];
   defaultValue?: string;
+  value?: any;
+  variableName?: string;
+  hint?: string;
+  required?: boolean;
+  chapter?: string;
+  question?: string;
+  questionNumber?: string;
+  consistencyCondition?: string;
+  inconsistencyMessage?: string;
+  errorType?: string;
+  description?: string;
+  disabled?: boolean;
+  readonly?: boolean;
+  dataSource?: string;
+  multiple?: boolean;
+  placeholder?: string;
+  specificType?: string;
+  height?: string;
+  color?: string;
 }
 
 export interface AvailableElementDefinition {
@@ -31,8 +43,23 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Text Input",
       type: FormFieldType.TEXT,
-      options: null,
+      options: [],
       rules: [],
+      value: "",
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
+      placeholder: "",
+      specificType: "text",
     },
   },
   {
@@ -42,8 +69,24 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Text Area",
       type: FormFieldType.TEXTAREA,
-      options: null,
+      options: [],
       rules: [],
+      value: "",
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
+      placeholder: "",
+      specificType: "textarea",
+      height: "4",
     },
   },
   {
@@ -55,6 +98,21 @@ export const availableElements: AvailableElementDefinition[] = [
       type: FormFieldType.SELECT,
       options: { items: ["Option 1", "Option 2", "Option 3"] },
       rules: [],
+      value: "",
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
+      dataSource: "",
+      multiple: false,
     },
   },
   {
@@ -64,8 +122,22 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Select Date",
       type: FormFieldType.DATE,
-      options: null,
+      options: [],
       rules: [],
+      value: "",
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
+      placeholder: "YYYY-MM-DD",
     },
   },
   {
@@ -75,8 +147,21 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Location",
       type: FormFieldType.MAP,
-      options: null,
+      options: [],
       rules: [],
+      value: null,
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
     },
   },
   {
@@ -86,8 +171,144 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       label: "Upload File",
       type: FormFieldType.FILE_UPLOAD,
-      options: null,
+      options: [],
       rules: [],
+      value: null,
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
+    },
+  },
+  {
+    type: FormFieldType.CHECKBOX,
+    displayName: "Checkbox",
+    icon: "mdi-checkbox-marked",
+    defaultConfig: {
+      label: "Checkbox",
+      type: FormFieldType.CHECKBOX,
+      options: [],
+      rules: [],
+      value: false,
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
+    },
+  },
+  {
+    type: FormFieldType.DATE_PICKER,
+    displayName: "Date Picker (JSON)",
+    icon: "mdi-calendar-range",
+    defaultConfig: {
+      label: "Date",
+      type: FormFieldType.DATE_PICKER,
+      options: [],
+      rules: [],
+      value: "",
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
+      placeholder: "YYYY-MM-DD",
+    },
+  },
+  {
+    type: FormFieldType.RADIO_GROUP,
+    displayName: "Radio Group",
+    icon: "mdi-radiobox-marked",
+    defaultConfig: {
+      label: "Radio Options",
+      type: FormFieldType.RADIO_GROUP,
+      options: { items: ["Option A", "Option B"] },
+      rules: [],
+      value: "",
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
+    },
+  },
+  {
+    type: FormFieldType.TIME_PICKER,
+    displayName: "Time Picker",
+    icon: "mdi-clock-time-four-outline",
+    defaultConfig: {
+      label: "Select Time",
+      type: FormFieldType.TIME_PICKER,
+      options: [],
+      rules: [],
+      value: "",
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
+      placeholder: "HH:MM",
+    },
+  },
+  {
+    type: FormFieldType.BUTTON,
+    displayName: "Button",
+    icon: "mdi-btn",
+    defaultConfig: {
+      label: "Button",
+      type: FormFieldType.BUTTON,
+      options: [],
+      rules: [],
+      value: "",
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
+      color: "primary",
     },
   },
 ];

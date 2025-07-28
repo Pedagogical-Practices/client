@@ -2,7 +2,7 @@
   "name": "Formato Plan de Clase",
   "fields": [
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Docente en Formación",
       "value": "",
       "variableName": "docenteFormacion",
@@ -15,15 +15,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482925459_1xua6ht",
       "disabled": false,
       "readonly": false,
       "dataSource": "students",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Institución Educativa",
       "value": "",
       "variableName": "institucionEducativa",
@@ -36,15 +38,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482929394_9nvt3zg",
       "disabled": false,
       "readonly": false,
       "dataSource": "institutions",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Asignatura",
       "value": "",
       "variableName": "asignatura",
@@ -57,15 +61,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482930579_frk62al",
       "disabled": false,
       "readonly": false,
       "dataSource": "courses",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Grado",
       "value": "",
       "variableName": "grado",
@@ -78,15 +84,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482931349_s870ebc",
       "disabled": false,
       "readonly": false,
       "dataSource": "courses",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Tema",
       "value": "",
       "variableName": "tema",
@@ -100,13 +108,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482932125_m2gqpxr",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "date-picker",
+      "type": "DATE_PICKER",
       "label": "Fecha",
       "value": "",
       "variableName": "fecha",
@@ -120,12 +128,12 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Objetivos de Aprendizaje",
       "value": "",
       "variableName": "objetivosAprendizaje",
@@ -139,13 +147,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482933607_7k2p1qr",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Competencias",
       "value": "",
       "variableName": "competencias",
@@ -159,13 +167,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482934348_8m1n2o3",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Actividades",
       "value": "",
       "variableName": "actividades",
@@ -179,13 +187,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482935089_4p5q6r7",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Recursos",
       "value": "",
       "variableName": "recursos",
@@ -199,13 +207,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482935830_9s0t1u2",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Evaluación",
       "value": "",
       "variableName": "evaluacion",
@@ -219,13 +227,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482936571_3v4w5x6",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Firma del Docente en Formación",
       "value": "",
       "variableName": "firmaDocenteFormacion",
@@ -238,11 +246,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482937312_7y8z9a0",
       "disabled": false,
       "readonly": false,
       "dataSource": "students",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     }
   ]

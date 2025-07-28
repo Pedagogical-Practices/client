@@ -2,7 +2,7 @@
   "name": "Formato de Observación de Clase del Docente en Formación",
   "fields": [
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Docente Tutor",
       "value": "",
       "variableName": "docenteTutor",
@@ -16,13 +16,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482925459_1xua6ht",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Docente en Formación",
       "value": "",
       "variableName": "docenteFormacion",
@@ -36,13 +36,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482929394_9nvt3zg",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Institución Educativa",
       "value": "",
       "variableName": "institucion",
@@ -56,13 +56,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482930579_frk62al",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "date-picker",
+      "type": "DATE_PICKER",
       "label": "Fecha",
       "value": "",
       "variableName": "fecha",
@@ -76,12 +76,12 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482931349_s870ebc",
       "disabled": false,
       "readonly": false
     },
     {
-      "type": "time-picker",
+      "type": "TIME_PICKER",
       "label": "Hora",
       "value": "",
       "variableName": "hora",
@@ -95,12 +95,12 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482932125_m2gqpxr",
       "disabled": false,
       "readonly": false
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Grado",
       "value": "",
       "variableName": "grado",
@@ -114,13 +114,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Contexto de Aula",
       "value": "",
       "variableName": "contextoAula",
@@ -134,13 +134,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482933607_7k2p1qr",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Tema Desarrollado",
       "value": "",
       "variableName": "temaDesarrollado",
@@ -154,13 +154,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482934348_8m1n2o3",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Dominio del Tema",
       "variableName": "dominioTema",
       "placeholder": "Selecciona el nivel de dominio",
@@ -173,19 +173,21 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482935089_4p5q6r7",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "Excelente", "value": "Excelente" },
-        { "label": "Bueno", "value": "Bueno" },
-        { "label": "Regular", "value": "Regular" },
-        { "label": "Deficiente", "value": "Deficiente" }
-      ],
+      "options": {
+        "items": [
+          { "label": "Excelente", "value": "Excelente" },
+          { "label": "Bueno", "value": "Bueno" },
+          { "label": "Regular", "value": "Regular" },
+          { "label": "Deficiente", "value": "Deficiente" }
+        ]
+      },
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Presentación Personal",
       "variableName": "presentacionPersonal",
       "placeholder": "Selecciona el nivel de presentación",
@@ -198,19 +200,21 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482935830_9s0t1u2",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "Excelente", "value": "Excelente" },
-        { "label": "Bueno", "value": "Bueno" },
-        { "label": "Regular", "value": "Regular" },
-        { "label": "Deficiente", "value": "Deficiente" }
-      ],
+      "options": {
+        "items": [
+          { "label": "Excelente", "value": "Excelente" },
+          { "label": "Bueno", "value": "Bueno" },
+          { "label": "Regular", "value": "Regular" },
+          { "label": "Deficiente", "value": "Deficiente" }
+        ]
+      },
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Puntualidad",
       "variableName": "puntualidad",
       "placeholder": "Selecciona el nivel de puntualidad",
@@ -223,21 +227,23 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482936571_3v4w5x6",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "Excelente", "value": "Excelente" },
-        { "label": "Bueno", "value": "Bueno" },
-        { "label": "Regular", "value": "Regular" },
-        { "label": "Deficiente", "value": "Deficiente" }
-      ],
+      "options": {
+        "items": [
+          { "label": "Excelente", "value": "Excelente" },
+          { "label": "Bueno", "value": "Bueno" },
+          { "label": "Regular", "value": "Regular" },
+          { "label": "Deficiente", "value": "Deficiente" }
+        ]
+      },
       "multiple": false
     },
     {
-      "type": "checkbox",
+      "type": "CHECKBOX",
       "label": "Presenta el Portafolio con la Clase a Desarrollar",
-      "value": "false",
+      "value": false,
       "variableName": "portafolio",
       "placeholder": "",
       "hint": "Indica si el docente en formación presenta el portafolio",
@@ -249,12 +255,12 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482937312_7y8z9a0",
       "disabled": false,
       "readonly": false
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Material de Apoyo o Recursos",
       "value": "",
       "variableName": "recursos",
@@ -268,13 +274,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482938053_1b2c3d4",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Aspectos Metodológicos: Inicio de Clase",
       "value": "",
       "variableName": "metodologiaInicio",
@@ -288,13 +294,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482938794_5e6f7g8",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Aspectos Metodológicos: Desarrollo",
       "value": "",
       "variableName": "metodologiaDesarrollo",
@@ -308,13 +314,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482939535_9h0i1j2",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Aspectos Metodológicos: Actividades",
       "value": "",
       "variableName": "metodologiaActividades",
@@ -328,13 +334,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482940276_3k4l5m6",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Aspectos Metodológicos: Evaluación",
       "value": "",
       "variableName": "metodologiaEvaluacion",
@@ -348,13 +354,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482941017_7n8o9p0",
       "disabled": false,
       "readonly": false,
       "height": "4"
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Manejo de Grupo",
       "variableName": "manejoGrupo",
       "placeholder": "Selecciona el nivel de manejo de grupo",
@@ -367,19 +373,21 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482941758_1q2r3s4",
       "disabled": false,
       "readonly": false,
-      "options": [
-        { "label": "Excelente", "value": "Excelente" },
-        { "label": "Bueno", "value": "Bueno" },
-        { "label": "Regular", "value": "Regular" },
-        { "label": "Deficiente", "value": "Deficiente" }
-      ],
+      "options": {
+        "items": [
+          { "label": "Excelente", "value": "Excelente" },
+          { "label": "Bueno", "value": "Bueno" },
+          { "label": "Regular", "value": "Regular" },
+          { "label": "Deficiente", "value": "Deficiente" }
+        ]
+      },
       "multiple": false
     },
     {
-      "type": "textarea",
+      "type": "TEXTAREA",
       "label": "Observaciones del Docente Asesor",
       "value": "",
       "variableName": "observaciones",
@@ -393,7 +401,7 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482942499_5t6u7v8",
       "disabled": false,
       "readonly": false,
       "height": "6"

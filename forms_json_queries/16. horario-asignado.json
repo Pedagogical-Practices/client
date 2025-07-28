@@ -2,7 +2,7 @@
   "name": "Formato Horario Asignado",
   "fields": [
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Docente en Formación",
       "value": "",
       "variableName": "docenteFormacion",
@@ -15,15 +15,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482925459_1xua6ht",
       "disabled": false,
       "readonly": false,
       "dataSource": "students",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Institución Educativa",
       "value": "",
       "variableName": "institucionEducativa",
@@ -36,15 +38,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482929394_9nvt3zg",
       "disabled": false,
       "readonly": false,
       "dataSource": "institutions",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Semestre",
       "value": "",
       "variableName": "semestre",
@@ -58,13 +62,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482930579_frk62al",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "text",
+      "type": "TEXT",
       "label": "Día",
       "value": "",
       "variableName": "dia",
@@ -78,13 +82,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482931349_s870ebc",
       "disabled": false,
       "readonly": false,
       "specificType": "text"
     },
     {
-      "type": "time-picker",
+      "type": "TIME_PICKER",
       "label": "Hora",
       "value": "",
       "variableName": "hora",
@@ -98,12 +102,12 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482932125_m2gqpxr",
       "disabled": false,
       "readonly": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Asignatura",
       "value": "",
       "variableName": "asignatura",
@@ -116,15 +120,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482932866_3j4tp1q",
       "disabled": false,
       "readonly": false,
       "dataSource": "courses",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Grupo",
       "value": "",
       "variableName": "grupo",
@@ -137,15 +143,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482933607_7k2p1qr",
       "disabled": false,
       "readonly": false,
       "dataSource": "courses",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Firma del Docente Asesor",
       "value": "",
       "variableName": "firmaDocenteAsesor",
@@ -158,15 +166,17 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482934348_8m1n2o3",
       "disabled": false,
       "readonly": false,
       "dataSource": "teachers",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     },
     {
-      "type": "select",
+      "type": "SELECT",
       "label": "Firma del Coordinador",
       "value": "",
       "variableName": "firmaCoordinador",
@@ -179,11 +189,13 @@
       "inconsistencyMessage": "",
       "errorType": "Soft",
       "description": "",
-      "name": "",
+      "name": "field_1753482935089_4p5q6r7",
       "disabled": false,
       "readonly": false,
       "dataSource": "teachers",
-      "options": [],
+      "options": {
+        "items": []
+      },
       "multiple": false
     }
   ]
