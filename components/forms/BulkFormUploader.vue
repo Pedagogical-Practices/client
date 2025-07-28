@@ -14,12 +14,15 @@
 
         <div v-if="files.length">
           <v-list>
-            <v-list-item v-for="(file, index) in files" :key="index">
+            <v-list-item
+              v-for="(file, index) in files"
+              :key="index"
+              :append-icon="getIcon(file.name)"
+              :class="getStatusClass(file.name)"
+            >
               <v-list-item-title>{{ file.name }}</v-list-item-title>
               <v-list-item-subtitle>
-                <v-chip :color="status[file.name]?.color || 'grey'" dark>
-                  {{ status[file.name]?.text || "Listo para cargar" }}
-                </v-chip>
+                {{ status[file.name]?.text || 'Listo para cargar' }}
               </v-list-item-subtitle>
             </v-list-item>
           </v-list>
@@ -115,4 +118,48 @@ const reset = () => {
   progress.value = 0;
   uploading.value = false;
 };
+
+const getIcon = (fileName: string) => {
+  const fileStatus = status.value[fileName];
+  if (!fileStatus) return '';
+
+  switch (fileStatus.text) {
+    case 'Éxito':
+      return 'mdi-check-circle';
+    case 'Error':
+      return 'mdi-close-circle';
+    case 'Cargando...':
+      return 'mdi-dots-horizontal';
+    default:
+      return '';
+  }
+};
+
+const getStatusClass = (fileName: string) => {
+  const fileStatus = status.value[fileName];
+  if (!fileStatus) return '';
+
+  switch (fileStatus.text) {
+    case 'Éxito':
+      return 'success-item';
+    case 'Error':
+      return 'error-item';
+    case 'Cargando...':
+      return 'loading-item';
+    default:
+      return '';
+  }
+};
 </script>
+
+<style scoped>
+.success-item .v-list-item__append .v-icon {
+  color: green;
+}
+.error-item .v-list-item__append .v-icon {
+  color: red;
+}
+.loading-item .v-list-item__append .v-icon {
+  color: blue;
+}
+</style>
