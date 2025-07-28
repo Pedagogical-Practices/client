@@ -62,8 +62,6 @@ const uploading = ref(false);
 const progress = ref(0);
 const formStore = useFormStore();
 
-console.log("Métodos del store:", formStore);
-
 const handleFiles = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files) {
