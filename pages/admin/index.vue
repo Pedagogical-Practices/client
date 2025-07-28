@@ -64,6 +64,18 @@
           </v-card-text>
         </v-card>
       </v-col>
+
+      <v-col cols="12" md="4">
+        <v-card to="/admin/upload-forms" hover class="pa-2" height="180" variant="outlined">
+          <v-card-title>
+            <v-icon left>mdi-upload-multiple</v-icon>
+            <span class="ml-2">Cargar Formularios</span>
+          </v-card-title>
+          <v-card-text class="card-text-scrollable">
+            Cargar masivamente formularios desde archivos JSON.
+          </v-card-text>
+        </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>
