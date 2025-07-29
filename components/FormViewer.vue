@@ -57,14 +57,14 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXTAREA]: VTextarea,
   [FormFieldType.SELECT]: VSelect,
   [FormFieldType.DATE]: VDatePicker,
-  [FormFieldType.MAP]: VTextField, // Placeholder for map component
-  [FormFieldType.FILE_UPLOAD]: VTextField, // Placeholder for file upload
+  [FormFieldType.MAP]: VTextField,
+  [FormFieldType.FILE_UPLOAD]: VTextField,
   [FormFieldType.CHECKBOX]: VCheckbox,
   [FormFieldType.DATE_PICKER]: VDatePicker,
   [FormFieldType.RADIO_GROUP]: VRadioGroup,
-  [FormFieldType.TIME_PICKER]: VTextField, // Placeholder for time picker
-  [FormFieldType.BUTTON]: VTextField, // Placeholder for button component
-  [FormFieldType.AUTOCOMPLETE]: VTextField, // Placeholder for autocomplete
+  [FormFieldType.TIME_PICKER]: VTextField,
+  [FormFieldType.BUTTON]: VTextField,
+  [FormFieldType.AUTOCOMPLETE]: VTextField,
   [FormFieldType.NUMBER]: VTextField,
   [FormFieldType.EMAIL]: VTextField,
   [FormFieldType.PASSWORD]: VTextField,
