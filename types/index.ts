@@ -59,6 +59,7 @@ export interface FormField {
   specificType?: string;
   height?: string;
   multiple?: boolean;
+  color?: string;
 }
 
 export interface Form {

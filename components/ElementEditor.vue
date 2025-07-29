@@ -100,7 +100,7 @@
                   variant="filled"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" md="6" v-if="editableElement.type === 'text'">
+              <v-col cols="12" md="6" v-if="editableElement.type === 'TEXT'">
                 <v-select
                   v-model="editableElement.specificType"
                   :items="[
@@ -122,7 +122,7 @@
               <v-col
                 cols="12"
                 md="6"
-                v-if="editableElement.type === 'textarea'"
+                v-if="editableElement.type === 'TEXTAREA'"
               >
                 <v-text-field
                   type="number"
@@ -134,7 +134,7 @@
                   variant="filled"
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" md="6" v-if="editableElement.type === 'button'">
+              <v-col cols="12" md="6" v-if="editableElement.type === 'BUTTON'">
                 <v-text-field
                   v-model="editableElement.color"
                   label="Button Color"
@@ -173,7 +173,7 @@
               </v-col>
             </v-row>
           </v-window-item>
-          {{ editableElement }} - {{ selectedElement }}
+
           <v-window-item value="behavior" class="tab-pane">
             <v-row dense>
               <v-col cols="12" sm="4">
@@ -216,15 +216,15 @@
               </v-col>
               <template
                 v-if="
-                  editableElement.type === 'select' ||
-                  editableElement.type === 'radio-group'
+                  editableElement.type === 'SELECT' ||
+                  editableElement.type === 'RADIO_GROUP'
                 "
               >
                 <v-col cols="12">
                   <v-textarea
                     v-model="selectItemsText"
                     :label="
-                      editableElement.type === 'select'
+                      editableElement.type === 'SELECT'
                         ? 'Dropdown Options (one per line)'
                         : 'Radio Options (one per line)'
                     "
@@ -277,7 +277,7 @@
                   variant="filled"
                 ></v-textarea>
               </v-col>
-              <v-col cols="12" md="6">
+              <!--v-col cols="12" md="6">
                 <v-select
                   v-model="editableElement.requirementLevel"
                   :items="['Required', 'Optional', 'Conditional']"
@@ -287,7 +287,7 @@
                   density="compact"
                   variant="filled"
                 ></v-select>
-              </v-col>
+              </v-col-->
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="editableElement.name"

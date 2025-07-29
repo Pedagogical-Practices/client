@@ -27,6 +27,10 @@ export const useFormElementStore = defineStore("formElement", () => {
     formElements.value.push(element);
   };
 
+  const chargeFieldsOnForm = (fields: FormField[]) => {
+    formElements.value = fields;
+  };
+
   const removeElement = (elementName: string) => {
     formElements.value = formElements.value.filter(
       (el) => el.name !== elementName
@@ -104,6 +108,7 @@ export const useFormElementStore = defineStore("formElement", () => {
     updateElement,
     setSelectedElement,
     initializeForm,
+    chargeFieldsOnForm,
     moveElementUp,
     moveElementDown,
     getElement,
