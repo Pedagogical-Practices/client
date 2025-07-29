@@ -11,14 +11,25 @@
           <v-card-title>Información General</v-card-title>
           <v-card-text>
             <p><strong>Nombre:</strong> {{ formStore.currentForm.name }}</p>
-            <p><strong>Descripción:</strong> {{ formStore.currentForm.description }}</p>
+            <p>
+              <strong>Descripción:</strong>
+              {{ formStore.currentForm.description }}
+            </p>
             <p>
               <strong>Fecha de creación:</strong>
-              {{ new Date(formStore.currentForm.createdAt).toLocaleString() }}
+              {{
+                formStore.currentForm.createdAt
+                  ? new Date(formStore.currentForm.createdAt).toLocaleString()
+                  : "N/A"
+              }}
             </p>
             <p>
               <strong>Última actualización:</strong>
-              {{ new Date(formStore.currentForm.updatedAt).toLocaleString() }}
+              {{
+                formStore.currentForm.updatedAt
+                  ? new Date(formStore.currentForm.updatedAt).toLocaleString()
+                  : "N/A"
+              }}
             </p>
           </v-card-text>
         </v-card>
@@ -27,7 +38,10 @@
         <v-card>
           <v-card-title>Campos del Formulario</v-card-title>
           <v-card-text>
-            <FormViewer :formDefinition="formStore.currentForm" :modelValue="{}" />
+            <FormViewer
+              :formDefinition="formStore.currentForm"
+              :modelValue="{}"
+            />
           </v-card-text>
         </v-card>
       </v-col>
@@ -54,7 +68,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useFormStore } from "~/stores/formStores";
+import { useFormStore } from "~/stores/formStore";
 import { useAuthStore } from "~/stores/authStore";
 import FormViewer from "~/components/FormViewer.vue";
 
@@ -78,10 +92,10 @@ onMounted(async () => {
         color: "error",
         timeout: 3000,
       };
-      router.push("/login");
+      // router.push("/login");
     } else {
       const formId = route.params.id as string;
-      await formStore.fetchForm(formId);
+      await formStore.fetchFormById(formId);
       if (!formStore.currentForm) {
         snackbar.value = {
           show: true,
@@ -89,7 +103,7 @@ onMounted(async () => {
           color: "error",
           timeout: 3000,
         };
-        router.push("/forms");
+        // router.push("/forms");
       }
     }
   } catch (error: any) {
@@ -100,7 +114,7 @@ onMounted(async () => {
       color: "error",
       timeout: 3000,
     };
-    router.push("/forms");
+    // router.push("/forms");
   }
 });
 </script>
