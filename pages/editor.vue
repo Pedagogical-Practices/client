@@ -282,6 +282,7 @@ import {
   VTextarea,
   VSelect,
   VDatePicker,
+  // VDateInput,
 } from "vuetify/components";
 import { definePageMeta } from "#imports";
 import { FormFieldType, type FormField } from "~/types";
@@ -348,6 +349,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.FILE_UPLOAD]: VTextField,
   [FormFieldType.CHECKBOX]: VTextField,
   [FormFieldType.DATE_PICKER]: VDatePicker,
+  // [FormFieldType.DATE_INPUT]: VDateInput,
   [FormFieldType.RADIO_GROUP]: VTextField,
   [FormFieldType.TIME_PICKER]: VTextField,
   [FormFieldType.BUTTON]: VTextField,
