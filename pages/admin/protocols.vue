@@ -13,7 +13,6 @@
       <v-data-table
         :headers="headers"
         :items="store.protocols"
-        :loading="store.loading"
         class="elevation-1"
       >
         <template v-slot:item.form.name="{ item }">
@@ -104,13 +103,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useProtocolStore } from "~/stores/protocolStore";
-import { Protocol } from "~/types/protocol"; // Adjust the import path as necessary
+import { type Protocol } from "~/types"; // Adjust the import path as necessary
 import EntityAutocomplete from "~/components/EntityAutocomplete.vue";
 
 // Middleware de ruta
-definePageMeta({
-  middleware: "admin",
-});
+// definePageMeta({ middleware: "admin",});
 
 const store = useProtocolStore();
 

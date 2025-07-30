@@ -34,7 +34,8 @@ import {
   VCheckbox,
   VRadioGroup,
 } from "vuetify/components";
-import { FormFieldType, type FormField } from "~/types";
+import { FormFieldType, type FormField, DataSourceType } from "~/types";
+import { useDataSourceStore } from "~/stores/dataSourceStore";
 
 export interface Form {
   id?: string;
@@ -51,6 +52,8 @@ const props = defineProps<{
 const emit = defineEmits(["update:modelValue"]);
 
 const localFormData = ref<Record<string, any>>({});
+const dataSourceStore = useDataSourceStore();
+const dynamicOptions = ref<Record<string, any[]>>({});
 
 const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXT]: VTextField,
@@ -85,17 +88,16 @@ const getComponentProps = (field: FormField) => {
   };
 
   if (field.type === FormFieldType.SELECT) {
-    if (field.options) {
+    if (field.dataSource) {
+      props.items = dynamicOptions.value[field.dataSource] || [];
+    } else if (field.options) {
       if (Array.isArray(field.options)) {
         props.items = field.options;
       } else {
         props.items = field.options.items || [];
       }
-      props.multiple = field.multiple || false;
     }
-    if (field.dataSource) {
-      props.dataSource = field.dataSource;
-    }
+    props.multiple = field.multiple || false;
   }
 
   if (field.type === FormFieldType.TEXTAREA) {
@@ -120,7 +122,7 @@ const getComponentProps = (field: FormField) => {
 
 watch(
   () => props.formDefinition,
-  (newVal) => {
+  async (newVal) => {
     if (newVal?.fields) {
       const currentModelValue = props.modelValue || {};
       localFormData.value = newVal.fields.reduce(
@@ -133,10 +135,32 @@ watch(
         },
         {} as Record<string, any>
       );
+
+      // Cargar opciones dinámicas para SELECTs
+      for (const field of newVal.fields) {
+        if (field.type === FormFieldType.SELECT && field.dataSource) {
+          if (!dynamicOptions.value[field.dataSource]) {
+            const fetchedOptions = await dataSourceStore.fetchFormattedOptions(
+              field.dataSource
+            );
+            dynamicOptions.value[field.dataSource] = fetchedOptions
+              .split("\n")
+              .filter((line) => line)
+              .map((line) => {
+                const parts = line.split("|");
+                return {
+                  value: parts[0],
+                  title: parts.length > 1 ? parts[1] : parts[0],
+                };
+              });
+          }
+        }
+      }
     }
   },
   { immediate: true, deep: true }
 );
+
 
 watch(
   localFormData,

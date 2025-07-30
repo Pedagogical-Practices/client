@@ -9,17 +9,19 @@ import CreateFormMutation from "~/queries/createForm.gql";
 import CreateManyFormsMutation from "~/queries/createManyForms.gql";
 import UpdateFormMutation from "~/queries/updateForm.gql";
 import GetFormQuery from "~/queries/form.gql";
-import GetFormsQuery from "~/queries/forms.gql"; // Nueva importación
-import DeleteFormMutation from "~/queries/removeForm.gql"; // Nueva importación
+import GetFormsQuery from "~/queries/forms.gql";
+import DeleteFormMutation from "~/queries/removeForm.gql";
+import { useFormElementStore } from "./formElementStore";
 
 export const useFormStore = defineStore("form", () => {
-  const { client: apolloClient } = useApolloClient(); // Obtener la instancia de apolloClient
+  const { client: apolloClient } = useApolloClient();
 
   // State
   const formName = ref<string>("");
   const editingFormId = ref<string | null>(null);
   const forms = ref<Form[]>([]);
-  const currentForm = ref<Form | null>(null); // Nueva propiedad de estado
+  const currentForm = ref<Form | null>(null);
+  const formElementStore = useFormElementStore();
 
   // Actions
   const createForm = async (input: any) => {
@@ -41,12 +43,13 @@ export const useFormStore = defineStore("form", () => {
   };
 
   const fetchFormById = async (id: string) => {
-    console.log(`fetchFormById: Intentando cargar formulario con ID: ${id}`);
     const { data, execute, error } = useAsyncQuery<{ form: Form }>(
       GetFormQuery,
       { id }
     );
+
     await execute();
+
     if (error.value) {
       console.error(
         "fetchFormById: Error al cargar el formulario:",
@@ -56,16 +59,12 @@ export const useFormStore = defineStore("form", () => {
         error.value.message || "Error desconocido al cargar el formulario."
       );
     }
-    console.log("fetchFormById: Datos recibidos:", data.value);
 
     if (data.value?.form) {
       formName.value = data.value.form.name;
       editingFormId.value = data.value.form.id ?? null;
       currentForm.value = data.value.form;
-      console.log(
-        "fetchFormById: Formulario cargado exitosamente:",
-        currentForm.value
-      );
+      formElementStore.chargeFieldsOnForm(data.value.form.fields || []);
     } else {
       console.log(
         "fetchFormById: No se encontró el formulario o los datos están vacíos."
@@ -85,10 +84,6 @@ export const useFormStore = defineStore("form", () => {
         throw errors;
       }
       forms.value = data.forms;
-      console.log(
-        "fetchForms: Formularios cargados exitosamente:",
-        forms.value
-      );
     } catch (error: any) {
       console.error("formStore: Error fetching forms:", error);
       throw new Error(
@@ -124,7 +119,7 @@ export const useFormStore = defineStore("form", () => {
     formName,
     editingFormId,
     forms,
-    currentForm, // Exponer currentForm
+    currentForm,
     createForm,
     createManyForms,
     updateForm,
