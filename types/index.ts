@@ -33,6 +33,16 @@ export enum FormFieldType {
   PASSWORD = "PASSWORD",
 }
 
+export enum DataSourceType {
+  INSTITUTIONS = "institutions",
+  TEACHERS = "teachers",
+  STUDENTS = "students",
+  COURSES = "courses",
+  FORMS = "forms",
+  PROTOCOLS = "protocols",
+  USERS = "users",
+}
+
 export interface FormField {
   id?: string;
   name: string;
@@ -148,4 +158,12 @@ export interface Submission {
   data: Record<string, any>;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface AvailableElementDefinition {
+  name: string;
+  type: FormFieldType;
+  displayName: string;
+  icon: string;
+  defaultConfig: FormField;
 }

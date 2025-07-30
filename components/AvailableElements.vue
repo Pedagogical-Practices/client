@@ -37,11 +37,9 @@
 
 <script setup lang="ts">
 import { useFormElementStore } from "~/stores/formElementStore";
-import type { FormField } from "~/server/src/form/schemas/formfield.shcema";
-import {
-  availableElements,
-  type AvailableElementDefinition,
-} from "./formElementDefinitions";
+import type { FormField } from "~/types";
+import { type AvailableElementDefinition } from "~/types";
+import { availableElements } from "./formElementDefinitions";
 
 const formElement = useFormElementStore();
 
@@ -60,7 +58,12 @@ const handleDragStart = (
   if (event.dataTransfer) {
     event.dataTransfer.setData(
       "application/json",
-      JSON.stringify({ type: elementDef.type, name: elementDef.defaultConfig.name || `field_${Date.now()}_${Math.random().toString(36).substring(2, 9)}` }) // Pass name for identification
+      JSON.stringify({
+        type: elementDef.type,
+        name:
+          elementDef.defaultConfig.name ||
+          `field_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+      }) // Pass name for identification
     );
     event.dataTransfer.effectAllowed = "copy";
   }

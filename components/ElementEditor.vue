@@ -154,15 +154,7 @@
               >
                 <v-select
                   v-model="editableElement.dataSource"
-                  :items="[
-                    'institutions',
-                    'teachers',
-                    'students',
-                    'courses',
-                    'forms',
-                    'protocols',
-                    'users',
-                  ]"
+                  :items="Object.values(DataSourceTypeEnum)"
                   label="Data Source"
                   hint="Source for dynamic options (e.g., institutions, teachers)."
                   persistent-hint
@@ -381,7 +373,9 @@ import { useFormElementStore } from "~/stores/formElementStore";
 import { useDataSourceStore } from "~/stores/dataSourceStore";
 import FormViewer from "~/components/FormViewer.vue";
 import { availableElements } from "./formElementDefinitions";
-import { type FormField, FormFieldType } from "~/types";
+import { type FormField, FormFieldType, DataSourceType } from "~/types";
+
+const DataSourceTypeEnum = DataSourceType;
 //"~/components/formElementDefinitions";
 
 const formElement = useFormElementStore();
@@ -406,7 +400,7 @@ watch(
   selectedElement,
   async (newVal) => {
     if (newVal) {
-      editableElement.value = reactive(toRaw(newVal));
+      editableElement.value = JSON.parse(JSON.stringify(newVal));
       // Aseguramos que dataSource sea un string simple para el v-select
       if (typeof editableElement.value.dataSource !== "string") {
         editableElement.value.dataSource = String(
@@ -530,20 +524,16 @@ const saveChanges = () => {
     editableElement.value.type === "SELECT" ||
     editableElement.value.type === "RADIO_GROUP"
   ) {
-    if (editableElement.value.dataSource) {
-      editableElement.value.options = [];
-    } else {
-      editableElement.value.options = selectItemsText.value
-        .split("\n")
-        .map((line) => line.trim())
-        .filter((line) => line)
-        .map((line) => {
-          const parts = line.split("|");
-          if (parts.length === 2)
-            return { value: parts[0].trim(), label: parts[1].trim() };
-          return { value: line, label: line };
-        });
-    }
+    editableElement.value.options = selectItemsText.value
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line)
+      .map((line) => {
+        const parts = line.split("|");
+        if (parts.length === 2)
+          return { value: parts[0].trim(), label: parts[1].trim() };
+        return { value: line, label: line };
+      });
   }
   editableElement.value.rules = rulesText.value
     .split(",")
