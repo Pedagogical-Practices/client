@@ -1,86 +1,58 @@
 import { defineStore } from "pinia";
-import { gql } from "graphql-tag";
 import { useApolloClient } from "@vue/apollo-composable";
 import { useAuthStore } from "~/stores/authStore";
-import { UserRole } from "~/types";
+import { UserRole, DataSourceType } from "~/types";
+
+// Importar las queries
+import GetUsers from "~/queries/dataSources/getUsers.gql";
+import GetForms from "~/queries/dataSources/getForms.gql";
+import GetProtocols from "~/queries/dataSources/getProtocols.gql";
+import GetCourses from "~/queries/dataSources/getCourses.gql";
+import GetInstitutions from "~/queries/dataSources/getInstitutions.gql";
+
+interface DataSourceConfig {
+  query: any;
+  dataKey: string;
+}
+
+const dataSourceConfigs: Record<DataSourceType, DataSourceConfig> = {
+  [DataSourceType.STUDENTS]: { query: GetUsers, dataKey: "users" },
+  [DataSourceType.TEACHERS]: { query: GetUsers, dataKey: "users" },
+  [DataSourceType.FORMS]: { query: GetForms, dataKey: "forms" },
+  [DataSourceType.PROTOCOLS]: { query: GetProtocols, dataKey: "protocols" },
+  [DataSourceType.COURSES]: { query: GetCourses, dataKey: "courses" },
+  [DataSourceType.INSTITUTIONS]: { query: GetInstitutions, dataKey: "institutions" },
+  [DataSourceType.USERS]: { query: GetUsers, dataKey: "users" },
+};
 
 export const useDataSourceStore = defineStore("dataSource", () => {
   const { client } = useApolloClient();
   const authStore = useAuthStore();
 
-  const fetchFormattedOptions = async (dataSource: string): Promise<string> => {
+  const fetchFormattedOptions = async (dataSource: DataSourceType): Promise<string> => {
     console.log(
       "dataSourceStore: fetchFormattedOptions called with",
       dataSource
     );
     if (!dataSource) return "";
 
-    let query;
-    let dataKey = dataSource;
-
-    if (dataSource === "students") {
-      if (authStore.user?.role === UserRole.STUDENT) {
-        const studentName = authStore.user.name || authStore.user.email;
-        return `${authStore.user.id}|${studentName}`;
-      }
-      query = gql`
-        query GetUsers {
-          users {
-            id
-            name
-            role
-          }
-        }
-      `;
-      dataKey = "users";
-    } else if (dataSource === "teachers") {
-      query = gql`
-        query GetUsers {
-          users {
-            id
-            name
-            role
-          }
-        }
-      `;
-      dataKey = "users";
-    } else if (dataSource === "forms") {
-      query = gql`
-        query GetForms {
-          forms {
-            id
-            name
-          }
-        }
-      `;
-    } else if (dataSource === "protocols") {
-      query = gql`
-        query GetProtocols {
-          protocols {
-            id
-            name
-          }
-        }
-      `;
-    } else if (dataSource === "courses") {
-      query = gql`
-        query GetCourses {
-          courses {
-            id
-            name
-          }
-        }
-      `;
-    } else {
+    const config = dataSourceConfigs[dataSource];
+    if (!config) {
       console.warn("dataSourceStore: Unknown dataSource", dataSource);
       return "";
     }
 
-    console.log("dataSourceStore: Generated query:", query);
+    // Manejo especial para el estudiante actual
+    if (dataSource === DataSourceType.STUDENTS && authStore.user?.role === UserRole.STUDENT) {
+      const studentName = authStore.user.name || authStore.user.email;
+      return `${authStore.user.id}|${studentName}`;
+    }
+
+    console.log("dataSourceStore: Generated query:", config.query);
 
     try {
-      console.log("dataSourceStore: Executing query", query);
-      const { data, errors } = await client.query({ query });
+      console.log("dataSourceStore: Executing query", config.query);
+      const { data, errors } = await client.query({ query: config.query });
 
       if (errors) {
         console.error("dataSourceStore: GraphQL errors", errors);
@@ -89,13 +61,13 @@ export const useDataSourceStore = defineStore("dataSource", () => {
 
       console.log("dataSourceStore: Data received", data);
 
-      if (data && data[dataKey]) {
-        let items = data[dataKey];
-        if (dataSource === "teachers") {
+      if (data && data[config.dataKey]) {
+        let items = data[config.dataKey];
+        if (dataSource === DataSourceType.TEACHERS) {
           items = items.filter(
             (user: any) => user.role === UserRole.TEACHER_DIRECTIVE
           );
-        } else if (dataSource === "students") {
+        } else if (dataSource === DataSourceType.STUDENTS) {
           items = items.filter((user: any) => user.role === UserRole.STUDENT);
         }
         const formatted = items

@@ -1,46 +1,14 @@
 import { FormFieldType } from "@/types";
-
-export interface FormField {
-  name: string;
-  label: string;
-  type: FormFieldType | string;
-  options?: Record<string, any> | any[];
-  rules?: string[];
-  defaultValue?: string;
-  value?: any;
-  variableName?: string;
-  hint?: string;
-  required?: boolean;
-  chapter?: string;
-  question?: string;
-  questionNumber?: string;
-  consistencyCondition?: string;
-  inconsistencyMessage?: string;
-  errorType?: string;
-  description?: string;
-  disabled?: boolean;
-  readonly?: boolean;
-  dataSource?: string;
-  multiple?: boolean;
-  placeholder?: string;
-  specificType?: string;
-  height?: string;
-  color?: string;
-}
-
-export interface AvailableElementDefinition {
-  type: FormFieldType;
-  displayName: string;
-  icon: string;
-  defaultConfig: Omit<FormField, "name">;
-}
+import type { FormField, AvailableElementDefinition } from "@/types";
 
 export const availableElements: AvailableElementDefinition[] = [
   {
+    name: "Text Input",
     type: FormFieldType.TEXT,
     displayName: "Text Input",
     icon: "mdi-form-textbox",
     defaultConfig: {
+      name: "text_input",
       label: "Text Input",
       type: FormFieldType.TEXT,
       options: [],
@@ -63,10 +31,12 @@ export const availableElements: AvailableElementDefinition[] = [
     },
   },
   {
+    name: "Text Area",
     type: FormFieldType.TEXTAREA,
     displayName: "Text Area",
     icon: "mdi-form-textarea",
     defaultConfig: {
+      name: "textarea",
       label: "Text Area",
       type: FormFieldType.TEXTAREA,
       options: [],
@@ -90,10 +60,12 @@ export const availableElements: AvailableElementDefinition[] = [
     },
   },
   {
+    name: "Dropdown Select",
     type: FormFieldType.SELECT,
     displayName: "Dropdown Select",
     icon: "mdi-form-dropdown",
     defaultConfig: {
+      name: "select",
       label: "Select Option",
       type: FormFieldType.SELECT,
       options: { items: ["Option 1", "Option 2", "Option 3"] },
@@ -116,10 +88,12 @@ export const availableElements: AvailableElementDefinition[] = [
     },
   },
   {
+    name: "Date Picker",
     type: FormFieldType.DATE,
     displayName: "Date Picker",
     icon: "mdi-calendar",
     defaultConfig: {
+      name: "date_picker",
       label: "Select Date",
       type: FormFieldType.DATE,
       options: [],
@@ -141,15 +115,17 @@ export const availableElements: AvailableElementDefinition[] = [
     },
   },
   {
+    name: "Map Input",
     type: FormFieldType.MAP,
     displayName: "Map Input",
     icon: "mdi-map",
     defaultConfig: {
+      name: "map_input",
       label: "Location",
       type: FormFieldType.MAP,
       options: [],
       rules: [],
-      value: null,
+      value: "",
       variableName: "",
       hint: "",
       required: false,
@@ -165,15 +141,17 @@ export const availableElements: AvailableElementDefinition[] = [
     },
   },
   {
+    name: "File Upload",
     type: FormFieldType.FILE_UPLOAD,
     displayName: "File Upload",
     icon: "mdi-file-upload",
     defaultConfig: {
+      name: "file_upload",
       label: "Upload File",
       type: FormFieldType.FILE_UPLOAD,
       options: [],
       rules: [],
-      value: null,
+      value: "",
       variableName: "",
       hint: "",
       required: false,
@@ -189,15 +167,17 @@ export const availableElements: AvailableElementDefinition[] = [
     },
   },
   {
+    name: "Checkbox",
     type: FormFieldType.CHECKBOX,
     displayName: "Checkbox",
     icon: "mdi-checkbox-marked",
     defaultConfig: {
+      name: "checkbox",
       label: "Checkbox",
       type: FormFieldType.CHECKBOX,
       options: [],
       rules: [],
-      value: false,
+      value: "",
       variableName: "",
       hint: "",
       required: false,
@@ -213,10 +193,12 @@ export const availableElements: AvailableElementDefinition[] = [
     },
   },
   {
+    name: "Date Picker (JSON)",
     type: FormFieldType.DATE_PICKER,
     displayName: "Date Picker (JSON)",
     icon: "mdi-calendar-range",
     defaultConfig: {
+      name: "date_picker",
       label: "Date",
       type: FormFieldType.DATE_PICKER,
       options: [],
@@ -238,10 +220,12 @@ export const availableElements: AvailableElementDefinition[] = [
     },
   },
   {
+    name: "Radio Group",
     type: FormFieldType.RADIO_GROUP,
     displayName: "Radio Group",
     icon: "mdi-radiobox-marked",
     defaultConfig: {
+      name: "radio_group",
       label: "Radio Options",
       type: FormFieldType.RADIO_GROUP,
       options: { items: ["Option A", "Option B"] },
@@ -262,10 +246,12 @@ export const availableElements: AvailableElementDefinition[] = [
     },
   },
   {
+    name: "Time Picker",
     type: FormFieldType.TIME_PICKER,
     displayName: "Time Picker",
     icon: "mdi-clock-time-four-outline",
     defaultConfig: {
+      name: "time_picker",
       label: "Select Time",
       type: FormFieldType.TIME_PICKER,
       options: [],
@@ -287,10 +273,12 @@ export const availableElements: AvailableElementDefinition[] = [
     },
   },
   {
+    name: "Button",
     type: FormFieldType.BUTTON,
     displayName: "Button",
     icon: "mdi-btn",
     defaultConfig: {
+      name: "button",
       label: "Button",
       type: FormFieldType.BUTTON,
       options: [],

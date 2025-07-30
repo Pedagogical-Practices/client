@@ -40,12 +40,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useFormStore } from "~/stores/formStores";
+import { useFormStore } from "~/stores/formStore";
 import { useProtocolStore } from "~/stores/protocolStore";
 import { useSubmissionStore } from "~/stores/submissionStore";
 import FormFiller from "~/components/FormFiller.vue";
 
-definePageMeta({});
+// definePageMeta({});
 
 const route = useRoute();
 const router = useRouter();
@@ -65,7 +65,7 @@ onMounted(async () => {
   const protocolId = route.params.id as string;
   await protocolStore.fetchProtocol(protocolId);
   if (protocolStore.currentProtocol?.form?.id) {
-    await formStore.fetchForm(protocolStore.currentProtocol.form.id);
+    await formStore.fetchFormById(protocolStore.currentProtocol.form.id);
   }
 });
 

@@ -8,7 +8,14 @@
             :is="getComponentName(field)"
             v-model="formData[field.name]"
             :label="field.label"
-            :rules="field.rules ? field.rules.map(rule => (v: any) => (!!v || rule !== 'required') || 'Campo requerido') : []"
+            :rules="
+              field.rules
+                ? field.rules.map(
+                    (rule: any) => (v: any) =>
+                      !!v || rule !== 'required' || 'Campo requerido'
+                  )
+                : []
+            "
             v-bind="getComponentProps(field)"
             class="mb-4"
             variant="outlined"
@@ -18,20 +25,22 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="submitForm">{{ submissionId ? 'Actualizar' : 'Enviar' }}</v-btn>
+      <v-btn color="primary" @click="submitForm">{{
+        submissionId ? "Actualizar" : "Enviar"
+      }}</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted, watch } from "vue";
 import {
   VTextField,
   VTextarea,
   VSelect,
   VDatePicker,
 } from "vuetify/components";
-import { FormFieldType } from "~/server/src/common/enums/form-field-type.enum";
+import { FormFieldType } from "~/types";
 import { useDataSourceStore } from "~/stores/dataSourceStore";
 
 const props = defineProps<{
@@ -40,7 +49,7 @@ const props = defineProps<{
   submissionId?: string | null;
 }>();
 
-const emit = defineEmits(['submit', 'update']);
+const emit = defineEmits(["submit", "update"]);
 
 const formRef = ref<HTMLFormElement | null>(null);
 const formData = reactive<Record<string, any>>({});
@@ -51,11 +60,20 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXTAREA]: VTextarea,
   [FormFieldType.SELECT]: VSelect,
   [FormFieldType.DATE]: VDatePicker,
-  [FormFieldType.MAP]: VTextField, // Placeholder for map component
-  [FormFieldType.FILE_UPLOAD]: VTextField, // Placeholder for file upload
+  [FormFieldType.MAP]: VTextField,
+  [FormFieldType.FILE_UPLOAD]: VTextField,
+  [FormFieldType.CHECKBOX]: VTextField,
+  [FormFieldType.DATE_PICKER]: VDatePicker,
+  [FormFieldType.RADIO_GROUP]: VTextField,
+  [FormFieldType.TIME_PICKER]: VTextField,
+  [FormFieldType.BUTTON]: VTextField,
+  [FormFieldType.AUTOCOMPLETE]: VTextField,
+  [FormFieldType.NUMBER]: VTextField,
+  [FormFieldType.EMAIL]: VTextField,
+  [FormFieldType.PASSWORD]: VTextField, // Assuming PASSWORD is a text field
 };
 
-const getComponentName = (field: any): any => {
+const getComponentName = (field: { type: FormFieldType }): any => {
   return componentMap[field.type] || VTextField;
 };
 
@@ -81,28 +99,36 @@ const initializeForm = () => {
   }
 
   props.formDefinition.fields.forEach((field: any) => {
-    formData[field.name] = data[field.name] !== undefined ? data[field.name] : null;
+    formData[field.name] =
+      data[field.name] !== undefined ? data[field.name] : null;
   });
 };
 
 onMounted(() => {
   console.log("FormFiller.vue: onMounted - initialData:", props.initialData);
-  console.log("FormFiller.vue: onMounted - formDefinition:", props.formDefinition);
+  console.log(
+    "FormFiller.vue: onMounted - formDefinition:",
+    props.formDefinition
+  );
   initializeForm();
 });
 
-watch(() => props.initialData, (newData) => {
-  console.log("FormFiller.vue: watch - initialData changed to:", newData);
-  initializeForm();
-}, { deep: true });
+watch(
+  () => props.initialData,
+  (newData) => {
+    console.log("FormFiller.vue: watch - initialData changed to:", newData);
+    initializeForm();
+  },
+  { deep: true }
+);
 
 const submitForm = async () => {
   const { valid } = await formRef.value!.validate();
   if (valid) {
     if (props.submissionId) {
-      emit('update', { id: props.submissionId, data: formData });
+      emit("update", { id: props.submissionId, data: formData });
     } else {
-      emit('submit', formData);
+      emit("submit", formData);
     }
   }
 };

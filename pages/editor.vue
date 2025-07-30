@@ -1,12 +1,43 @@
 <template>
   <v-container fluid class="pa-4">
     <v-row>
-      <v-col cols="12">
+      <v-col cols="6">
         <v-text-field
+          class="mt-4"
           variant="outlined"
           label="Nombre del Formulario"
           v-model="formStore.formName"
         ></v-text-field>
+      </v-col>
+      <v-col cols="6" class="d-flex justify-end align-center">
+        <v-btn
+          class="ma-1"
+          color="primary"
+          @click="createNewForm"
+          icon="mdi-plus"
+        >
+        </v-btn>
+        <v-btn
+          class="ma-1"
+          color="secondary"
+          @click="saveFormToBackend"
+          icon="mdi-content-save"
+        >
+        </v-btn>
+        <v-btn
+          class="ma-1"
+          color="info"
+          @click="showPreview = true"
+          icon="mdi-eye"
+        >
+        </v-btn>
+        <v-btn
+          class="ma-1"
+          color="success"
+          @click="showBulkUpload = true"
+          icon="mdi-upload-multiple"
+        >
+        </v-btn>
       </v-col>
     </v-row>
     <v-row>
@@ -23,36 +54,6 @@
         >
           <v-card-title class="d-flex justify-space-between align-center">
             <span>Form Builder Canvas</span>
-            <div>
-              <v-btn
-                color="primary"
-                @click="saveFormToBackend"
-                icon="mdi-content-save"
-                class="mr-2"
-                title="Guardar Formulario"
-              ></v-btn>
-              <v-btn
-                color="secondary"
-                @click="createNewForm"
-                icon="mdi-file-document-plus"
-                class="mr-2"
-                title="Nuevo Formulario"
-              ></v-btn>
-              <v-btn
-                color="info"
-                @click="showPreview = true"
-                icon="mdi-eye"
-                class="mr-2"
-                title="Previsualizar Formulario"
-              ></v-btn>
-              <v-btn
-                color="success"
-                @click="showBulkUpload = true"
-                icon="mdi-upload-multiple"
-                class="mr-2"
-                title="Cargar Formularios"
-              ></v-btn>
-            </div>
           </v-card-title>
           <v-card-text>
             <p
@@ -311,7 +312,7 @@ const snackbar = ref<{
 });
 
 watch(
-  () => route.params.id,
+  () => route.query.id,
   async (newId) => {
     if (newId) {
       try {
