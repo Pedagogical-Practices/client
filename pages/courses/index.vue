@@ -53,7 +53,7 @@
               v-model="newCourse.protocolIds"
               specific-type="protocol"
               label="Protocolos Asociados"
-              multiple
+              :multiple="true"
             ></EntityAutocomplete>
           </v-form>
         </v-card-text>
@@ -127,6 +127,7 @@ const createCourse = async () => {
   if (!valid) return;
 
   try {
+    console.log('courses/index.vue: newCourse.protocolIds before sending:', newCourse.value.protocolIds); // NEW LOG
     await courseStore.createCourse({
       name: newCourse.value.name,
       description: newCourse.value.description,

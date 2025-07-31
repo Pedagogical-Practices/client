@@ -96,6 +96,7 @@ export const useCourseStore = defineStore(
         }
       `);
       try {
+        console.log('courseStore: Input to createCourse mutation:', input); // NEW LOG
         const result = await mutate({ input });
         if (result?.errors) {
           throw new Error(result.errors[0]?.message || "Error al crear curso");
