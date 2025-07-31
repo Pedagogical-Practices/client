@@ -85,7 +85,7 @@ export interface Protocol {
   id: string;
   name: string;
   description?: string;
-  form: Form;
+  forms: Form[]; // Cambiado de 'form: Form;' a 'forms: Form[];'
   productType?: string;
   createdAt?: string;
   updatedAt?: string;

@@ -3,12 +3,12 @@ query Protocol($id: ID!) {
     id
     name
     description
-    form {
-      id
-      name
-    }
     productType
     createdAt
     updatedAt
+    forms {
+      id
+      name
+    }
   }
 }
