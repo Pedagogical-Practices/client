@@ -1,0 +1,6 @@
+query Forms {
+  forms {
+    id
+    name
+  }
+}
