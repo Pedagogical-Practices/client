@@ -1,13 +1,11 @@
-query Protocol($id: ID!) {
+query GetProtocolForEditing($id: ID!) {
   protocol(id: $id) {
     id
     name
     description
+    productType
     forms {
       id
     }
-    productType
-    createdAt
-    updatedAt
   }
 }

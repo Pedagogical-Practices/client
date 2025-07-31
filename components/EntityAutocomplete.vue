@@ -10,6 +10,9 @@
     hide-no-data
     hide-details
     clearable
+    :multiple="multiple"
+    :chips="multiple"
+    :clearable="multiple"
     return-object
     @update:model-value="onItemSelected"
   ></v-autocomplete>

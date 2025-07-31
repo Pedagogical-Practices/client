@@ -3,7 +3,7 @@ mutation CreateProtocol($input: CreateProtocolInput!) {
     id
     name
     description
-    form {
+    forms {
       id
       name
     }

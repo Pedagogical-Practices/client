@@ -1,5 +1,5 @@
-query Protocols {
-  protocols {
+mutation UpdateProtocol($id: ID!, $input: UpdateProtocolInput!) {
+  updateProtocol(id: $id, input: $input) {
     id
     name
     description
