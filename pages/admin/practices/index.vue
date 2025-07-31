@@ -24,12 +24,10 @@
                 {{ item.student?.name || "N/A" }}
               </template>
               <template v-slot:item.advisor="{ item }">
-                {{ item.advisor?.name || "N/A" }}
+                {{ item.teacher?.name || "N/A" }}
               </template>
               <template v-slot:item.protocol="{ item }">
-                {{ item.protocol?.name || "N/A" }} ({{
-                  item.protocol?.module || "N/A"
-                }})
+                {{ item.protocols || "N/A" }}
               </template>
               <template v-slot:item.status="{ item }">
                 <v-chip :color="getStatusColor(item.status)" size="small">
@@ -42,7 +40,7 @@
                   color="info"
                   icon="mdi-eye"
                   class="mr-2"
-                  @click="viewPractice(item._id)"
+                  @click="viewPractice(item.id)"
                   title="Ver Detalle"
                 ></v-btn>
                 <v-btn
@@ -50,14 +48,14 @@
                   color="warning"
                   icon="mdi-pencil"
                   class="mr-2"
-                  @click="editPractice(item._id)"
+                  @click="editPractice(item.id)"
                   title="Editar Práctica"
                 ></v-btn>
                 <v-btn
                   size="small"
                   color="error"
                   icon="mdi-delete"
-                  @click="confirmDeletePractice(item._id)"
+                  @click="confirmDeletePractice(item.id)"
                   title="Eliminar Práctica"
                 ></v-btn>
               </template>
@@ -78,44 +76,31 @@
         </v-card-title>
         <v-card-text>
           <v-form ref="practiceFormRef">
-            <v-select
+            <EntityAutocomplete
               v-model="newPractice.studentId"
-              :items="students"
-              item-title="name"
-              item-value="_id"
-              label="Estudiante"
-              variant="outlined"
-              density="compact"
-              :rules="[(v) => !!v || 'Estudiante es requerido']"
-            ></v-select>
-            <v-select
-              v-model="newPractice.advisorId"
-              :items="advisors"
-              item-title="name"
-              item-value="_id"
+              specific-type="student"
+              label="Docente en formación"
+              :multiple="false"
+            ></EntityAutocomplete>
+            <EntityAutocomplete
+              v-model="newPractice.studentId"
+              specific-type="teacher"
               label="Docente Asesor"
-              variant="outlined"
-              density="compact"
-              :rules="[(v) => !!v || 'Docente Asesor es requerido']"
-            ></v-select>
-            <v-select
+              :multiple="false"
+            ></EntityAutocomplete>
+            <EntityAutocomplete
               v-model="newPractice.protocolId"
-              :items="protocolStore.protocols"
-              item-title="name"
-              item-value="_id"
+              specific-type="protocol"
               label="Protocolo"
-              variant="outlined"
-              density="compact"
-              :rules="[(v) => !!v || 'Protocolo es requerido']"
-            ></v-select>
-            
-            <v-text-field
+              :multiple="false"
+            ></EntityAutocomplete>
+            <EntityAutocomplete
               v-model="newPractice.courseName"
-              label="Nombre del Curso"
-              variant="outlined"
-              density="compact"
-              :rules="[(v) => !!v || 'Curso es requerido']"
-            ></v-text-field>
+              specific-type="course"
+              label="Curso"
+              :multiple="false"
+            >
+            </EntityAutocomplete>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -175,20 +160,26 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
+import { PracticeStatus } from "~/types";
 import { usePracticeStore } from "~/stores/practiceStore";
 import { useAuthStore } from "~/stores/authStore";
 import { useProtocolStore } from "~/stores/protocolStore";
-import { PracticeStatus } from "~/types";
 
+import EntityAutocomplete from "~/components/EntityAutocomplete.vue";
 
 const router = useRouter();
 const practiceStore = usePracticeStore();
 const authStore = useAuthStore();
 const protocolStore = useProtocolStore();
 
-
 const dialog = ref(false);
-const practiceFormRef = ref<HTMLFormElement | null>(null);
+const isEditMode = ref(false);
+
+const closeDialog = () => {
+  dialog.value = false;
+  // practiceFormRef.value?.reset(); // Limpiar el formulario
+};
+
 const newPractice = ref({
   id: "", // Para modo edición
   studentId: "",
@@ -197,7 +188,23 @@ const newPractice = ref({
   courseName: "",
   status: PracticeStatus.ASSIGNED, // Default para nueva práctica
 });
-const isEditMode = ref(false);
+
+const openCreatePracticeDialog = () => {
+  isEditMode.value = false;
+  newPractice.value = {
+    id: "", // Para modo edición
+    studentId: "",
+    advisorId: "",
+    protocolId: "",
+    // institutionName: "",
+    courseName: "",
+    status: PracticeStatus.ASSIGNED, // Default para nueva práctica
+  };
+  dialog.value = true;
+};
+
+const practiceFormRef = ref<HTMLFormElement | null>(null);
+
 const practiceToDeleteId = ref<string | null>(null);
 const deleteConfirmDialog = ref(false);
 
@@ -209,10 +216,10 @@ const snackbar = ref({
 });
 
 const headers = ref([
-  { title: "Estudiante", key: "student" },
-  { title: "Asesor", key: "advisor" },
+  { title: "Docente en formación", key: "student" },
+  { title: "Docente Asesor", key: "teacher" },
   { title: "Protocolo", key: "protocol" },
-  
+
   { title: "Curso", key: "courseName" },
   { title: "Estado", key: "status" },
   { title: "Acciones", key: "actions", sortable: false },
@@ -222,11 +229,10 @@ onMounted(async () => {
   console.log("practices/index.vue: onMounted started.");
   await practiceStore.fetchPractices();
   console.log("practices/index.vue: practices fetched.");
-  await protocolStore.fetchProtocols(); // Cargar protocolos
+  await protocolStore.fetchProtocols();
   console.log("practices/index.vue: protocols fetched.");
-  await authStore.fetchUsers(); // Cargar todos los usuarios
+  await authStore.fetchUsers();
   console.log("practices/index.vue: users fetched.");
-  
 });
 
 const students = computed(() => {
@@ -234,7 +240,7 @@ const students = computed(() => {
     "practices/index.vue: Computing students. authStore.users:",
     authStore.users
   );
-  return (authStore.users || []).filter((user) => user.role === "student");
+  return (authStore.users || []).filter((user) => user.role === "STUDENT");
 });
 const advisors = computed(() => {
   console.log(
@@ -242,7 +248,7 @@ const advisors = computed(() => {
     authStore.users
   );
   return (authStore.users || []).filter(
-    (user) => user.role === "teacher_directive"
+    (user) => user.role === "TEACHER_DIRECTIVE"
   );
 });
 
@@ -259,25 +265,6 @@ const getStatusColor = (status: PracticeStatus): string => {
     default:
       return "grey";
   }
-};
-
-const openCreatePracticeDialog = () => {
-  isEditMode.value = false;
-  newPractice.value = {
-    id: "", // Para modo edición
-    studentId: "",
-    advisorId: "",
-    protocolId: "",
-    institutionName: "",
-    courseName: "",
-    status: PracticeStatus.ASSIGNED, // Default para nueva práctica
-  };
-  dialog.value = true;
-};
-
-const closeDialog = () => {
-  dialog.value = false;
-  practiceFormRef.value?.reset(); // Limpiar el formulario
 };
 
 const savePractice = async () => {
@@ -329,11 +316,11 @@ const editPractice = (id: string) => {
   const practice = practiceStore.practices.find((p) => p._id === id);
   if (practice) {
     newPractice.value = {
-      id: practice._id,
-      studentId: practice.student._id,
-      advisorId: practice.advisor._id,
-      protocolId: practice.protocol._id,
-      courseName: practice.courseName,
+      id: practice.id,
+      studentId: practice.student.id,
+      advisorId: practice.teacher.id,
+      protocolId: practice.protocols[0].id,
+      courseName: practice.course.name,
       status: practice.status,
     };
     dialog.value = true;

@@ -21,9 +21,17 @@
         size="small"
         color="primary"
         @click="$emit('view', item.id)"
-        prepend-icon="mdi-eye"
+        icon="mdi-eye"
+        class="mr-2"
       >
-        Ver
+      </v-btn>
+      <v-btn
+        size="small"
+        color="error"
+        @click="$emit('delete', item.id)"
+        icon="mdi-delete"
+        class="mr-2"
+      >
       </v-btn>
     </template>
   </v-data-table>
@@ -37,14 +45,14 @@ defineProps<{
   courses: Course[];
 }>();
 
-defineEmits(["view"]);
+defineEmits(["view", "delete"]); // "delete" added
 
 const headers = ref([
   { title: "Nombre", key: "name" },
   { title: "Descripción", key: "description" },
-  { title: "Fecha Inicio", key: "startDate" },
-  { title: "Fecha Fin", key: "endDate" },
-  { title: "Protocolos", key: "protocols" },
+  // { title: "Fecha Inicio", key: "startDate" },
+  // { title: "Fecha Fin", key: "endDate" },
+  // { title: "Protocolos", key: "protocols" },
   { title: "Acciones", key: "actions", sortable: false },
 ]);
 </script>

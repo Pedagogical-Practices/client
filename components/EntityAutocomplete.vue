@@ -14,6 +14,8 @@
     :clearable="multiple"
     return-object
     @update:model-value="onItemSelected"
+    class="mb-4"
+    variant="outlined"
   ></v-autocomplete>
 </template>
 
@@ -59,38 +61,40 @@ const fetchItems = async (query: string) => {
     switch (props.specificType) {
       case "teacher":
         graphqlQuery = `
-          query Users($search: String, $role: UserRole) {
-            users(search: $search, role: $role) {
+          query Users {
+            users {
               id
               name
+              role
             }
           }
         `;
-        variables = { search: query, role: "TEACHER_DIRECTIVE" };
+        variables = {};
         dataPath = "users";
         break;
       case "student":
         graphqlQuery = `
-          query Users($search: String, $role: UserRole) {
-            users(search: $search, role: $role) {
+          query Users {
+            users {
               id
               name
+              role
             }
           }
         `;
-        variables = { search: query, role: "STUDENT" };
+        variables = {};
         dataPath = "users";
         break;
       case "course":
         graphqlQuery = `
-          query Courses($search: String) {
-            courses(search: $search) {
+          query Courses {
+            courses {
               id
               name
             }
           }
         `;
-        variables = { search: query };
+        variables = {};
         dataPath = "courses";
         break;
       case "protocol":
@@ -144,7 +148,27 @@ const fetchItems = async (query: string) => {
         `EntityAutocomplete: Data received for ${props.specificType}:`,
         data
       );
-      items.value = data[dataPath] || [];
+      let fetchedItems = data[dataPath] || [];
+      console.log(
+        `EntityAutocomplete: Raw fetchedItems for ${props.specificType}:`,
+        fetchedItems
+      ); // NEW LOG
+      if (props.specificType === "teacher") {
+        fetchedItems = fetchedItems.filter((user: any) => {
+          console.log(
+            `EntityAutocomplete: User role for teacher filter: ${user.role}`
+          ); // NEW LOG
+          return user.role === "TEACHER_DIRECTIVE";
+        });
+      } else if (props.specificType === "student") {
+        fetchedItems = fetchedItems.filter((user: any) => {
+          console.log(
+            `EntityAutocomplete: User role for student filter: ${user.role}`
+          ); // NEW LOG
+          return user.role === "STUDENT";
+        });
+      }
+      items.value = fetchedItems;
       console.log(
         `EntityAutocomplete: Items set for ${props.specificType}:`,
         items.value
@@ -220,19 +244,40 @@ watch(
           fetchedItem = data?.user;
         } else if (props.specificType === "course") {
           const { data } = await apolloClient.query({
-            query: gql`query Course($id: ID!) { course(id: ID!) { id name } }`,
+            query: gql`
+              query Course($id: ID!) {
+                course(id: $id) {
+                  id
+                  name
+                }
+              }
+            `,
             variables: { id: newValue },
           });
           fetchedItem = data?.course;
         } else if (props.specificType === "protocol") {
           const { data } = await apolloClient.query({
-            query: gql`query Protocol($id: ID!) { protocol(id: ID!) { id name } }`,
+            query: gql`
+              query Protocol($id: ID!) {
+                protocol(id: $id) {
+                  id
+                  name
+                }
+              }
+            `,
             variables: { id: newValue },
           });
           fetchedItem = data?.protocol;
         } else if (props.specificType === "form") {
           const { data } = await apolloClient.query({
-            query: gql`query Form($id: ID!) { form(id: ID!) { id name } }`,
+            query: gql`
+              query Form($id: ID!) {
+                form(id: $id) {
+                  id
+                  name
+                }
+              }
+            `,
             variables: { id: newValue },
           });
           fetchedItem = data?.form;
