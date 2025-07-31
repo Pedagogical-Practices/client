@@ -1,0 +1,9 @@
+mutation UpdateProtocol($id: ID!, $input: UpdateProtocolInput!) {
+  updateProtocol(id: $id, input: $input) {
+    id
+    name
+    description
+    productType
+    updatedAt
+  }
+}

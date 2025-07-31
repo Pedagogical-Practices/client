@@ -18,7 +18,27 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted } from 'vue';
 import { useApolloClient } from '@vue/apollo-composable';
-import { gql } from 'graphql-tag';
+import { UserRole } from '~/types';
+
+// Importar las queries
+import GetUsersAutocomplete from '~/queries/entityAutocomplete/getUsersAutocomplete.gql';
+import GetCoursesAutocomplete from '~/queries/entityAutocomplete/getCoursesAutocomplete.gql';
+import GetProtocolsAutocomplete from '~/queries/entityAutocomplete/getProtocolsAutocomplete.gql';
+import GetFormsAutocomplete from '~/queries/entityAutocomplete/getFormsAutocomplete.gql';
+
+interface EntityConfig {
+  query: any;
+  dataPath: string;
+  role?: UserRole;
+}
+
+const entityConfigs: Record<string, EntityConfig> = {
+  teacher: { query: GetUsersAutocomplete, dataPath: 'users', role: UserRole.TEACHER_DIRECTIVE },
+  student: { query: GetUsersAutocomplete, dataPath: 'users', role: UserRole.STUDENT },
+  course: { query: GetCoursesAutocomplete, dataPath: 'courses' },
+  protocol: { query: GetProtocolsAutocomplete, dataPath: 'protocols' },
+  form: { query: GetFormsAutocomplete, dataPath: 'forms' },
+};
 
 const props = defineProps({
   specificType: {
@@ -43,81 +63,23 @@ const loading = ref(false);
 const search = ref('');
 const selectedItem = ref<any>(props.modelValue);
 
-const fetchItems = async (query: string) => {
+const fetchItems = async (searchQuery: string) => {
   loading.value = true;
   try {
-    let graphqlQuery = '';
-    let variables: any = {};
-    let dataPath: string = '';
+    const config = entityConfigs[props.specificType];
+    if (!config) {
+      console.warn(`Unknown specificType: ${props.specificType}`);
+      items.value = [];
+      return;
+    }
 
-    switch (props.specificType) {
-      case 'teacher':
-        graphqlQuery = `
-          query Users($search: String, $role: UserRole) {
-            users(search: $search, role: $role) {
-              id
-              name
-            }
-          }
-        `;
-        variables = { search: query, role: 'TEACHER_DIRECTIVE' };
-        dataPath = 'users';
-        break;
-      case 'student':
-        graphqlQuery = `
-          query Users($search: String, $role: UserRole) {
-            users(search: $search, role: $role) {
-              id
-              name
-            }
-          }
-        `;
-        variables = { search: query, role: 'STUDENT' };
-        dataPath = 'users';
-        break;
-      case 'course':
-        graphqlQuery = `
-          query Courses($search: String) {
-            courses(search: $search) {
-              id
-              name
-            }
-          }
-        `;
-        variables = { search: query };
-        dataPath = 'courses';
-        break;
-      case 'protocol':
-        graphqlQuery = `
-          query Protocols($search: String) {
-            protocols(search: $search) {
-              id
-              name
-            }
-          }
-        `;
-        variables = { search: query };
-        dataPath = 'protocols';
-        break;
-      case 'form':
-        graphqlQuery = `
-          query Forms($search: String) {
-            forms(search: $search) {
-              id
-              name
-            }
-          }
-        `;
-        variables = { search: query };
-        dataPath = 'forms';
-        break;
-      default:
-        console.warn(`Unknown specificType: ${props.specificType}`);
-        return;
+    const variables: any = { search: searchQuery };
+    if (config.role) {
+      variables.role = config.role;
     }
 
     const { data, errors } = await apolloClient.query({
-      query: gql(graphqlQuery),
+      query: config.query,
       variables,
       fetchPolicy: 'network-only',
     });
@@ -126,7 +88,7 @@ const fetchItems = async (query: string) => {
       console.error(`Error fetching ${props.specificType}:`, errors);
       items.value = [];
     } else {
-      items.value = data[dataPath] || [];
+      items.value = data[config.dataPath] || [];
     }
   } catch (error) {
     console.error(`Failed to fetch ${props.specificType}:`, error);
@@ -136,30 +98,29 @@ const fetchItems = async (query: string) => {
   }
 };
 
+onMounted(() => {
+  fetchItems(''); // Cargar todos los elementos al inicio
+});
+
 watch(search, (newSearch) => {
-  if (newSearch && newSearch.length > 2) {
+  // Solo buscar si hay más de 2 caracteres o si la búsqueda está vacía (para resetear)
+  if (newSearch === '' || newSearch.length > 2) {
     fetchItems(newSearch);
-  } else {
-    items.value = [];
   }
 });
 
 watch(() => props.modelValue, async (newValue) => {
   if (newValue && typeof newValue === 'string') {
-    // If modelValue is an ID, fetch the full object
+    // Si modelValue es un ID, buscar el objeto completo
     let fetchedItem: any = null;
-    if (props.specificType === 'teacher' || props.specificType === 'student') {
-      const { data } = await apolloClient.query({ query: gql`query User($id: ID!) { user(id: $id) { id name } }`, variables: { id: newValue } });
-      fetchedItem = data?.user;
-    } else if (props.specificType === 'course') {
-      const { data } = await apolloClient.query({ query: gql`query Course($id: ID!) { course(id: $id) { id name } }`, variables: { id: newValue } });
-      fetchedItem = data?.course;
-    } else if (props.specificType === 'protocol') {
-      const { data } = await apolloClient.query({ query: gql`query Protocol($id: ID!) { protocol(id: $id) { id name } }`, variables: { id: newValue } });
-      fetchedItem = data?.protocol;
-    } else if (props.specificType === 'form') {
-      const { data } = await apolloClient.query({ query: gql`query Form($id: ID!) { form(id: $id) { id name } }`, variables: { id: newValue } });
-      fetchedItem = data?.form;
+    const config = entityConfigs[props.specificType];
+    if (config) {
+      const { data } = await apolloClient.query({
+        query: config.query,
+        variables: { id: newValue },
+        fetchPolicy: 'network-only',
+      });
+      fetchedItem = data[config.dataPath]?.[0]; // Asumiendo que la query devuelve un array y tomamos el primero
     }
     selectedItem.value = fetchedItem;
   } else {
