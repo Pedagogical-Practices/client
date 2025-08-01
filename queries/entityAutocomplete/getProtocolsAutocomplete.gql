@@ -1,0 +1,6 @@
+query Protocols($search: String) {
+  protocols(search: $search) {
+    id
+    name
+  }
+}
