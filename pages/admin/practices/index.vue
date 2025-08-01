@@ -83,7 +83,7 @@
               :multiple="false"
             ></EntityAutocomplete>
             <EntityAutocomplete
-              v-model="newPractice.studentId"
+              v-model="newPractice.advisorId"
               specific-type="teacher"
               label="Docente Asesor"
               :multiple="false"

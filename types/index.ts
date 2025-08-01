@@ -143,23 +143,6 @@ export interface Practice {
   updatedAt?: string;
 }
 
-export interface Institution {
-  _id?: string;
-  name: string;
-  address?: string;
-  phone?: string;
-}
-
-export interface Submission {
-  id: string;
-  formId: string;
-  practiceId: string;
-  userId: string;
-  data: Record<string, any>;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
 export interface AvailableElementDefinition {
   name: string;
   type: FormFieldType;
