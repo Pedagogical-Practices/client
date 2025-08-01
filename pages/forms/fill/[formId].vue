@@ -29,7 +29,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import FormViewer from '~/components/FormViewer.vue';
-import { useFormStore } from '~/stores/formStores';
+import { useFormStore } from '~/stores/formStore';
 import type { Form } from '~/types/form';
 
 const route = useRoute();

@@ -85,7 +85,7 @@ export interface Protocol {
   id: string;
   name: string;
   description?: string;
-  forms: Form[]; // Cambiado de 'form: Form;' a 'forms: Form[];'
+  forms: Form[];
   productType?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -139,23 +139,6 @@ export interface Practice {
   status: PracticeStatus;
   protocols: Protocol[];
   submissions: Submission[];
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface Institution {
-  _id?: string;
-  name: string;
-  address?: string;
-  phone?: string;
-}
-
-export interface Submission {
-  id: string;
-  formId: string;
-  practiceId: string;
-  userId: string;
-  data: Record<string, any>;
   createdAt?: string;
   updatedAt?: string;
 }

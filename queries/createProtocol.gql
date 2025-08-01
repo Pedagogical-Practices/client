@@ -3,6 +3,10 @@ mutation CreateProtocol($input: CreateProtocolInput!) {
     id
     name
     description
+    forms {
+      id
+      name
+    }
     productType
     createdAt
     updatedAt

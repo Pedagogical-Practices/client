@@ -26,14 +26,12 @@
 
 <script setup lang="ts">
 import { defineProps } from 'vue';
-import { Practice } from '~/server/src/practice/schemas/practice.schema';
-import { PracticeStatus } from '~/server/src/common/enums/practice-status.enum';
 
 const props = defineProps<{
-  practice: Practice;
+  practice: any;
 }>();
 
-const statusColor = (status: PracticeStatus) => {
+const statusColor = (status: any) => {
   switch (status) {
     case PracticeStatus.PENDING: return 'blue';
     case PracticeStatus.IN_PROGRESS: return 'orange';

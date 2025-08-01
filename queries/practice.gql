@@ -23,7 +23,7 @@ query PracticeQuery($id: ID!) {
       id
       name
       description
-      form {
+      forms {
         id
         name
       }

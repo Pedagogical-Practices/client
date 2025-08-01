@@ -55,11 +55,9 @@
 <script setup lang="ts">
 import { defineProps, computed } from "vue";
 import { useRouter } from "vue-router";
-import { Practice } from "~/server/src/practice/schemas/practice.schema";
-import { Submission } from "~/server/src/submission/schemas/submission.schema";
 
 const props = defineProps<{
-  practice: Practice;
+  practice: any;
 }>();
 
 const router = useRouter();

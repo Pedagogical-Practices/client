@@ -1,5 +1,5 @@
 import { useAuthStore } from '~/stores/authStore';
-import { UserRole } from "~/stores/authStore";
+import { UserRole } from "~/types";
 
 export default defineNuxtRouteMiddleware((to, from) => {
   const authStore = useAuthStore();

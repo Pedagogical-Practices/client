@@ -269,15 +269,12 @@ import { useFormElementStore } from "~/stores/formElementStore";
 import { useFormStore } from "~/stores/formStore";
 import { useAuthStore } from "~/stores/authStore";
 import AvailableElements from "~/components/AvailableElements.vue";
-import {
-  availableElements,
-  type AvailableElementDefinition,
-} from "~/components/formElementDefinitions";
+import { availableElements } from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
 import FormViewer from "~/components/FormViewer.vue";
 import BulkFormUploader from "~/components/forms/BulkFormUploader.vue";
-// import { useMutation } from "@vue/apollo-composable";
-// import { gql } from "graphql-tag";
+
+import { type AvailableElementDefinition } from "~/types";
 import {
   VTextField,
   VTextarea,

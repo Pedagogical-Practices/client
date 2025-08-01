@@ -3,12 +3,12 @@ query Protocols {
     id
     name
     description
-    productType
-    createdAt
-    updatedAt
     forms {
       id
       name
     }
+    productType
+    createdAt
+    updatedAt
   }
 }

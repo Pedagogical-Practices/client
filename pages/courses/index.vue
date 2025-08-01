@@ -14,7 +14,11 @@
             </v-btn>
           </v-card-title>
           <v-card-text>
-            <CourseList :courses="courseStore.courses" @view="viewCourse" />
+            <CourseList
+              :courses="courseStore.courses"
+              @view="viewCourse"
+              @delete="confirmDelete"
+            />
           </v-card-text>
         </v-card>
       </v-col>
@@ -53,7 +57,7 @@
               v-model="newCourse.protocolIds"
               specific-type="protocol"
               label="Protocolos Asociados"
-              multiple
+              :multiple="true"
             ></EntityAutocomplete>
           </v-form>
         </v-card-text>
@@ -63,6 +67,25 @@
             >Cancelar</v-btn
           >
           <v-btn color="primary" @click="createCourse">Guardar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- Modal de Confirmación de Borrado -->
+    <v-dialog v-model="deleteDialog" persistent max-width="400px">
+      <v-card>
+        <v-card-title class="text-h5">Confirmar Borrado</v-card-title>
+        <v-card-text
+          >¿Estás seguro de que quieres eliminar este curso? Esta acción no se
+          puede deshacer.</v-card-text
+        >
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="deleteDialog = false"
+            >Cancelar</v-btn
+          >
+          <v-btn color="red darken-1" text @click="deleteCourseConfirmed"
+            >Aceptar</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -107,6 +130,9 @@ const snackbar = ref({
   timeout: 3000,
 });
 
+const deleteDialog = ref(false); // NEW
+const courseToDelete = ref<any>(null); // NEW
+
 onMounted(() => {
   courseStore.fetchCourses();
 });
@@ -127,6 +153,10 @@ const createCourse = async () => {
   if (!valid) return;
 
   try {
+    console.log(
+      "courses/index.vue: newCourse.protocolIds before sending:",
+      newCourse.value.protocolIds
+    ); // NEW LOG
     await courseStore.createCourse({
       name: newCourse.value.name,
       description: newCourse.value.description,
@@ -160,6 +190,36 @@ const createCourse = async () => {
 
 const viewCourse = (courseId: string) => {
   router.push(`/courses/${courseId}`);
+};
+
+const confirmDelete = (course: any) => {
+  // NEW
+  courseToDelete.value = course;
+  deleteDialog.value = true;
+};
+
+const deleteCourseConfirmed = async () => {
+  // NEW
+  if (courseToDelete.value) {
+    try {
+      await courseStore.deleteCourse(courseToDelete.value.id);
+      snackbar.value = {
+        show: true,
+        text: "¡Curso eliminado exitosamente!",
+        color: "success",
+        timeout: 3000,
+      };
+    } catch (error: any) {
+      snackbar.value = {
+        show: true,
+        text: `Error al eliminar: ${error.message}`,
+        color: "error",
+        timeout: 3000,
+      };
+    }
+  }
+  deleteDialog.value = false;
+  courseToDelete.value = null;
 };
 </script>
 

@@ -9,36 +9,20 @@
     item-value="id"
     hide-no-data
     hide-details
-    clearable
+    :multiple="multiple"
+    :chips="multiple"
+    :clearable="multiple"
     return-object
     @update:model-value="onItemSelected"
+    class="mb-4"
+    variant="outlined"
   ></v-autocomplete>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted } from 'vue';
-import { useApolloClient } from '@vue/apollo-composable';
-import { UserRole } from '~/types';
-
-// Importar las queries
-import GetUsersAutocomplete from '~/queries/entityAutocomplete/getUsersAutocomplete.gql';
-import GetCoursesAutocomplete from '~/queries/entityAutocomplete/getCoursesAutocomplete.gql';
-import GetProtocolsAutocomplete from '~/queries/entityAutocomplete/getProtocolsAutocomplete.gql';
-import GetFormsAutocomplete from '~/queries/entityAutocomplete/getFormsAutocomplete.gql';
-
-interface EntityConfig {
-  query: any;
-  dataPath: string;
-  role?: UserRole;
-}
-
-const entityConfigs: Record<string, EntityConfig> = {
-  teacher: { query: GetUsersAutocomplete, dataPath: 'users', role: UserRole.TEACHER_DIRECTIVE },
-  student: { query: GetUsersAutocomplete, dataPath: 'users', role: UserRole.STUDENT },
-  course: { query: GetCoursesAutocomplete, dataPath: 'courses' },
-  protocol: { query: GetProtocolsAutocomplete, dataPath: 'protocols' },
-  form: { query: GetFormsAutocomplete, dataPath: 'forms' },
-};
+import { ref, watch, computed, onMounted } from "vue";
+import { useApolloClient } from "@vue/apollo-composable";
+import { gql } from "graphql-tag";
 
 const props = defineProps({
   specificType: {
@@ -47,49 +31,153 @@ const props = defineProps({
   },
   label: {
     type: String,
-    default: 'Seleccionar',
+    default: "Seleccionar",
   },
   modelValue: {
-    type: [String, Object],
+    type: [String, Object, Array],
     default: null,
+  },
+  multiple: {
+    type: Boolean,
+    default: false,
   },
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 
 const { client: apolloClient } = useApolloClient();
 const items = ref<any[]>([]);
 const loading = ref(false);
-const search = ref('');
+const search = ref("");
 const selectedItem = ref<any>(props.modelValue);
 
-const fetchItems = async (searchQuery: string) => {
+const fetchItems = async (query: string) => {
   loading.value = true;
   try {
-    const config = entityConfigs[props.specificType];
-    if (!config) {
-      console.warn(`Unknown specificType: ${props.specificType}`);
-      items.value = [];
-      return;
-    }
+    let graphqlQuery = "";
+    let variables: any = {};
+    let dataPath: string = "";
 
-    const variables: any = { search: searchQuery };
-    if (config.role) {
-      variables.role = config.role;
+    switch (props.specificType) {
+      case "teacher":
+        graphqlQuery = `
+          query Users {
+            users {
+              id
+              name
+              role
+            }
+          }
+        `;
+        variables = {};
+        dataPath = "users";
+        break;
+      case "student":
+        graphqlQuery = `
+          query Users {
+            users {
+              id
+              name
+              role
+            }
+          }
+        `;
+        variables = {};
+        dataPath = "users";
+        break;
+      case "course":
+        graphqlQuery = `
+          query Courses {
+            courses {
+              id
+              name
+            }
+          }
+        `;
+        variables = {};
+        dataPath = "courses";
+        break;
+      case "protocol":
+        graphqlQuery = `
+          query Protocols {
+            protocols {
+              id
+              name
+            }
+          }
+        `;
+        variables = {};
+        dataPath = "protocols";
+        console.log(
+          "EntityAutocomplete: Fetching protocols with query:",
+          graphqlQuery
+        );
+        console.log("EntityAutocomplete: Variables:", variables);
+        break;
+      case "form":
+        graphqlQuery = `
+          query Forms($search: String) {
+            forms(search: $search) {
+              id
+              name
+            }
+          }
+        `;
+        variables = { search: query };
+        dataPath = "forms";
+        break;
+      default:
+        console.warn(`Unknown specificType: ${props.specificType}`);
+        return;
     }
 
     const { data, errors } = await apolloClient.query({
-      query: config.query,
+      query: gql(graphqlQuery),
       variables,
-      fetchPolicy: 'network-only',
+      fetchPolicy: "network-only",
     });
 
     if (errors) {
-      console.error(`Error fetching ${props.specificType}:`, errors);
+      console.error(
+        `EntityAutocomplete: GraphQL errors for ${props.specificType}:`,
+        errors
+      );
       items.value = [];
     } else {
-      items.value = data[config.dataPath] || [];
+      console.log(
+        `EntityAutocomplete: Data received for ${props.specificType}:`,
+        data
+      );
+      let fetchedItems = data[dataPath] || [];
+      console.log(
+        `EntityAutocomplete: Raw fetchedItems for ${props.specificType}:`,
+        fetchedItems
+      ); // NEW LOG
+      if (props.specificType === "teacher") {
+        fetchedItems = fetchedItems.filter((user: any) => {
+          console.log(
+            `EntityAutocomplete: User role for teacher filter: ${user.role}`
+          ); // NEW LOG
+          return user.role === "TEACHER_DIRECTIVE";
+        });
+      } else if (props.specificType === "student") {
+        fetchedItems = fetchedItems.filter((user: any) => {
+          console.log(
+            `EntityAutocomplete: User role for student filter: ${user.role}`
+          ); // NEW LOG
+          return user.role === "STUDENT";
+        });
+      }
+      items.value = fetchedItems;
+      console.log(
+        `EntityAutocomplete: Items set for ${props.specificType}:`,
+        items.value
+      );
     }
+    console.log(
+      `EntityAutocomplete: Fetch completed for ${props.specificType}. Items:`,
+      items.value
+    );
   } catch (error) {
     console.error(`Failed to fetch ${props.specificType}:`, error);
     items.value = [];
@@ -99,36 +187,121 @@ const fetchItems = async (searchQuery: string) => {
 };
 
 onMounted(() => {
-  fetchItems(''); // Cargar todos los elementos al inicio
+  fetchItems(""); // Cargar ítems al montar el componente
 });
 
-watch(search, (newSearch) => {
-  // Solo buscar si hay más de 2 caracteres o si la búsqueda está vacía (para resetear)
-  if (newSearch === '' || newSearch.length > 2) {
-    fetchItems(newSearch);
-  }
-});
-
-watch(() => props.modelValue, async (newValue) => {
-  if (newValue && typeof newValue === 'string') {
-    // Si modelValue es un ID, buscar el objeto completo
-    let fetchedItem: any = null;
-    const config = entityConfigs[props.specificType];
-    if (config) {
-      const { data } = await apolloClient.query({
-        query: config.query,
-        variables: { id: newValue },
-        fetchPolicy: 'network-only',
-      });
-      fetchedItem = data[config.dataPath]?.[0]; // Asumiendo que la query devuelve un array y tomamos el primero
+watch(
+  () => props.modelValue,
+  async (newValue) => {
+    console.log(
+      `EntityAutocomplete: modelValue changed for ${props.specificType}:`,
+      newValue
+    );
+    if (props.multiple) {
+      if (Array.isArray(newValue) && newValue.length > 0) {
+        let fetchedItems: any[] = [];
+        if (props.specificType === "protocol") {
+          const { data } = await apolloClient.query({
+            query: gql`
+              query ProtocolsByIds($ids: [ID!]!) {
+                protocolsByIds(ids: $ids) {
+                  id
+                  name
+                }
+              }
+            `,
+            variables: { ids: newValue },
+            fetchPolicy: "network-only", // Ensure fresh data
+          });
+          fetchedItems = data?.protocolsByIds || [];
+        }
+        selectedItem.value = fetchedItems;
+        console.log(
+          "EntityAutocomplete: selectedItem after fetch (multiple):",
+          selectedItem.value
+        ); // NEW LOG
+      } else {
+        selectedItem.value = [];
+      }
+    } else {
+      if (newValue && typeof newValue === "string") {
+        let fetchedItem: any = null;
+        if (
+          props.specificType === "teacher" ||
+          props.specificType === "student"
+        ) {
+          const { data } = await apolloClient.query({
+            query: gql`
+              query User($id: ID!) {
+                user(id: $id) {
+                  id
+                  name
+                }
+              }
+            `,
+            variables: { id: newValue },
+          });
+          fetchedItem = data?.user;
+        } else if (props.specificType === "course") {
+          const { data } = await apolloClient.query({
+            query: gql`
+              query Course($id: ID!) {
+                course(id: $id) {
+                  id
+                  name
+                }
+              }
+            `,
+            variables: { id: newValue },
+          });
+          fetchedItem = data?.course;
+        } else if (props.specificType === "protocol") {
+          const { data } = await apolloClient.query({
+            query: gql`
+              query Protocol($id: ID!) {
+                protocol(id: $id) {
+                  id
+                  name
+                }
+              }
+            `,
+            variables: { id: newValue },
+          });
+          fetchedItem = data?.protocol;
+        } else if (props.specificType === "form") {
+          const { data } = await apolloClient.query({
+            query: gql`
+              query Form($id: ID!) {
+                form(id: $id) {
+                  id
+                  name
+                }
+              }
+            `,
+            variables: { id: newValue },
+          });
+          fetchedItem = data?.form;
+        }
+        selectedItem.value = fetchedItem;
+      } else {
+        selectedItem.value = newValue;
+      }
+      console.log("fetchedItem:", selectedItem.value);
     }
-    selectedItem.value = fetchedItem;
-  } else {
-    selectedItem.value = newValue;
-  }
-}, { immediate: true });
+  },
+  { immediate: true }
+);
 
 const onItemSelected = (value: any) => {
-  emit('update:modelValue', value ? value.id : null);
+  console.log("EntityAutocomplete: onItemSelected value:", value); // NEW LOG
+  if (props.multiple) {
+    const emittedValue = value ? value.map((item: any) => item.id) : [];
+    console.log("EntityAutocomplete: Emitting (multiple):", emittedValue); // NEW LOG
+    emit("update:modelValue", emittedValue);
+  } else {
+    const emittedValue = value ? value.id : null;
+    console.log("EntityAutocomplete: Emitting (single):", emittedValue); // NEW LOG
+    emit("update:modelValue", emittedValue);
+  }
 };
 </script>
