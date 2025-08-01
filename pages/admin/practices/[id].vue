@@ -132,7 +132,7 @@
 import { ref, onMounted, computed } from 'vue'; // Importar computed
 import { useRoute, useRouter } from 'vue-router';
 import { usePracticeStore } from '~/stores/practiceStore';
-import { PracticeStatus } from '~/types/practice';
+import { PracticeStatus } from '~/types';
 
 definePageMeta({});
 

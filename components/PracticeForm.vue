@@ -47,7 +47,6 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { PracticeStatus } from '~/server/src/common/enums/practice-status.enum';
 import EntityAutocomplete from './EntityAutocomplete.vue';
 
 const props = defineProps<{
@@ -62,7 +61,7 @@ const practice = ref<any>(props.initialPractice || {
   studentId: '',
   teacherId: '',
   protocolIds: [],
-  status: PracticeStatus.PENDING,
+  status: 'PENDING',
 });
 
 watch(() => props.initialPractice, (newVal) => {

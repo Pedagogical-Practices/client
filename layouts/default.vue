@@ -97,14 +97,14 @@ const allItems = [
     title: "Protocolos",
     value: "protocols",
     to: "/protocols",
-    icon: "mdi-file-document-box",
+    icon: "mdi-package",
     roles: [UserRole.ADMIN, UserRole.TEACHER_DIRECTIVE, UserRole.STUDENT],
   },
   {
     title: "Perfil",
     value: "profile",
     to: "/profile",
-    icon: "mdi-account-profile",
+    icon: "mdi-account",
     roles: [
       UserRole.ADMIN,
       UserRole.STUDENT,
@@ -116,7 +116,7 @@ const allItems = [
     title: "Administración",
     value: "admin",
     to: "/admin",
-    icon: "mdi-account-cog",
+    icon: "mdi-security",
     roles: [UserRole.ADMIN],
   },
   {

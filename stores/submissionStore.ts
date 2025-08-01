@@ -2,19 +2,18 @@ import { defineStore } from "pinia";
 import { ref } from 'vue';
 import { useApolloClient, useMutation } from '@vue/apollo-composable';
 import { gql } from 'graphql-tag';
-import { Submission } from "~/server/src/submission/schemas/submission.schema";
 
 interface SubmissionState {
-  submissions: Submission[];
-  currentSubmission: Submission | null;
+  submissions: any[];
+  currentSubmission: any | null;
 }
 
 export const useSubmissionStore = defineStore("submission", () => {
   const { client } = useApolloClient();
 
   // State
-  const submissions = ref<Submission[]>([]);
-  const currentSubmission = ref<Submission | null>(null);
+  const submissions = ref<any[]>([]);
+  const currentSubmission = ref<any | null>(null);
 
   // Actions
   const setCurrentSubmission = (submission: Submission | null) => {

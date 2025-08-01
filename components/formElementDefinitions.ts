@@ -1,5 +1,5 @@
 import { FormFieldType } from "@/types";
-import type { FormField, AvailableElementDefinition } from "@/types";
+import type { AvailableElementDefinition } from "@/types";
 
 export const availableElements: AvailableElementDefinition[] = [
   {
@@ -276,7 +276,7 @@ export const availableElements: AvailableElementDefinition[] = [
     name: "Button",
     type: FormFieldType.BUTTON,
     displayName: "Button",
-    icon: "mdi-btn",
+    icon: "mdi-button-cursor",
     defaultConfig: {
       name: "button",
       label: "Button",

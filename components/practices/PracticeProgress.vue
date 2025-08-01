@@ -16,10 +16,9 @@
 
 <script setup lang="ts">
 import { defineProps, computed } from 'vue';
-import { Practice } from '~/server/src/practice/schemas/practice.schema';
 
 const props = defineProps<{
-  practice: Practice;
+  practice: any;
 }>();
 
 const totalProtocols = computed(() => props.practice.protocols.length);

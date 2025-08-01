@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useFormStore } from '~/stores/formStores'; // Asumo que tienes un formStores.ts
+import { useFormStore } from '~/stores/formStore'; // Asumo que tienes un formStores.ts
 import { usePracticeStore } from '~/stores/practiceStore';
 import FormFiller from '~/components/FormFiller.vue';
 

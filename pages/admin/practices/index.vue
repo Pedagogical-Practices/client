@@ -23,11 +23,24 @@
               <template v-slot:item.student="{ item }">
                 {{ item.student?.name || "N/A" }}
               </template>
-              <template v-slot:item.advisor="{ item }">
+              <template v-slot:item.teacher="{ item }">
                 {{ item.teacher?.name || "N/A" }}
               </template>
-              <template v-slot:item.protocol="{ item }">
-                {{ item.protocols || "N/A" }}
+              <template v-slot:item.course="{ item }">
+                {{ item.course?.name || "N/A" }}
+              </template>
+              <template v-slot:item.protocols="{ item }">
+                <div v-if="item.protocols && item.protocols.length">
+                  <v-chip
+                    v-for="protocol in item.protocols"
+                    :key="protocol.id"
+                    size="small"
+                    class="mr-1 mb-1"
+                  >
+                    {{ protocol.name }}
+                  </v-chip>
+                </div>
+                <span v-else>N/A</span>
               </template>
               <template v-slot:item.status="{ item }">
                 <v-chip :color="getStatusColor(item.status)" size="small">
@@ -83,19 +96,19 @@
               :multiple="false"
             ></EntityAutocomplete>
             <EntityAutocomplete
-              v-model="newPractice.advisorId"
+              v-model="newPractice.teacherId"
               specific-type="teacher"
               label="Docente Asesor"
               :multiple="false"
             ></EntityAutocomplete>
             <EntityAutocomplete
-              v-model="newPractice.protocolId"
+              v-model="newPractice.protocolIds"
               specific-type="protocol"
-              label="Protocolo"
-              :multiple="false"
+              label="Protocolos"
+              :multiple="true"
             ></EntityAutocomplete>
             <EntityAutocomplete
-              v-model="newPractice.courseName"
+              v-model="newPractice.courseId"
               specific-type="course"
               label="Curso"
               :multiple="false"
@@ -183,22 +196,21 @@ const closeDialog = () => {
 const newPractice = ref({
   id: "", // Para modo edición
   studentId: "",
-  advisorId: "",
-  protocolId: "",
-  courseName: "",
-  status: PracticeStatus.ASSIGNED, // Default para nueva práctica
+  teacherId: "",
+  protocolIds: [],
+  courseId: "",
+  status: PracticeStatus.PENDING, // Default para nueva práctica
 });
 
 const openCreatePracticeDialog = () => {
   isEditMode.value = false;
   newPractice.value = {
-    id: "", // Para modo edición
+    id: "",
     studentId: "",
-    advisorId: "",
-    protocolId: "",
-    // institutionName: "",
-    courseName: "",
-    status: PracticeStatus.ASSIGNED, // Default para nueva práctica
+    teacherId: "",
+    protocolIds: [],
+    courseId: "",
+    status: PracticeStatus.PENDING,
   };
   dialog.value = true;
 };
@@ -218,9 +230,8 @@ const snackbar = ref({
 const headers = ref([
   { title: "Docente en formación", key: "student" },
   { title: "Docente Asesor", key: "teacher" },
-  { title: "Protocolo", key: "protocol" },
-
-  { title: "Curso", key: "courseName" },
+  { title: "Protocolos", key: "protocols" },
+  { title: "Curso", key: "course" },
   { title: "Estado", key: "status" },
   { title: "Acciones", key: "actions", sortable: false },
 ]);
@@ -273,7 +284,10 @@ const savePractice = async () => {
 
   try {
     if (isEditMode.value) {
-      await practiceStore.updatePractice(newPractice.value);
+      await practiceStore.updatePractice(
+        newPractice.value.id,
+        newPractice.value
+      );
       snackbar.value = {
         show: true,
         text: "¡Práctica actualizada exitosamente!",
@@ -281,12 +295,8 @@ const savePractice = async () => {
         timeout: 3000,
       };
     } else {
-      await practiceStore.createPractice({
-        studentId: newPractice.value.studentId,
-        advisorId: newPractice.value.advisorId,
-        protocolId: newPractice.value.protocolId,
-        courseName: newPractice.value.courseName,
-      });
+      const { id, ...createData } = newPractice.value;
+      await practiceStore.createPractice(createData);
       snackbar.value = {
         show: true,
         text: "¡Práctica asignada exitosamente!",
@@ -313,14 +323,14 @@ const viewPractice = (id: string) => {
 
 const editPractice = (id: string) => {
   isEditMode.value = true;
-  const practice = practiceStore.practices.find((p) => p._id === id);
+  const practice = practiceStore.practices.find((p) => p.id === id);
   if (practice) {
     newPractice.value = {
       id: practice.id,
       studentId: practice.student.id,
-      advisorId: practice.teacher.id,
-      protocolId: practice.protocols[0].id,
-      courseName: practice.course.name,
+      teacherId: practice.teacher.id,
+      protocolIds: practice.protocols.map((p) => p.id),
+      courseId: practice.course.id,
       status: practice.status,
     };
     dialog.value = true;
@@ -335,7 +345,7 @@ const confirmDeletePractice = (id: string) => {
 const deletePractice = async () => {
   try {
     if (practiceToDeleteId.value) {
-      await practiceStore.removePractice(practiceToDeleteId.value);
+      await practiceStore.deletePractice(practiceToDeleteId.value);
       snackbar.value = {
         show: true,
         text: "¡Práctica eliminada exitosamente!",

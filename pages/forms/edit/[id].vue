@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { useFormStore } from '~/stores/formStores';
+import { useFormStore } from '~/stores/formStore';
 import Editor from '~/pages/editor.vue';
 
 definePageMeta({});

@@ -50,7 +50,7 @@
 import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useSubmissionStore } from '~/stores/submissionStore';
-import { useFormStore } from '~/stores/formStores';
+import { useFormStore } from '~/stores/formStore';
 import { useAuthStore } from '~/stores/authStore';
 
 const route = useRoute();
