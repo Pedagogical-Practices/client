@@ -22,19 +22,11 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>Docente Asesor:</v-list-item-title>
-                  <v-list-item-subtitle>{{ practiceStore.currentPractice.advisor?.name || 'N/A' }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ practiceStore.currentPractice.teacher?.name || 'N/A' }}</v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-title>Protocolo:</v-list-item-title>
-                  <v-list-item-subtitle>{{ practiceStore.currentPractice.protocol?.name || 'N/A' }} ({{ practiceStore.currentPractice.protocol?.module || 'N/A' }})</v-list-item-subtitle>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-title>Institución:</v-list-item-title>
-                  <v-list-item-subtitle>{{ practiceStore.currentPractice.institutionName }}</v-list-item-subtitle>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-title>Curso/Grado:</v-list-item-title>
-                  <v-list-item-subtitle>{{ practiceStore.currentPractice.courseName }}</v-list-item-subtitle>
+                  <v-list-item-title>Curso:</v-list-item-title>
+                  <v-list-item-subtitle>{{ practiceStore.currentPractice.course?.name || 'N/A' }}</v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>Estado:</v-list-item-title>
@@ -51,6 +43,22 @@
                 </v-list-item>
               </v-col>
               <v-col cols="12" md="6">
+                <v-list-item>
+                  <v-list-item-title>Protocolos:</v-list-item-title>
+                  <v-list-item-subtitle>
+                    <div v-if="practiceStore.currentPractice.protocols && practiceStore.currentPractice.protocols.length > 0">
+                      <v-chip
+                        v-for="protocol in practiceStore.currentPractice.protocols"
+                        :key="protocol.id"
+                        size="small"
+                        class="mr-1 mb-1"
+                      >
+                        {{ protocol.name }}
+                      </v-chip>
+                    </div>
+                    <span v-else>N/A</span>
+                  </v-list-item-subtitle>
+                </v-list-item>
                 <v-list-item>
                   <v-list-item-title>Creado por:</v-list-item-title>
                   <v-list-item-subtitle>{{ practiceStore.currentPractice.createdBy?.name || 'N/A' }}</v-list-item-subtitle>
@@ -82,28 +90,28 @@
             <h3 class="mb-3">Formularios del Protocolo</h3>
             <v-list density="compact">
               <v-list-item
-                v-for="filledForm in practiceStore.currentPractice.filledForms"
-                :key="filledForm.form._id"
+                v-for="protocol in practiceStore.currentPractice.protocols"
+                :key="protocol.id"
               >
                 <template v-slot:prepend>
                   <v-icon
-                    :color="filledForm.submission ? 'success' : 'warning'"
-                    :icon="filledForm.submission ? 'mdi-check-circle' : 'mdi-alert-circle'"
+                    :color="getProtocolStatus(protocol.id).color"
+                    :icon="getProtocolStatus(protocol.id).icon"
                   ></v-icon>
                 </template>
                 <v-list-item-title>
-                  {{ filledForm.form?.name || 'Formulario Desconocido' }}
+                  {{ protocol.name || 'Formulario Desconocido' }}
                 </v-list-item-title>
                 <v-list-item-subtitle>
-                  Estado: {{ filledForm.submission ? 'Completado' : 'Pendiente' }}
+                  Estado: {{ getProtocolStatus(protocol.id).statusText }}
                 </v-list-item-subtitle>
                 <template v-slot:append>
                   <v-btn
-                    v-if="!filledForm.submission"
+                    v-if="!getProtocolStatus(protocol.id).isCompleted"
                     color="success"
                     size="small"
                     class="mr-2"
-                    @click="fillForm(filledForm.form._id)"
+                    @click="fillForm(protocol.id)"
                   >
                     Llenar Formulario
                   </v-btn>
@@ -111,7 +119,7 @@
                     v-else
                     color="info"
                     size="small"
-                    @click="viewSubmission(filledForm.submission._id)"
+                    @click="viewSubmission(getProtocolStatus(protocol.id).submissionId)"
                   >
                     Ver Envío
                   </v-btn>
@@ -129,7 +137,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'; // Importar computed
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { usePracticeStore } from '~/stores/practiceStore';
 import { PracticeStatus } from '~/types';
@@ -145,37 +153,65 @@ const practiceId = route.params.id as string;
 onMounted(async () => {
   if (practiceId) {
     await practiceStore.fetchPractice(practiceId);
+    console.log("practiceStore.currentPractice after fetch:", practiceStore.currentPractice);
   }
 });
 
+const getProtocolStatus = (protocolId: string) => {
+  const submission = practiceStore.currentPractice?.submissions.find(
+    (sub: any) => sub.protocol.id === protocolId
+  );
+
+  if (submission) {
+    return {
+      isCompleted: true,
+      statusText: `Completado (${new Date(submission.createdAt).toLocaleDateString()})`,
+      color: "green",
+      icon: "mdi-check-circle",
+      submissionId: submission.id,
+    };
+  } else {
+    return {
+      isCompleted: false,
+      statusText: "Pendiente",
+      color: "red",
+      icon: "mdi-alert-circle",
+      submissionId: null,
+    };
+  }
+};
+
 const completionPercentage = computed(() => {
-  if (!practiceStore.currentPractice || practiceStore.currentPractice.filledForms.length === 0) {
+  if (!practiceStore.currentPractice || !practiceStore.currentPractice.protocols) {
     return 0;
   }
-  const completedForms = practiceStore.currentPractice.filledForms.filter(
-    (ff) => ff.submission
+  const totalProtocols = practiceStore.currentPractice.protocols.length;
+  if (totalProtocols === 0) {
+    return 0;
+  }
+  const completedProtocols = practiceStore.currentPractice.protocols.filter(
+    (protocol: any) => getProtocolStatus(protocol.id).isCompleted
   ).length;
-  const totalForms = practiceStore.currentPractice.filledForms.length;
-  return (completedForms / totalForms) * 100;
+  return (completedProtocols / totalProtocols) * 100;
 });
 
 const getStatusColor = (status: PracticeStatus): string => {
   switch (status) {
-    case PracticeStatus.ASSIGNED:
+    case PracticeStatus.PENDING:
       return 'blue';
     case PracticeStatus.IN_PROGRESS:
       return 'orange';
     case PracticeStatus.COMPLETED:
       return 'green';
-    case PracticeStatus.REVIEWED:
-      return 'purple';
+    case PracticeStatus.ARCHIVED:
+      return 'grey';
     default:
       return 'grey';
   }
 };
 
-const fillForm = (formId: string) => {
-  router.push(`/forms/fill/${formId}?practiceId=${practiceId}`);
+const fillForm = (protocolId: string) => {
+  router.push(`/forms/fill/${protocolId}?practiceId=${practiceId.value}`);
 };
 
 const viewSubmission = (submissionId: string) => {
