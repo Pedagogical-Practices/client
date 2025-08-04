@@ -1,4 +1,4 @@
-query PracticeQuery($id: ID!) {
+query PracticeQuery($id: String!) {
   practice(id: $id) {
     id
     course {
