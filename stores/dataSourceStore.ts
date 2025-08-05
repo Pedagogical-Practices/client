@@ -7,7 +7,7 @@ import { UserRole, DataSourceType } from "~/types";
 import GetUsers from "~/queries/dataSources/getUsers.gql";
 import GetForms from "~/queries/dataSources/getForms.gql";
 import GetProtocols from "~/queries/dataSources/getProtocols.gql";
-import GetCourses from "~/queries/dataSources/getCourses.gql";
+import GetPractices from "~/queries/dataSources/getPractices.gql";
 import GetInstitutions from "~/queries/dataSources/getInstitutions.gql";
 
 interface DataSourceConfig {
@@ -20,7 +20,7 @@ const dataSourceConfigs: Record<DataSourceType, DataSourceConfig> = {
   [DataSourceType.TEACHERS]: { query: GetUsers, dataKey: "users" },
   [DataSourceType.FORMS]: { query: GetForms, dataKey: "forms" },
   [DataSourceType.PROTOCOLS]: { query: GetProtocols, dataKey: "protocols" },
-  [DataSourceType.COURSES]: { query: GetCourses, dataKey: "courses" },
+  [DataSourceType.PRACTICES]: { query: GetPractices, dataKey: "practices" },
   [DataSourceType.INSTITUTIONS]: { query: GetInstitutions, dataKey: "institutions" },
   [DataSourceType.USERS]: { query: GetUsers, dataKey: "users" },
 };
@@ -43,7 +43,7 @@ export const useDataSourceStore = defineStore("dataSource", () => {
     }
 
     // Manejo especial para el estudiante actual
-    if (dataSource === DataSourceType.STUDENTS && authStore.user?.role === UserRole.STUDENT) {
+    if (dataSource === DataSourceType.STUDENTS && authStore.user?.roles?.includes(UserRole.STUDENT)) {
       const studentName = authStore.user.name || authStore.user.email;
       return `${authStore.user.id}|${studentName}`;
     }
@@ -65,10 +65,10 @@ export const useDataSourceStore = defineStore("dataSource", () => {
         let items = data[config.dataKey];
         if (dataSource === DataSourceType.TEACHERS) {
           items = items.filter(
-            (user: any) => user.role === UserRole.TEACHER_DIRECTIVE
+            (user: any) => user.roles.includes(UserRole.TEACHER_DIRECTIVE)
           );
         } else if (dataSource === DataSourceType.STUDENTS) {
-          items = items.filter((user: any) => user.role === UserRole.STUDENT);
+          items = items.filter((user: any) => user.roles.includes(UserRole.STUDENT));
         }
         const formatted = items
           .map((item: any) => `${item.id}|${item.name}`)

@@ -1,0 +1,15 @@
+query groupProtocolDeadline($id: ID!) {
+  groupProtocolDeadline(id: $id) {
+    id
+    startDate
+    endDate
+    group {
+      id
+      name
+    }
+    protocol {
+      id
+      name
+    }
+  }
+}

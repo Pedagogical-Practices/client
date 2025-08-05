@@ -39,12 +39,19 @@
               density="compact"
               required
             ></v-text-field>
-            <v-text-field
-              v-model="newProtocol.module"
-              label="Módulo"
+            <v-textarea
+              v-model="newProtocol.description"
+              label="Descripción"
               variant="outlined"
               density="compact"
-              required
+            ></v-textarea>
+            <v-text-field
+              v-model="newProtocol.productType"
+              label="Tipo de Producto"
+              variant="outlined"
+              density="compact"
+              hint="Ej: INFORME_MAPEO, RECURSO_DIGITAL"
+              persistent-hint
             ></v-text-field>
 
             <v-select
@@ -113,8 +120,8 @@ const protocolStore = useProtocolStore();
 const dialog = ref(false);
 const newProtocol = ref({
   name: "",
-  module: "",
-  // courseId: "", // Eliminado
+  description: "",
+  productType: "",
   formIds: [] as string[], // Ahora es un array de IDs
 });
 const snackbar = ref({
@@ -133,7 +140,7 @@ onMounted(async () => {
 });
 
 const openCreateProtocolDialog = () => {
-  newProtocol.value = { name: "", module: "", formIds: [] }; // Inicializar formIds como array vacío
+  newProtocol.value = { name: "", description: "", productType: "", formIds: [] }; // Inicializar formIds como array vacío
   dialog.value = true;
 };
 
@@ -141,7 +148,8 @@ const createProtocol = async () => {
   try {
     if (
       !newProtocol.value.name ||
-      !newProtocol.value.module ||
+      !newProtocol.value.description ||
+      !newProtocol.value.productType ||
       newProtocol.value.formIds.length === 0 // Validar que se haya seleccionado al menos un formulario
     ) {
       throw new Error(
@@ -150,7 +158,8 @@ const createProtocol = async () => {
     }
     await protocolStore.createProtocol({
       name: newProtocol.value.name,
-      module: newProtocol.value.module,
+      description: newProtocol.value.description,
+      productType: newProtocol.value.productType,
       formIds: newProtocol.value.formIds,
     });
     snackbar.value = {

@@ -1,170 +1,116 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import { useApolloClient } from "@vue/apollo-composable";
-import { gql } from "graphql-tag";
-import type { Practice } from "~/types";
+import { defineStore } from 'pinia';
+import { useApolloClient } from '@nuxtjs/apollo';
 
-// Import GQL documents using default imports
-import PracticesQuery from "~/queries/practices.gql";
-import MyPracticesQuery from "~/queries/myPractices.gql";
-import PracticeQuery from "~/queries/practice.gql";
-import PracticesByTeacherQuery from "~/queries/practicesByTeacher.gql";
-import PracticesByStudentQuery from "~/queries/practicesByStudent.gql";
-import CreatePracticeMutation from "~/queries/createPractice.gql";
-import UpdatePracticeMutation from "~/queries/updatePractice.gql";
-import DeletePracticeMutation from "~/queries/deletePractice.gql";
+import practicesQuery from '~/queries/practices.gql';
+import practiceQuery from '~/queries/practice.gql';
+import createPracticeMutation from '~/queries/createPractice.gql';
+import updatePracticeMutation from '~/queries/updatePractice.gql';
+import deletePracticeMutation from '~/queries/deletePractice.gql';
 
-export const usePracticeStore = defineStore("practice", () => {
-  const { client } = useApolloClient();
+export const usePracticeStore = defineStore('practice', {
+  state: () => ({
+    practices: [],
+    currentPractice: null,
+    loading: false,
+    error: null,
+  }),
 
-  // State
-  const practices = ref<Practice[]>([]);
-  const currentPractice = ref<Practice | null>(null);
-  const loading = ref(false);
+  actions: {
+    async fetchAllPractices() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { client } = useApolloClient();
+        const { data } = await client.query({
+          query: practicesQuery,
+        });
+        this.practices = data.practices;
+      } catch (error) {
+        this.error = error;
+        console.error('Error fetching practices:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
 
-  // Actions
-  const _handleError = (error: any, context: string) => {
-    console.error(`practiceStore: Error in ${context}:`, error);
-    const message = error.message || `Error desconocido en ${context}.`;
-    throw new Error(message);
-  };
+    async fetchPracticeById(id) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { client } = useApolloClient();
+        const { data } = await client.query({
+          query: practiceQuery,
+          variables: { id },
+        });
+        this.currentPractice = data.practice;
+      } catch (error) {
+        this.error = error;
+        console.error(`Error fetching practice with ID ${id}:`, error);
+      } finally {
+        this.loading = false;
+      }
+    },
 
-  const fetchPractices = async () => {
-    loading.value = true;
-    try {
-      const { data, errors } = await client.query({
-        query: PracticesQuery,
-        fetchPolicy: "network-only",
-      });
-      if (errors) throw errors;
-      practices.value = data.practices;
-    } catch (error: any) {
-      _handleError(error, "fetchPractices");
-    } finally {
-      loading.value = false;
-    }
-  };
+    async createPractice(input) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { client } = useApolloClient();
+        const { data } = await client.mutate({
+          mutation: createPracticeMutation,
+          variables: { input },
+        });
+        this.practices.push(data.createPractice);
+        return data.createPractice;
+      } catch (error) {
+        this.error = error;
+        console.error('Error creating practice:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
 
-  const fetchMyPractices = async () => {
-    loading.value = true;
-    try {
-      const { data, errors } = await client.query({
-        query: MyPracticesQuery,
-        fetchPolicy: "network-only",
-      });
-      if (errors) throw errors;
-      practices.value = data.myPractices;
-    } catch (error: any) {
-      _handleError(error, "fetchMyPractices");
-    } finally {
-      loading.value = false;
-    }
-  };
+    async updatePractice(id, input) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { client } = useApolloClient();
+        const { data } = await client.mutate({
+          mutation: updatePracticeMutation,
+          variables: { id, input },
+        });
+        const index = this.practices.findIndex(p => p.id === id);
+        if (index !== -1) {
+          Object.assign(this.practices[index], data.updatePractice);
+        }
+        this.currentPractice = data.updatePractice;
+        return data.updatePractice;
+      } catch (error) {
+        this.error = error;
+        console.error(`Error updating practice with ID ${id}:`, error);
+      } finally {
+        this.loading = false;
+      }
+    },
 
-  const fetchPractice = async (id: string) => {
-    loading.value = true;
-    try {
-      const { data, errors } = await client.query({
-        query: PracticeQuery,
-        variables: { id },
-        fetchPolicy: "network-only",
-      });
-      if (errors) throw errors;
-      currentPractice.value = data.practice;
-    } catch (error: any) {
-      _handleError(error, "fetchPractice");
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  const findPracticesByTeacher = async (teacherId: string) => {
-    loading.value = true;
-    try {
-      const { data, errors } = await client.query({
-        query: PracticesByTeacherQuery,
-        variables: { teacherId },
-        fetchPolicy: "network-only",
-      });
-      if (errors) throw errors;
-      practices.value = data.practicesByTeacher;
-    } catch (error: any) {
-      _handleError(error, "findPracticesByTeacher");
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  const findPracticesByStudent = async (studentId: string) => {
-    loading.value = true;
-    try {
-      const { data, errors } = await client.query({
-        query: PracticesByStudentQuery,
-        variables: { studentId },
-        fetchPolicy: "network-only",
-      });
-      if (errors) throw errors;
-      practices.value = data.practicesByStudent;
-    } catch (error: any) {
-      _handleError(error, "findPracticesByStudent");
-    } finally {
-      loading.value = false;
-    }
-  };
-
-  const createPractice = async (input: any): Promise<Practice> => {
-    try {
-      const { data, errors } = await client.mutate({
-        mutation: CreatePracticeMutation,
-        variables: { input },
-      });
-      if (errors) throw errors;
-      await fetchPractices(); // Refetch
-      return data.createPractice;
-    } catch (error: any) {
-      return _handleError(error, "createPractice");
-    }
-  };
-
-  const updatePractice = async (id: string, input: any): Promise<Practice> => {
-    try {
-      const { data, errors } = await client.mutate({
-        mutation: UpdatePracticeMutation,
-        variables: { id, input },
-      });
-      if (errors) throw errors;
-      await fetchPractices(); // Refetch
-      return data.updatePractice;
-    } catch (error: any) {
-      return _handleError(error, "updatePractice");
-    }
-  };
-
-  const deletePractice = async (id: string): Promise<boolean> => {
-    try {
-      const { data, errors } = await client.mutate({
-        mutation: DeletePracticeMutation,
-        variables: { id },
-      });
-      if (errors) throw errors;
-      await fetchPractices(); // Refetch
-      return data.deletePractice;
-    } catch (error: any) {
-      return _handleError(error, "deletePractice");
-    }
-  };
-
-  return {
-    practices,
-    currentPractice,
-    loading,
-    fetchPractices,
-    fetchMyPractices,
-    fetchPractice,
-    findPracticesByTeacher,
-    findPracticesByStudent,
-    createPractice,
-    updatePractice,
-    deletePractice,
-  };
+    async deletePractice(id) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { client } = useApolloClient();
+        await client.mutate({
+          mutation: deletePracticeMutation,
+          variables: { id },
+        });
+        this.practices = this.practices.filter(p => p.id !== id);
+        return true;
+      } catch (error) {
+        this.error = error;
+        console.error(`Error deleting practice with ID ${id}:`, error);
+        return false;
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
 });

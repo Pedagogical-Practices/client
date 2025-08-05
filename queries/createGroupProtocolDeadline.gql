@@ -1,0 +1,15 @@
+mutation createGroupProtocolDeadline($input: CreateGroupProtocolDeadlineInput!) {
+  createGroupProtocolDeadline(input: $input) {
+    id
+    startDate
+    endDate
+    group {
+      id
+      name
+    }
+    protocol {
+      id
+      name
+    }
+  }
+}

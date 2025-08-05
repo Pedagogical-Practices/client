@@ -1,8 +1,9 @@
 query GetUserById($id: ID!) {
   user(id: $id) {
     id
-    name
+    firstName
+    lastName
     email
-    role
+    roles
   }
 }

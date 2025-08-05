@@ -11,18 +11,28 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   // we need to check for a token and fetch the user.
   const token = await getToken();
   if (token && !authStore.isAuthenticated) {
-    const { data, error } = await client.query({ query: MeQuery });
-    if (data?.me) {
-      authStore.setUser(data.me);
-    } else {
-      // Token is invalid/expired, clear it and the store
+    try {
+      const { data, errors } = await client.query({ query: MeQuery });
+      if (errors) {
+        console.error("auth.global.ts: GraphQL errors on MeQuery:", errors);
+        throw new Error(errors.map(e => e.message).join(", "));
+      }
+      if (data?.me) {
+        authStore.setUser(data.me);
+      } else {
+        // Token is invalid/expired, clear it and the store
+        await onLogout();
+        authStore.setUser(null);
+      }
+    } catch (error) {
+      console.error("auth.global.ts: Error fetching MeQuery:", error);
       await onLogout();
       authStore.setUser(null);
     }
   }
 
   // Define public routes that do not require authentication
-  const publicRoutes = ['/login'];
+  const publicRoutes = ['/login', '/register'];
   const isPublicRoute = publicRoutes.includes(to.path);
 
   // If trying to access a protected route and not authenticated, redirect to login

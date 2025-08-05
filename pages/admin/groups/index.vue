@@ -4,19 +4,19 @@
       <v-col cols="12">
         <v-card elevation="2">
           <v-card-title class="d-flex justify-space-between align-center">
-            <span>Gestión de Prácticas</span>
+            <span>Gestión de Grupos</span>
             <v-btn
               color="primary"
               prepend-icon="mdi-plus"
-              @click="openCreatePracticeDialog"
+              @click="openCreateGroupDialog"
             >
-              Asignar Nueva Práctica
+              Asignar Nuevo Grupo
             </v-btn>
           </v-card-title>
           <v-card-text>
             <v-data-table
               :headers="headers"
-              :items="practiceStore.practices"
+              :items="groupStore.groups"
               :items-per-page="10"
               class="elevation-1"
             >
@@ -53,7 +53,7 @@
                   color="info"
                   icon="mdi-eye"
                   class="mr-2"
-                  @click="viewPractice(item.id)"
+                  @click="viewGroup(item.id)"
                   title="Ver Detalle"
                 ></v-btn>
                 <v-btn
@@ -61,15 +61,15 @@
                   color="warning"
                   icon="mdi-pencil"
                   class="mr-2"
-                  @click="editPractice(item.id)"
-                  title="Editar Práctica"
+                  @click="editGroup(item.id)"
+                  title="Editar Grupo"
                 ></v-btn>
                 <v-btn
                   size="small"
                   color="error"
                   icon="mdi-delete"
-                  @click="confirmDeletePractice(item.id)"
-                  title="Eliminar Práctica"
+                  @click="confirmDeleteGroup(item.id)"
+                  title="Eliminar Grupo"
                 ></v-btn>
               </template>
             </v-data-table>
@@ -78,39 +78,37 @@
       </v-col>
     </v-row>
 
-    <!-- Diálogo para crear/editar práctica -->
+    <!-- Diálogo para crear/editar grupo -->
     <v-dialog v-model="dialog" max-width="700px" persistent>
       <v-card>
         <v-card-title class="d-flex justify-space-between align-center">
-          <span>{{
-            isEditMode ? "Editar Práctica" : "Asignar Nueva Práctica"
-          }}</span>
+          <span>{{ isEditMode ? "Editar Grupo" : "Asignar Nuevo Grupo" }}</span>
           <v-btn icon="mdi-close" @click="closeDialog"></v-btn>
         </v-card-title>
         <v-card-text>
-          <v-form ref="practiceFormRef">
+          <v-form ref="groupFormRef">
             <EntityAutocomplete
-              v-model="newPractice.studentId"
+              v-model="newGroup.studentId"
               specific-type="student"
               label="Docente en formación"
               :multiple="false"
             ></EntityAutocomplete>
             <EntityAutocomplete
-              v-model="newPractice.teacherId"
+              v-model="newGroup.teacherId"
               specific-type="teacher"
               label="Docente Asesor"
               :multiple="false"
             ></EntityAutocomplete>
             <EntityAutocomplete
-              v-model="newPractice.protocolIds"
+              v-model="newGroup.protocolIds"
               specific-type="protocol"
               label="Protocolos"
               :multiple="true"
             ></EntityAutocomplete>
             <EntityAutocomplete
-              v-model="newPractice.courseId"
-              specific-type="course"
-              label="Curso"
+              v-model="newGroup.practiceId"
+              specific-type="practice"
+              label="Curso de Malla Curricular"
               :multiple="false"
             >
             </EntityAutocomplete>
@@ -125,7 +123,7 @@
             color="primary"
             variant="elevated"
             prepend-icon="mdi-content-save"
-            @click="savePractice"
+            @click="saveGroup"
           >
             {{ isEditMode ? "Guardar Cambios" : "Asignar" }}
           </v-btn>
@@ -138,7 +136,7 @@
       <v-card>
         <v-card-title class="headline">Confirmar Eliminación</v-card-title>
         <v-card-text>
-          ¿Estás seguro de que quieres eliminar esta práctica? Esta acción no se
+          ¿Estás seguro de que quieres eliminar este grupo? Esta acción no se
           puede deshacer.
         </v-card-text>
         <v-card-actions>
@@ -174,14 +172,14 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { PracticeStatus } from "~/types";
-import { usePracticeStore } from "~/stores/practiceStore";
+import { useGroupStore } from "~/stores/groupStore";
 import { useAuthStore } from "~/stores/authStore";
 import { useProtocolStore } from "~/stores/protocolStore";
 
 import EntityAutocomplete from "~/components/EntityAutocomplete.vue";
 
 const router = useRouter();
-const practiceStore = usePracticeStore();
+const groupStore = useGroupStore();
 const authStore = useAuthStore();
 const protocolStore = useProtocolStore();
 
@@ -190,21 +188,21 @@ const isEditMode = ref(false);
 
 const closeDialog = () => {
   dialog.value = false;
-  // practiceFormRef.value?.reset(); // Limpiar el formulario
+  // groupFormRef.value?.reset(); // Limpiar el formulario
 };
 
-const newPractice = ref({
+const newGroup = ref({
   id: "", // Para modo edición
   studentId: "",
   teacherId: "",
   protocolIds: [],
   courseId: "",
-  status: PracticeStatus.PENDING, // Default para nueva práctica
+  status: PracticeStatus.PENDING, // Default para nuevo grupo
 });
 
-const openCreatePracticeDialog = () => {
+const openCreateGroupDialog = () => {
   isEditMode.value = false;
-  newPractice.value = {
+  newGroup.value = {
     id: "",
     studentId: "",
     teacherId: "",
@@ -215,9 +213,9 @@ const openCreatePracticeDialog = () => {
   dialog.value = true;
 };
 
-const practiceFormRef = ref<HTMLFormElement | null>(null);
+const groupFormRef = ref<HTMLFormElement | null>(null);
 
-const practiceToDeleteId = ref<string | null>(null);
+const groupToDeleteId = ref<string | null>(null);
 const deleteConfirmDialog = ref(false);
 
 const snackbar = ref({
@@ -231,31 +229,31 @@ const headers = ref([
   { title: "Docente en formación", key: "student" },
   { title: "Docente Asesor", key: "teacher" },
   { title: "Protocolos", key: "protocols" },
-  { title: "Curso", key: "course" },
+  { title: "Curso de Malla Curricular", key: "practice.name" },
   { title: "Estado", key: "status" },
   { title: "Acciones", key: "actions", sortable: false },
 ]);
 
 onMounted(async () => {
-  console.log("practices/index.vue: onMounted started.");
-  await practiceStore.fetchPractices();
-  console.log("practices/index.vue: practices fetched.");
+  console.log("groups/index.vue: onMounted started.");
+  await groupStore.fetchGroups();
+  console.log("groups/index.vue: groups fetched.");
   await protocolStore.fetchProtocols();
-  console.log("practices/index.vue: protocols fetched.");
+  console.log("groups/index.vue: protocols fetched.");
   await authStore.fetchUsers();
-  console.log("practices/index.vue: users fetched.");
+  console.log("groups/index.vue: users fetched.");
 });
 
 const students = computed(() => {
   console.log(
-    "practices/index.vue: Computing students. authStore.users:",
+    "groups/index.vue: Computing students. authStore.users:",
     authStore.users
   );
   return (authStore.users || []).filter((user) => user.role === "STUDENT");
 });
 const advisors = computed(() => {
   console.log(
-    "practices/index.vue: Computing advisors. authStore.users:",
+    "groups/index.vue: Computing advisors. authStore.users:",
     authStore.users
   );
   return (authStore.users || []).filter(
@@ -278,36 +276,33 @@ const getStatusColor = (status: PracticeStatus): string => {
   }
 };
 
-const savePractice = async () => {
-  const { valid } = await practiceFormRef.value!.validate();
+const saveGroup = async () => {
+  const { valid } = await groupFormRef.value!.validate();
   if (!valid) return;
 
   try {
     if (isEditMode.value) {
-      await practiceStore.updatePractice(
-        newPractice.value.id,
-        newPractice.value
-      );
+      await groupStore.updateGroup(newGroup.value.id, newGroup.value);
       snackbar.value = {
         show: true,
-        text: "¡Práctica actualizada exitosamente!",
+        text: "¡Grupo actualizado exitosamente!",
         color: "success",
         timeout: 3000,
       };
     } else {
-      const { id, ...createData } = newPractice.value;
-      await practiceStore.createPractice(createData);
+      const { id, ...createData } = newGroup.value;
+      await groupStore.createGroup(createData);
       snackbar.value = {
         show: true,
-        text: "¡Práctica asignada exitosamente!",
+        text: "¡Grupo asignado exitosamente!",
         color: "success",
         timeout: 3000,
       };
     }
     closeDialog();
-    await practiceStore.fetchPractices(); // Refrescar la lista
+    await groupStore.fetchGroups(); // Refrescar la lista
   } catch (error: any) {
-    console.error("Error al guardar práctica:", error);
+    console.error("Error al guardar grupo:", error);
     snackbar.value = {
       show: true,
       text: `Error: ${error.message}`,
@@ -317,47 +312,47 @@ const savePractice = async () => {
   }
 };
 
-const viewPractice = (id: string) => {
-  router.push(`/admin/practices/${id}`); // Navegar a la página de detalle de la práctica
+const viewGroup = (id: string) => {
+  router.push(`/admin/groups/${id}`); // Navegar a la página de detalle del grupo
 };
 
-const editPractice = (id: string) => {
+const editGroup = (id: string) => {
   isEditMode.value = true;
-  const practice = practiceStore.practices.find((p) => p.id === id);
-  if (practice) {
-    newPractice.value = {
-      id: practice.id,
-      studentId: practice.student.id,
-      teacherId: practice.teacher.id,
-      protocolIds: practice.protocols.map((p) => p.id),
-      courseId: practice.course.id,
-      status: practice.status,
+  const group = groupStore.groups.find((p) => p.id === id);
+  if (group) {
+    newGroup.value = {
+      id: group.id,
+      studentId: group.student.id,
+      teacherId: group.teacher.id,
+      protocolIds: group.protocols.map((p) => p.id),
+      practiceId: group.practice.id,
+      status: group.status,
     };
     dialog.value = true;
   }
 };
 
-const confirmDeletePractice = (id: string) => {
-  practiceToDeleteId.value = id;
+const confirmDeleteGroup = (id: string) => {
+  groupToDeleteId.value = id;
   deleteConfirmDialog.value = true;
 };
 
-const deletePractice = async () => {
+const deleteGroup = async () => {
   try {
-    if (practiceToDeleteId.value) {
-      await practiceStore.deletePractice(practiceToDeleteId.value);
+    if (groupToDeleteId.value) {
+      await groupStore.deleteGroup(groupToDeleteId.value);
       snackbar.value = {
         show: true,
-        text: "¡Práctica eliminada exitosamente!",
+        text: "¡Grupo eliminado exitosamente!",
         color: "success",
         timeout: 3000,
       };
       deleteConfirmDialog.value = false;
-      practiceToDeleteId.value = null;
-      await practiceStore.fetchPractices(); // Refrescar la lista
+      groupToDeleteId.value = null;
+      await groupStore.fetchGroups(); // Refrescar la lista
     }
   } catch (error: any) {
-    console.error("Error al eliminar práctica:", error);
+    console.error("Error al eliminar grupo:", error);
     snackbar.value = {
       show: true,
       text: `Error: ${error.message}`,

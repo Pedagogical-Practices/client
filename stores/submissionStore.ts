@@ -21,7 +21,7 @@ export const useSubmissionStore = defineStore("submission", () => {
   };
 
   const createSubmission = async (input: any): Promise<Submission | null> => {
-    const { mutate } = useMutation(gql`mutation CreateSubmission($input: CreateSubmissionInput!) { createSubmission(input: $input) { id practice { id } protocol { id } formData locationData score feedback createdAt updatedAt } }`);
+    const { mutate } = useMutation(gql`mutation CreateSubmission($input: CreateSubmissionInput!) { createSubmission(input: $input) { id group { id } protocol { id } formData locationData score feedback createdAt updatedAt } }`);
     try {
       const result = await mutate({ input });
       if (result?.errors) {
@@ -50,7 +50,7 @@ export const useSubmissionStore = defineStore("submission", () => {
 
   const fetchSubmission = async (id: string): Promise<Submission | null> => {
     try {
-      const { data, errors } = await client.query({ query: gql`query Submission($id: ID!) { submission(id: $id) { id practice { id student { id name } teacher { id name } } protocol { id name form { id name fields { name label type options rules } } } formData locationData score feedback createdAt updatedAt } }`, variables: { id }, fetchPolicy: 'network-only' });
+      const { data, errors } = await client.query({ query: gql`query Submission($id: ID!) { submission(id: $id) { id group { id student { id name } teacher { id name } } protocol { id name form { id name fields { name label type options rules } } } formData locationData score feedback createdAt updatedAt } }`, variables: { id }, fetchPolicy: 'network-only' });
       if (errors) throw errors;
       currentSubmission.value = data.submission;
       return data.submission;
@@ -62,7 +62,7 @@ export const useSubmissionStore = defineStore("submission", () => {
 
   const fetchSubmissions = async (): Promise<Submission[]> => {
     try {
-      const { data, errors } = await client.query({ query: gql`query Submissions { submissions { id practice { id student { id name } teacher { id name } } protocol { id name } formData locationData score feedback createdAt updatedAt } }`, fetchPolicy: 'network-only' });
+      const { data, errors } = await client.query({ query: gql`query Submissions { submissions { id group { id student { id name } teacher { id name } } protocol { id name } formData locationData score feedback createdAt updatedAt } }`, fetchPolicy: 'network-only' });
       if (errors) throw errors;
       submissions.value = data.submissions;
       return data.submissions;

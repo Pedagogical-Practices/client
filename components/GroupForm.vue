@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>{{ isEditMode ? 'Editar Práctica' : 'Asignar Nueva Práctica' }}</v-card-title>
+    <v-card-title>{{ isEditMode ? 'Editar Grupo' : 'Asignar Nuevo Grupo' }}</v-card-title>
     <v-card-text>
       <v-form ref="form">
         <EntityAutocomplete
@@ -31,7 +31,7 @@
           v-if="isEditMode"
           v-model="practice.status"
           :items="Object.values(PracticeStatus)"
-          label="Estado de la Práctica"
+          label="Estado del Grupo"
           variant="outlined"
           density="compact"
         ></v-select>

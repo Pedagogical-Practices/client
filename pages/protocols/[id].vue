@@ -44,6 +44,7 @@ import { useFormStore } from "~/stores/formStore";
 import { useProtocolStore } from "~/stores/protocolStore";
 import { useSubmissionStore } from "~/stores/submissionStore";
 import FormFiller from "~/components/FormFiller.vue";
+import { useAuthStore } from "~/stores/authStore";
 
 // definePageMeta({});
 
@@ -53,6 +54,7 @@ const router = useRouter();
 const formStore = useFormStore();
 const protocolStore = useProtocolStore();
 const submissionStore = useSubmissionStore();
+const authStore = useAuthStore();
 const formData = ref({});
 const snackbar = ref({
   show: false,
@@ -71,9 +73,21 @@ onMounted(async () => {
 
 const submitProtocol = async () => {
   try {
+    // Assuming the user is a student and belongs to a group
+    // You might need to fetch the student's current group or pass it as a prop/route param
+    // For now, let's assume authStore.user.id is the studentId and we need a groupId
+    // This groupId should come from the context where the student is viewing the protocol
+    // For demonstration, let's use a placeholder or assume it's available from route.params
+    const groupId = route.query.groupId as string; // Assuming groupId is passed as a query parameter
+
+    if (!groupId) {
+      throw new Error("Group ID is missing. Cannot submit protocol.");
+    }
+
     await submissionStore.createSubmission({
-      practiceId: "", // This needs to be dynamically set based on the context of the practice
+      groupId: groupId,
       protocolId: route.params.id as string,
+      studentIds: [authStore.user?.id], // Assuming single student submission for now
       formData: formData.value,
     });
     snackbar.value = {

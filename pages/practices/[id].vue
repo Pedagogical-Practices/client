@@ -1,50 +1,183 @@
 <template>
-  <v-container v-if="practiceStore.currentPractice">
-    <v-col cols="12">
-      <PracticeDetailHeader :practice="practiceStore.currentPractice" />
-    </v-col>
-    <v-col cols="12">
-      <PracticeProgress :practice="practiceStore.currentPractice" />
-    </v-col>
-    <v-col cols="12">
-      <PracticeFormList
-        :practice="practiceStore.currentPractice"
-      />
-    </v-col>
-  </v-container>
-  <v-container v-else>
+  <v-container fluid class="pa-4">
     <v-row>
       <v-col cols="12">
-        <p>Cargando detalles de la práctica...</p>
+        <v-card>
+          <v-card-title class="d-flex justify-space-between align-center">
+            <span>Práctica: {{ practiceStore.currentPractice?.name }}</span>
+            <v-btn
+              color="primary"
+              @click="openCreateProtocolDialog"
+              prepend-icon="mdi-plus"
+              v-if="authStore.isAdmin"
+            >
+              Crear Protocolo
+            </v-btn>
+          </v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col cols="12">
+                <v-textarea
+                  label="Descripción"
+                  :model-value="practiceStore.currentPractice?.description"
+                  readonly
+                  variant="outlined"
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Fecha de Inicio"
+                  :model-value="practiceStore.currentPractice?.startDate"
+                  readonly
+                  variant="outlined"
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  label="Fecha de Fin"
+                  :model-value="practiceStore.currentPractice?.endDate"
+                  readonly
+                  variant="outlined"
+                />
+              </v-col>
+            </v-row>
+            <ProtocolList
+              :protocols="practiceStore.currentPractice?.protocols || []"
+              @view="viewProtocol"
+              class="mt-4"
+            />
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
+    <v-dialog v-model="createProtocolDialog" max-width="600px">
+      <v-card>
+        <v-card-title>Crear Nuevo Protocolo</v-card-title>
+        <v-card-text>
+          <v-form ref="createProtocolForm">
+            <v-text-field
+              v-model="newProtocol.name"
+              label="Nombre del Protocolo"
+              variant="outlined"
+              :rules="[(v) => !!v || 'Requerido']"
+            />
+            <v-textarea
+              v-model="newProtocol.description"
+              label="Descripción"
+              variant="outlined"
+            />
+            <EntityAutocomplete
+              v-model="newProtocol.formId"
+              specific-type="form"
+              label="Formulario Asociado"
+              required
+            ></EntityAutocomplete>
+            <v-text-field
+              v-model="newProtocol.productType"
+              label="Tipo de Producto"
+              hint="Ej: INFORME_MAPEO, RECURSO_DIGITAL"
+              persistent-hint
+            ></v-text-field>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="error" @click="createProtocolDialog = false"
+            >Cancelar</v-btn
+          >
+          <v-btn color="primary" @click="createProtocol">Guardar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-snackbar
+      v-model="snackbar.show"
+      :color="snackbar.color"
+      :timeout="snackbar.timeout"
+      location="top right"
+    >
+      {{ snackbar.text }}
+      <template v-slot:actions>
+        <v-btn variant="text" @click="snackbar.show = false">Cerrar</v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { usePracticeStore } from "~/stores/practiceStore";
+import { useProtocolStore } from "~/stores/protocolStore";
 import { useAuthStore } from "~/stores/authStore";
-import PracticeDetailHeader from "~/components/practices/PracticeDetailHeader.vue";
-import PracticeProgress from "~/components/practices/PracticeProgress.vue";
-import PracticeFormList from "~/components/practices/PracticeFormList.vue";
+import ProtocolList from "~/components/ProtocolList.vue";
+import EntityAutocomplete from "~/components/EntityAutocomplete.vue";
+
+definePageMeta({});
 
 const route = useRoute();
+const router = useRouter();
 const practiceStore = usePracticeStore();
+const protocolStore = useProtocolStore();
 const authStore = useAuthStore();
+const createProtocolDialog = ref(false);
+const createProtocolForm = ref();
+const newProtocol = ref({
+  name: "",
+  description: "",
+  formId: "",
+  productType: "",
+});
+const snackbar = ref({
+  show: false,
+  text: "",
+  color: "success",
+  timeout: 3000,
+});
 
 onMounted(async () => {
   const practiceId = route.params.id as string;
-  if (practiceId) {
-    try {
-      await practiceStore.fetchPractice(practiceId);
-    } catch (error) {
-      console.error(
-        "practices/[id].vue: Error fetching practice details:",
-        error
-      );
-    }
-  }
+  await practiceStore.fetchPracticeById(practiceId);
 });
+
+const openCreateProtocolDialog = () => {
+  createProtocolDialog.value = true;
+  newProtocol.value = { name: "", description: "", formId: "", productType: "" };
+};
+
+const createProtocol = async () => {
+  const { valid } = await createProtocolForm.value.validate();
+  if (!valid) return;
+
+  try {
+    await protocolStore.createProtocol({
+      ...newProtocol.value,
+    });
+    snackbar.value = {
+      show: true,
+      text: "¡Protocolo creado exitosamente!",
+      color: "success",
+      timeout: 3000,
+    };
+    createProtocolDialog.value = false;
+    newProtocol.value = { name: "", description: "", formId: "", productType: "" };
+    await practiceStore.fetchPracticeById(route.params.id as string); // Re-fetch practice to update protocol list
+  } catch (error: any) {
+    snackbar.value = {
+      show: true,
+      text: `Error: ${error.message}`,
+      color: "error",
+      timeout: 3000,
+    };
+  }
+};
+
+const viewProtocol = (protocolId: string) => {
+  router.push(`/protocols/${protocolId}`);
+};
 </script>
+
+<style scoped>
+.v-card {
+  background-color: #fff;
+}
+</style>

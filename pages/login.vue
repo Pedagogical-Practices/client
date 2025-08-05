@@ -15,15 +15,20 @@
               ></v-text-field>
               <v-text-field
                 v-model="password"
+                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="showPassword ? 'text' : 'password'"
                 label="Contraseña"
-                type="password"
                 variant="outlined"
                 required
+                @click:append-inner="showPassword = !showPassword"
               ></v-text-field>
               <v-btn type="submit" color="primary" block class="mt-4"
                 >Iniciar Sesión</v-btn
               >
             </v-form>
+            <v-btn variant="text" block class="mt-2" to="/register">
+              ¿No tienes cuenta? Regístrate
+            </v-btn>
           </v-card-text>
           <v-snackbar
             v-model="snackbar.show"
@@ -50,6 +55,7 @@ import { useAuthStore } from "~/stores/authStore";
 const authStore = useAuthStore();
 const email = ref("");
 const password = ref("");
+const showPassword = ref(false);
 const snackbar = ref({
   show: false,
   text: "",

@@ -6,7 +6,7 @@
           variant="text"
           @click.stop="drawer = !drawer"
         ></v-app-bar-nav-icon>
-        <v-toolbar-title>Control de prácticas pedagógicas</v-toolbar-title>
+        <v-toolbar-title>Control de grupos pedagógicos</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn v-if="!authStore.isAuthenticated" to="/login" text>
           Iniciar Sesión
@@ -80,9 +80,9 @@ const allItems = [
     roles: [UserRole.ADMIN, UserRole.TEACHER_DIRECTIVE],
   },
   {
-    title: "Cursos",
-    value: "courses",
-    to: "/courses",
+    title: "Prácticas",
+    value: "practices",
+    to: "/practices",
     icon: "mdi-book-open-page-variant",
     roles: [UserRole.ADMIN],
   },
@@ -127,16 +127,16 @@ const allItems = [
     roles: [UserRole.ADMIN],
   },
   {
-    title: "Gestionar Prácticas",
-    value: "admin-practices",
-    to: "/admin/practices",
+    title: "Gestionar Grupos",
+    value: "admin-groups",
+    to: "/admin/groups",
     icon: "mdi-school-outline",
-    roles: [UserRole.ADMIN, UserRole.TEACHER_DIRECTIVE],
+    roles: [UserRole.ADMIN, UserRole.COORDINATOR],
   },
   {
-    title: "Mis Prácticas",
-    value: "practices",
-    to: "/practices",
+    title: "Mis Grupos",
+    value: "groups",
+    to: "/groups",
     icon: "mdi-school",
     roles: [
       UserRole.ADMIN,

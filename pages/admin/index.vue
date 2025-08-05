@@ -9,7 +9,7 @@
             <span class="ml-2">Gestionar Instituciones</span>
           </v-card-title>
           <v-card-text class="card-text-scrollable">
-            Administrar las instituciones educativas asociadas a las prácticas.
+            Administrar las instituciones educativas asociadas a los grupos.
           </v-card-text>
         </v-card>
       </v-col>
@@ -36,19 +36,19 @@
           </v-card-title>
           <v-card-text class="card-text-scrollable">
             Definir y organizar los protocolos que contienen los formularios
-            para las prácticas.
+            para los grupos.
           </v-card-text>
         </v-card>
       </v-col>
 
       <v-col cols="12" md="4">
-        <v-card to="/courses" hover class="pa-2" height="180" variant="outlined">
+        <v-card to="/practices" hover class="pa-2" height="180" variant="outlined">
           <v-card-title>
             <v-icon left>mdi-book-open-page-variant</v-icon>
             <span class="ml-2">Gestionar Cursos</span>
           </v-card-title>
           <v-card-text class="card-text-scrollable">
-            Crear, editar y eliminar cursos de práctica.
+            Crear, editar y eliminar cursos de la malla curricular.
           </v-card-text>
         </v-card>
       </v-col>

@@ -7,8 +7,14 @@
           <v-card-text>
             <v-form @submit.prevent="handleUpdateProfile">
               <v-text-field
-                v-model="name"
+                v-model="firstName"
                 label="Nombre"
+                variant="outlined"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="lastName"
+                label="Apellido"
                 variant="outlined"
                 required
               ></v-text-field>
@@ -56,7 +62,8 @@ import { ref, onMounted } from "vue";
 import { useAuthStore } from "~/stores/authStore";
 
 const authStore = useAuthStore();
-const name = ref(authStore.user?.name || "");
+const firstName = ref(authStore.user?.firstName || "");
+const lastName = ref(authStore.user?.lastName || "");
 const email = ref(authStore.user?.email || "");
 const password = ref("");
 const snackbar = ref({
@@ -75,7 +82,7 @@ const handleUpdateProfile = async () => {
     if (!authStore.user?.id) {
       throw new Error("User ID not found.");
     }
-    const updateInput: any = { name: name.value, email: email.value };
+    const updateInput: any = { firstName: firstName.value, lastName: lastName.value, email: email.value };
     if (password.value) updateInput.password = password.value;
     await authStore.updateUser(authStore.user.id, updateInput);
     snackbar.value = {

@@ -3,9 +3,10 @@ mutation Login($email: String!, $password: String!) {
     token
     user {
       id
-      name
+      firstName
+      lastName
       email
-      role
+      roles
     }
   }
 }

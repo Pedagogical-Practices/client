@@ -1,0 +1,23 @@
+mutation createGroup($input: CreateGroupInput!) {
+  createGroup(input: $input) {
+    id
+    name
+    period
+    practice {
+      id
+      name
+    }
+    tutor {
+      id
+      name
+    }
+    students {
+      id
+      name
+    }
+    institutions {
+      id
+      name
+    }
+  }
+}

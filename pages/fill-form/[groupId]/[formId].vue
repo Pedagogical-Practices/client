@@ -36,18 +36,18 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useFormStore } from "~/stores/formStore";
-import { usePracticeStore } from "~/stores/practiceStore";
+import { useGroupStore } from "~/stores/groupStore";
 import { useSubmissionStore } from "~/stores/submissionStore";
 import { useAuthStore } from "~/stores/authStore";
 import FormFiller from "~/components/FormFiller.vue";
 
 const route = useRoute();
 const router = useRouter();
-const practiceId = ref(route.params.practiceId as string);
-const protocolId = ref(route.params.formId as string); // Renamed formId to protocolId
+const groupId = ref(route.params.groupId as string);
+const formId = ref(route.params.formId as string);
 const submissionId = ref(route.query.submissionId as string | undefined);
 const formStore = useFormStore();
-const practiceStore = usePracticeStore();
+const groupStore = useGroupStore();
 const submissionStore = useSubmissionStore();
 const authStore = useAuthStore();
 
@@ -68,11 +68,11 @@ onMounted(async () => {
   if (protocolId.value) {
     await formStore.fetchForm(protocolId.value);
   }
-  if (practiceId.value) {
-    await practiceStore.fetchPractice(practiceId.value);
+  if (groupId.value) {
+    await groupStore.fetchPractice(groupId.value);
     console.log(
       "Practice fetched in fill-form page:",
-      practiceStore.currentPractice
+      groupStore.currentPractice
     );
 
     if (submissionId.value) {
@@ -90,16 +90,18 @@ onMounted(async () => {
 });
 
 const handleSubmit = async (formData: Record<string, any>) => {
-  if (!protocolId.value || !practiceId.value || !authStore.user) return;
+  if (!protocolId.value || !groupId.value || !authStore.user) return;
+  const studentIds = groupStore.currentGroup?.students?.map(s => s.id) || [];
   try {
     await submissionStore.createSubmission({
-      practiceId: practiceId.value,
+      groupId: groupId.value,
       protocolId: protocolId.value,
+      studentIds: studentIds,
       formData: formData,
     });
-    await practiceStore.fetchPractice(practiceId.value); // Forzar recarga
+    await groupStore.fetchGroup(groupId.value); // Forzar recarga
     showSnackbar("Formulario enviado exitosamente!", "success");
-    router.push(`/practices/${practiceId.value}`);
+    router.push(`/practices/${groupId.value}`);
   } catch (error: any) {
     console.error("Error submitting form:", error);
     showSnackbar(`Error al enviar formulario: ${error.message}`, "error");
@@ -110,9 +112,9 @@ const handleUpdate = async ({ id, data }: { id: string; data: Record<string, any
   if (!id) return;
   try {
     await submissionStore.updateSubmission(id, { formData: data });
-    await practiceStore.fetchPractice(practiceId.value); // Forzar recarga
+    await groupStore.fetchPractice(groupId.value); // Forzar recarga
     showSnackbar("Formulario actualizado exitosamente!", "success");
-    router.push(`/practices/${practiceId.value}`);
+    router.push(`/practices/${groupId.value}`);
   } catch (error: any) {
     console.error("Error updating form:", error);
     showSnackbar(`Error al actualizar formulario: ${error.message}`, "error");
