@@ -68,7 +68,7 @@ const allItems = [
     roles: [
       UserRole.ADMIN,
       UserRole.STUDENT,
-      UserRole.TEACHER_DIRECTIVE,
+      UserRole.ASSESSOR,
       UserRole.FAMILY,
     ],
   },
@@ -77,7 +77,7 @@ const allItems = [
     value: "editor",
     to: "/editor",
     icon: "mdi-text-box",
-    roles: [UserRole.ADMIN, UserRole.TEACHER_DIRECTIVE],
+    roles: [UserRole.ADMIN, UserRole.ASSESSOR],
   },
   {
     title: "Prácticas",
@@ -98,7 +98,7 @@ const allItems = [
     value: "protocols",
     to: "/protocols",
     icon: "mdi-package",
-    roles: [UserRole.ADMIN, UserRole.TEACHER_DIRECTIVE, UserRole.STUDENT],
+    roles: [UserRole.ADMIN, UserRole.ASSESSOR, UserRole.STUDENT],
   },
   {
     title: "Perfil",
@@ -108,7 +108,7 @@ const allItems = [
     roles: [
       UserRole.ADMIN,
       UserRole.STUDENT,
-      UserRole.TEACHER_DIRECTIVE,
+      UserRole.ASSESSOR,
       UserRole.FAMILY,
     ],
   },
@@ -141,7 +141,7 @@ const allItems = [
     roles: [
       UserRole.ADMIN,
       UserRole.STUDENT,
-      UserRole.TEACHER_DIRECTIVE,
+      UserRole.ASSESSOR,
       UserRole.FAMILY,
     ],
   },
@@ -153,7 +153,7 @@ const allItems = [
     roles: [
       UserRole.ADMIN,
       UserRole.STUDENT,
-      UserRole.TEACHER_DIRECTIVE,
+      UserRole.ASSESSOR,
       UserRole.FAMILY,
     ],
   },
@@ -163,7 +163,9 @@ const filteredItems = computed(() => {
   if (!authStore.isAuthenticated || !authStore.user) {
     return [];
   }
-  return allItems.filter((item) => item.roles.includes(authStore.user.role));
+  return allItems.filter((item) =>
+    item.roles.some((role) => authStore.user.roles.includes(role))
+  );
 });
 
 router.afterEach(() => {
