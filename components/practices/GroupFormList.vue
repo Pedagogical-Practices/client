@@ -1,12 +1,12 @@
 <template>
   <v-card>
     <v-card-title class="text-h5 primary--text"
-      >Protocolos de la Práctica</v-card-title
+      >Protocolos del Grupo</v-card-title
     >
     <v-card-text>
       <v-list lines="two">
         <v-list-item
-          v-for="protocol in practice.protocols"
+          v-for="protocol in group.protocols"
           :key="protocol.id"
           :title="protocol.name"
           :subtitle="getProtocolStatus(protocol.id).statusText"
@@ -57,13 +57,13 @@ import { defineProps, computed } from "vue";
 import { useRouter } from "vue-router";
 
 const props = defineProps<{
-  practice: any;
+  group: any;
 }>();
 
 const router = useRouter();
 
 const getProtocolStatus = (protocolId: string) => {
-  const submission = props.practice.submissions.find(
+  const submission = props.group.submissions.find(
     (sub: Submission) => sub.protocol.id === protocolId
   );
 
@@ -87,7 +87,7 @@ const getProtocolStatus = (protocolId: string) => {
 };
 
 const fillForm = (protocolId: string) => {
-  router.push(`/fill-form/${props.practice.id}/${protocolId}`);
+  router.push(`/fill-form/${props.group.id}/${protocolId}`);
 };
 
 const viewSubmission = (submissionId: string) => {

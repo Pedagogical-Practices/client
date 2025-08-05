@@ -1,6 +1,6 @@
 <template>
   <v-card class="mb-4">
-    <v-card-title class="text-h5 primary--text">Progreso de la Práctica</v-card-title>
+    <v-card-title class="text-h5 primary--text">Progreso del Grupo</v-card-title>
     <v-card-text>
       <v-progress-linear
         :model-value="progressPercentage"
@@ -18,12 +18,12 @@
 import { defineProps, computed } from 'vue';
 
 const props = defineProps<{
-  practice: any;
+  group: any;
 }>();
 
-const totalProtocols = computed(() => props.practice.protocols.length);
+const totalProtocols = computed(() => props.group.protocols.length);
 const protocolsCompleted = computed(() => {
-  return props.practice.submissions.length;
+  return props.group.submissions.length;
 });
 
 const progressPercentage = computed(() => {

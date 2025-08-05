@@ -13,9 +13,9 @@
         </v-col>
         <v-col cols="12" md="6" lg="3">
           <v-card class="pa-4 text-center" color="success" dark>
-            <v-card-title class="justify-center">Prácticas</v-card-title>
+            <v-card-title class="justify-center">Grupos</v-card-title>
             <v-card-text>
-              <div class="text-h3">{{ dashboardStore.practicesCount ?? '--' }}</div>
+              <div class="text-h3">{{ dashboardStore.groupsCount ?? '--' }}</div>
             </v-card-text>
           </v-card>
         </v-col>

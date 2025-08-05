@@ -98,10 +98,10 @@ const displayData = computed(() => {
 
 const editSubmission = () => {
   if (submissionStore.currentSubmission) {
-    const { id: submissionId, practice, protocol } = submissionStore.currentSubmission;
-    const practiceId = practice.id;
+    const { id: submissionId, group, protocol } = submissionStore.currentSubmission;
+    const groupId = group.id;
     const formId = protocol.form.id;
-    router.push(`/fill-form/${practiceId}/${formId}?submissionId=${submissionId}`);
+    router.push(`/fill-form/${groupId}/${formId}?submissionId=${submissionId}`);
   }
 };
 

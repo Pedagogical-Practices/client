@@ -4,7 +4,7 @@
       <v-col cols="12">
         <v-card elevation="2">
           <v-card-title class="d-flex justify-space-between align-center">
-            <span>Detalle de la Práctica</span>
+            <span>Detalle del Grupo</span>
             <v-btn
               color="primary"
               prepend-icon="mdi-arrow-left"
@@ -13,30 +13,30 @@
               Volver
             </v-btn>
           </v-card-title>
-          <v-card-text v-if="practiceStore.currentPractice">
+          <v-card-text v-if="groupStore.currentGroup">
             <v-row>
               <v-col cols="12" md="6">
                 <v-list-item>
                   <v-list-item-title>Estudiante:</v-list-item-title>
-                  <v-list-item-subtitle>{{ practiceStore.currentPractice.student?.name || 'N/A' }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ groupStore.currentGroup.student?.name || 'N/A' }}</v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>Docente Asesor:</v-list-item-title>
-                  <v-list-item-subtitle>{{ practiceStore.currentPractice.teacher?.name || 'N/A' }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ groupStore.currentGroup.teacher?.name || 'N/A' }}</v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>Curso:</v-list-item-title>
-                  <v-list-item-subtitle>{{ practiceStore.currentPractice.course?.name || 'N/A' }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ groupStore.currentGroup.practice?.name || 'N/A' }}</v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>Estado:</v-list-item-title>
                   <v-list-item-subtitle>
                     <v-chip
-                      v-if="practiceStore.currentPractice?.status"
-                      :color="getStatusColor(practiceStore.currentPractice.status)"
+                      v-if="groupStore.currentGroup?.status"
+                      :color="getStatusColor(groupStore.currentGroup.status)"
                       size="small"
                     >
-                      {{ practiceStore.currentPractice.status }}
+                      {{ groupStore.currentGroup.status }}
                     </v-chip>
                     <span v-else>N/A</span>
                   </v-list-item-subtitle>
@@ -46,9 +46,9 @@
                 <v-list-item>
                   <v-list-item-title>Protocolos:</v-list-item-title>
                   <v-list-item-subtitle>
-                    <div v-if="practiceStore.currentPractice.protocols && practiceStore.currentPractice.protocols.length > 0">
+                    <div v-if="groupStore.currentGroup.protocols && groupStore.currentGroup.protocols.length > 0">
                       <v-chip
-                        v-for="protocol in practiceStore.currentPractice.protocols"
+                        v-for="protocol in groupStore.currentGroup.protocols"
                         :key="protocol.id"
                         size="small"
                         class="mr-1 mb-1"
@@ -61,12 +61,12 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>Creado por:</v-list-item-title>
-                  <v-list-item-subtitle>{{ practiceStore.currentPractice.createdBy?.name || 'N/A' }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ groupStore.currentGroup.createdBy?.name || 'N/A' }}</v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>Fecha de Creación:</v-list-item-title>
                   <v-list-item-subtitle>
-                    {{ practiceStore.currentPractice.createdAt ? new Date(practiceStore.currentPractice.createdAt).toLocaleDateString() : 'N/A' }}
+                    {{ groupStore.currentGroup.createdAt ? new Date(groupStore.currentGroup.createdAt).toLocaleDateString() : 'N/A' }}
                   </v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item>
@@ -90,7 +90,7 @@
             <h3 class="mb-3">Formularios del Protocolo</h3>
             <v-list density="compact">
               <v-list-item
-                v-for="protocol in practiceStore.currentPractice.protocols"
+                v-for="protocol in groupStore.currentPractice.protocols"
                 :key="protocol.id"
               >
                 <template v-slot:prepend>
@@ -128,7 +128,7 @@
             </v-list>
           </v-card-text>
           <v-card-text v-else>
-            <v-alert type="info">Cargando detalles de la práctica o práctica no encontrada.</v-alert>
+            <v-alert type="info">Cargando detalles del grupo o grupo no encontrado.</v-alert>
           </v-card-text>
         </v-card>
       </v-col>
@@ -139,26 +139,26 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { usePracticeStore } from '~/stores/practiceStore';
+import { useGroupStore } from '~/stores/groupStore';
 import { PracticeStatus } from '~/types';
 
 definePageMeta({});
 
 const route = useRoute();
 const router = useRouter();
-const practiceStore = usePracticeStore();
+const groupStore = useGroupStore();
 
-const practiceId = route.params.id as string;
+const groupId = route.params.id as string;
 
 onMounted(async () => {
-  if (practiceId) {
-    await practiceStore.fetchPractice(practiceId);
-    console.log("practiceStore.currentPractice after fetch:", practiceStore.currentPractice);
+  if (groupId) {
+    await groupStore.fetchGroup(groupId);
+    console.log("groupStore.currentGroup after fetch:", groupStore.currentGroup);
   }
 });
 
 const getProtocolStatus = (protocolId: string) => {
-  const submission = practiceStore.currentPractice?.submissions.find(
+  const submission = groupStore.currentPractice?.submissions.find(
     (sub: any) => sub.protocol.id === protocolId
   );
 
@@ -182,14 +182,14 @@ const getProtocolStatus = (protocolId: string) => {
 };
 
 const completionPercentage = computed(() => {
-  if (!practiceStore.currentPractice || !practiceStore.currentPractice.protocols) {
+  if (!groupStore.currentGroup || !groupStore.currentGroup.protocols) {
     return 0;
   }
-  const totalProtocols = practiceStore.currentPractice.protocols.length;
+  const totalProtocols = groupStore.currentGroup.protocols.length;
   if (totalProtocols === 0) {
     return 0;
   }
-  const completedProtocols = practiceStore.currentPractice.protocols.filter(
+  const completedProtocols = groupStore.currentGroup.protocols.filter(
     (protocol: any) => getProtocolStatus(protocol.id).isCompleted
   ).length;
   return (completedProtocols / totalProtocols) * 100;
@@ -211,7 +211,7 @@ const getStatusColor = (status: PracticeStatus): string => {
 };
 
 const fillForm = (protocolId: string) => {
-  router.push(`/forms/fill/${protocolId}?practiceId=${practiceId.value}`);
+  router.push(`/forms/fill/${protocolId}?groupId=${groupId.value}`);
 };
 
 const viewSubmission = (submissionId: string) => {

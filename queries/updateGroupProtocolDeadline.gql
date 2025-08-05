@@ -1,0 +1,15 @@
+mutation updateGroupProtocolDeadline($id: ID!, $input: UpdateGroupProtocolDeadlineInput!) {
+  updateGroupProtocolDeadline(id: $id, input: $input) {
+    id
+    startDate
+    endDate
+    group {
+      id
+      name
+    }
+    protocol {
+      id
+      name
+    }
+  }
+}

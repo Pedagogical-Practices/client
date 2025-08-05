@@ -1,0 +1,15 @@
+query groupProtocolDeadlines {
+  groupProtocolDeadlines {
+    id
+    startDate
+    endDate
+    group {
+      id
+      name
+    }
+    protocol {
+      id
+      name
+    }
+  }
+}

@@ -10,7 +10,7 @@ import CreateManyFormsMutation from "~/queries/createManyForms.gql";
 import UpdateFormMutation from "~/queries/updateForm.gql";
 import GetFormQuery from "~/queries/form.gql";
 import GetFormsQuery from "~/queries/forms.gql";
-import DeleteFormMutation from "~/queries/removeForm.gql";
+import DeleteFormMutation from "~/queries/deleteForm.gql";
 import { useFormElementStore } from "./formElementStore";
 
 export const useFormStore = defineStore("form", () => {
@@ -111,6 +111,37 @@ export const useFormStore = defineStore("form", () => {
     }
   };
 
+  const createNewFormVersion = async (formId: string): Promise<Form> => {
+    const { mutate } = useMutation(gql`
+      mutation createNewFormVersion($formId: ID!) {
+        createNewFormVersion(formId: $formId) {
+          id
+          name
+          version
+          parentForm {
+            id
+            name
+            version
+          }
+        }
+      }
+    `);
+    try {
+      const result = await mutate({ formId });
+      if (result?.errors) {
+        throw new Error(
+          result.errors[0]?.message || "Error al crear nueva versión del formulario"
+        );
+      }
+      return result?.data?.createNewFormVersion;
+    } catch (error: any) {
+      console.error("formStore: createNewFormVersion error:", error);
+      throw new Error(
+        error.message || "Error desconocido al crear nueva versión del formulario."
+      );
+    }
+  };
+
   const clearEditingFormId = () => {
     editingFormId.value = null;
   };
@@ -126,6 +157,7 @@ export const useFormStore = defineStore("form", () => {
     fetchFormById,
     fetchForms,
     deleteForm,
+    createNewFormVersion,
     clearEditingFormId,
   };
 });

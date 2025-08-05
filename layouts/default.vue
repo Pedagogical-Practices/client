@@ -6,7 +6,7 @@
           variant="text"
           @click.stop="drawer = !drawer"
         ></v-app-bar-nav-icon>
-        <v-toolbar-title>Control de prácticas pedagógicas</v-toolbar-title>
+        <v-toolbar-title>Control de grupos pedagógicos</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn v-if="!authStore.isAuthenticated" to="/login" text>
           Iniciar Sesión
@@ -68,7 +68,7 @@ const allItems = [
     roles: [
       UserRole.ADMIN,
       UserRole.STUDENT,
-      UserRole.TEACHER_DIRECTIVE,
+      UserRole.ASSESSOR,
       UserRole.FAMILY,
     ],
   },
@@ -77,12 +77,12 @@ const allItems = [
     value: "editor",
     to: "/editor",
     icon: "mdi-text-box",
-    roles: [UserRole.ADMIN, UserRole.TEACHER_DIRECTIVE],
+    roles: [UserRole.ADMIN, UserRole.ASSESSOR],
   },
   {
-    title: "Cursos",
-    value: "courses",
-    to: "/courses",
+    title: "Prácticas",
+    value: "practices",
+    to: "/practices",
     icon: "mdi-book-open-page-variant",
     roles: [UserRole.ADMIN],
   },
@@ -98,7 +98,7 @@ const allItems = [
     value: "protocols",
     to: "/protocols",
     icon: "mdi-package",
-    roles: [UserRole.ADMIN, UserRole.TEACHER_DIRECTIVE, UserRole.STUDENT],
+    roles: [UserRole.ADMIN, UserRole.ASSESSOR, UserRole.STUDENT],
   },
   {
     title: "Perfil",
@@ -108,7 +108,7 @@ const allItems = [
     roles: [
       UserRole.ADMIN,
       UserRole.STUDENT,
-      UserRole.TEACHER_DIRECTIVE,
+      UserRole.ASSESSOR,
       UserRole.FAMILY,
     ],
   },
@@ -127,21 +127,21 @@ const allItems = [
     roles: [UserRole.ADMIN],
   },
   {
-    title: "Gestionar Prácticas",
-    value: "admin-practices",
-    to: "/admin/practices",
+    title: "Gestionar Grupos",
+    value: "admin-groups",
+    to: "/admin/groups",
     icon: "mdi-school-outline",
-    roles: [UserRole.ADMIN, UserRole.TEACHER_DIRECTIVE],
+    roles: [UserRole.ADMIN, UserRole.COORDINATOR],
   },
   {
-    title: "Mis Prácticas",
-    value: "practices",
-    to: "/practices",
+    title: "Mis Grupos",
+    value: "groups",
+    to: "/groups",
     icon: "mdi-school",
     roles: [
       UserRole.ADMIN,
       UserRole.STUDENT,
-      UserRole.TEACHER_DIRECTIVE,
+      UserRole.ASSESSOR,
       UserRole.FAMILY,
     ],
   },
@@ -153,7 +153,7 @@ const allItems = [
     roles: [
       UserRole.ADMIN,
       UserRole.STUDENT,
-      UserRole.TEACHER_DIRECTIVE,
+      UserRole.ASSESSOR,
       UserRole.FAMILY,
     ],
   },
@@ -163,7 +163,9 @@ const filteredItems = computed(() => {
   if (!authStore.isAuthenticated || !authStore.user) {
     return [];
   }
-  return allItems.filter((item) => item.roles.includes(authStore.user.role));
+  return allItems.filter((item) =>
+    item.roles.some((role) => authStore.user.roles.includes(role))
+  );
 });
 
 router.afterEach(() => {

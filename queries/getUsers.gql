@@ -1,8 +1,9 @@
 query GetUsers {
   users {
     id
-    name
+    firstName
+    lastName
     email
-    role
+    roles
   }
 }

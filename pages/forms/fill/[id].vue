@@ -40,7 +40,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useFormStore } from '~/stores/formStore'; // Asumo que tienes un formStores.ts
-import { usePracticeStore } from '~/stores/practiceStore';
+import { useGroupStore } from '~/stores/groupStore';
 import FormFiller from '~/components/FormFiller.vue';
 
 definePageMeta({});
@@ -48,10 +48,10 @@ definePageMeta({});
 const route = useRoute();
 const router = useRouter();
 const formStore = useFormStore();
-const practiceStore = usePracticeStore();
+const groupStore = useGroupStore();
 
 const formId = route.params.id as string;
-const practiceId = route.query.practiceId as string; // Obtener practiceId de la query
+const groupId = route.query.groupId as string; // Obtener groupId de la query
 
 const snackbar = ref({
   show: false,
@@ -68,17 +68,18 @@ onMounted(async () => {
 
 const handleFormSubmit = async (formData: any) => {
   try {
-    if (!practiceId) {
-      throw new Error("ID de práctica no proporcionado.");
+    if (!groupId) {
+      throw new Error("ID de grupo no proporcionado.");
     }
     if (!formStore.currentForm?._id) {
       throw new Error("ID de formulario no disponible.");
     }
 
-    // Asumo que tienes una acción en practiceStore para registrar la submission
-    await practiceStore.submitFormForPractice({
-      practiceId: practiceId,
-      formId: formStore.currentForm._id,
+    // Asumo que tienes una acción en groupStore para registrar la submission
+    await groupStore.createSubmission({
+      groupId: groupId,
+      protocolId: formStore.currentForm._id,
+      studentIds: [], // TODO: Implement logic to get studentIds for group submissions
       formData: formData,
     });
 
@@ -88,7 +89,7 @@ const handleFormSubmit = async (formData: any) => {
       color: "success",
       timeout: 3000,
     };
-    router.back(); // Volver a la página de detalle de la práctica
+    router.back(); // Volver a la página de detalle del grupo
   } catch (error: any) {
     console.error("Error al enviar formulario:", error);
     snackbar.value = {

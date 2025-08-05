@@ -64,8 +64,9 @@ const fetchItems = async (query: string) => {
           query Users {
             users {
               id
-              name
-              role
+              firstName
+              lastName
+              roles
             }
           }
         `;
@@ -77,25 +78,26 @@ const fetchItems = async (query: string) => {
           query Users {
             users {
               id
-              name
-              role
+              firstName
+              lastName
+              roles
             }
           }
         `;
         variables = {};
         dataPath = "users";
         break;
-      case "course":
+      case "practice":
         graphqlQuery = `
-          query Courses {
-            courses {
+          query Practices {
+            practices {
               id
               name
             }
           }
         `;
         variables = {};
-        dataPath = "courses";
+        dataPath = "practices";
         break;
       case "protocol":
         graphqlQuery = `
@@ -235,18 +237,19 @@ watch(
               query User($id: ID!) {
                 user(id: $id) {
                   id
-                  name
+                  firstName
+                  lastName
                 }
               }
             `,
             variables: { id: newValue },
           });
           fetchedItem = data?.user;
-        } else if (props.specificType === "course") {
+        } else if (props.specificType === "practice") {
           const { data } = await apolloClient.query({
             query: gql`
-              query Course($id: ID!) {
-                course(id: $id) {
+              query Practice($id: ID!) {
+                practice(id: $id) {
                   id
                   name
                 }
@@ -254,7 +257,7 @@ watch(
             `,
             variables: { id: newValue },
           });
-          fetchedItem = data?.course;
+          fetchedItem = data?.practice;
         } else if (props.specificType === "protocol") {
           const { data } = await apolloClient.query({
             query: gql`

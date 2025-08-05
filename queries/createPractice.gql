@@ -1,27 +1,11 @@
-mutation CreatePracticeMutation($input: CreatePracticeInput!) {
-  createPractice(input: $input) {
+mutation createPractice($input: CreatePracticeInput!) {
+  createPractice(createPracticeInput: $input) {
     id
-    course {
-      id
-      name
-    }
-    student {
-      id
-      name
-    }
-    teacher {
-      id
-      name
-    }
-    status
+    name
+    description
     protocols {
       id
       name
     }
-    submissions {
-      id
-    }
-    createdAt
-    updatedAt
   }
 }

@@ -1,27 +1,11 @@
-query PracticesQuery {
+query practices {
   practices {
     id
-    course {
-      id
-      name
-    }
-    student {
-      id
-      name
-    }
-    teacher {
-      id
-      name
-    }
-    status
+    name
+    description
     protocols {
       id
       name
     }
-    submissions {
-      id
-    }
-    createdAt
-    updatedAt
   }
 }

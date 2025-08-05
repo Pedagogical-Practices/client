@@ -33,7 +33,7 @@ export const useAuthStore = defineStore(
         const { user: loggedInUser, token } = result?.data?.login;
         user.value = loggedInUser;
         await onLogin(token);
-        await navigateTo(user.value?.role === UserRole.ADMIN ? "/admin" : "/");
+        await navigateTo(user.value?.roles?.includes(UserRole.ADMIN) ? "/admin" : "/");
       } catch (error: any) {
         console.error("authStore: Login error:", error);
         throw new Error(
@@ -47,9 +47,10 @@ export const useAuthStore = defineStore(
         mutation CreateUser($input: CreateUserInput!) {
           createUser(input: $input) {
             id
-            name
+            firstName
+            lastName
             email
-            role
+            roles
           }
         }
       `);
@@ -72,9 +73,10 @@ export const useAuthStore = defineStore(
         mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
           updateUser(id: $id, input: $input) {
             id
-            name
+            firstName
+            lastName
             email
-            role
+            roles
           }
         }
       `);
@@ -134,9 +136,10 @@ export const useAuthStore = defineStore(
             query GetUsers {
               users {
                 id
-                name
+                firstName
+                lastName
                 email
-                role
+                roles
               }
             }
           `,
@@ -159,9 +162,10 @@ export const useAuthStore = defineStore(
             query GetUserById($id: ID!) {
               user(id: $id) {
                 id
-                name
+                firstName
+                lastName
                 email
-                role
+                roles
               }
             }
           `,
@@ -180,7 +184,7 @@ export const useAuthStore = defineStore(
 
     // Getters
     const isAuthenticated = computed(() => !!user.value);
-    const isAdmin = computed(() => user.value?.role === UserRole.ADMIN);
+    const isAdmin = computed(() => user.value?.roles?.includes(UserRole.ADMIN));
 
     // Return state, actions, and getters
     return {

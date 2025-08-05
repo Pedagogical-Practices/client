@@ -1,15 +1,18 @@
 export enum UserRole {
   ADMIN = "ADMIN",
-  TEACHER_DIRECTIVE = "TEACHER_DIRECTIVE",
+  COORDINATOR = "COORDINATOR",
+  TUTOR = "TUTOR",
+  ASSESSOR = "ASSESSOR",
   STUDENT = "STUDENT",
   FAMILY = "FAMILY",
+  VISITOR = "VISITOR",
 }
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
+  roles: UserRole[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -98,12 +101,10 @@ export enum PracticeStatus {
   ARCHIVED = "ARCHIVED",
 }
 
-export interface Course {
+export interface Practice {
   id: string;
   name: string;
   description?: string;
-  startDate?: string;
-  endDate?: string;
   protocols?: Protocol[];
   createdAt?: string;
   updatedAt?: string;
@@ -111,8 +112,9 @@ export interface Course {
 
 export interface Submission {
   id: string;
-  practice: Practice;
+  group: Group;
   protocol: Protocol;
+  students: User[];
   formData: Record<string, any>;
   locationData?: Record<string, any>;
   score?: number;
@@ -121,14 +123,35 @@ export interface Submission {
   updatedAt?: string;
 }
 
-export interface Practice {
+export interface Institution {
   id: string;
-  course: Course;
-  student: User;
-  teacher: User;
-  status: PracticeStatus;
-  protocols: Protocol[];
-  submissions: Submission[];
+  name: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface GroupProtocolDeadline {
+  id: string;
+  group: Group;
+  protocol: Protocol;
+  startDate?: string;
+  endDate: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  period: string;
+  practice: Practice;
+  tutor: User;
+  students: User[];
+  institutions: Institution[];
+  deadlines: GroupProtocolDeadline[];
   createdAt?: string;
   updatedAt?: string;
 }

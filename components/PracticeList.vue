@@ -1,7 +1,7 @@
 <template>
   <v-data-table
     :headers="headers"
-    :items="courses"
+    :items="practices"
     :items-per-page="10"
     class="elevation-1"
   >
@@ -39,10 +39,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import type { Course } from "~/types";
+import type { Practice } from "~/types";
 
 defineProps<{
-  courses: Course[];
+  practices: Practice[];
 }>();
 
 defineEmits(["view", "delete"]); // "delete" added

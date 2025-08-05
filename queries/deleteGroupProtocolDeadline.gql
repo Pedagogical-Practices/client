@@ -1,0 +1,3 @@
+mutation deleteGroupProtocolDeadline($id: ID!) {
+  deleteGroupProtocolDeadline(id: $id)
+}

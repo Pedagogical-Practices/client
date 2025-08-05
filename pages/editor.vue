@@ -38,6 +38,25 @@
           icon="mdi-upload-multiple"
         >
         </v-btn>
+        <v-btn
+          v-if="formStore.editingFormId"
+          class="ma-1"
+          color="purple"
+          @click="createNewFormVersion"
+          icon="mdi-content-copy"
+          title="Crear Nueva Versión"
+        >
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row v-if="formStore.currentForm?.version">
+      <v-col cols="12">
+        <v-chip color="info" class="mb-4">
+          Versión Actual: {{ formStore.currentForm?.version }}
+          <span v-if="formStore.currentForm?.parentForm">
+            (Basado en v{{ formStore.currentForm?.parentForm.version }})
+          </span>
+        </v-chip>
       </v-col>
     </v-row>
     <v-row>
@@ -595,6 +614,38 @@ const saveFormToBackend = async (): Promise<void> => {
     snackbar.value = {
       show: true,
       text: `Error: ${error.message}`,
+      color: "error",
+      timeout: 3000,
+    };
+  }
+};
+
+const createNewFormVersion = async () => {
+  if (!formStore.editingFormId) {
+    snackbar.value = {
+      show: true,
+      text: "Debe cargar un formulario existente para crear una nueva versión.",
+      color: "warning",
+      timeout: 3000,
+    };
+    return;
+  }
+  try {
+    const newForm = await formStore.createNewFormVersion(
+      formStore.editingFormId
+    );
+    snackbar.value = {
+      show: true,
+      text: `¡Nueva versión del formulario creada exitosamente! (v${newForm.version})`,
+      color: "success",
+      timeout: 3000,
+    };
+    router.push(`/editor?id=${newForm.id}`);
+  } catch (error: any) {
+    console.error("Error al crear nueva versión:", error);
+    snackbar.value = {
+      show: true,
+      text: `Error al crear nueva versión: ${error.message}`,
       color: "error",
       timeout: 3000,
     };

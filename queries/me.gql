@@ -1,8 +1,9 @@
 query Me {
   me {
     id
-    name
+    firstName
+    lastName
     email
-    role
+    roles
   }
 }
