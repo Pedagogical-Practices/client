@@ -47,6 +47,14 @@
           title="Crear Nueva Versión"
         >
         </v-btn>
+        <v-btn
+          class="ma-1"
+          color="indigo"
+          @click="viewForms"
+          icon="mdi-form-select"
+          title="Ver formularios"
+        >
+        </v-btn>
       </v-col>
     </v-row>
     <v-row v-if="formStore.currentForm?.version">
@@ -299,8 +307,8 @@ import {
   VTextarea,
   VSelect,
   VDatePicker,
-  // VDateInput,
 } from "vuetify/components";
+import { VDateInput } from "vuetify/labs/VDateInput";
 import { definePageMeta } from "#imports";
 import { FormFieldType, type FormField } from "~/types";
 
@@ -330,7 +338,7 @@ const snackbar = ref<{
 watch(
   () => route.query.id,
   async (newId) => {
-    if (newId && typeof newId === 'string' && newId.length > 0) {
+    if (newId && typeof newId === "string" && newId.length > 0) {
       try {
         await formStore.fetchFormById(newId);
       } catch (error: any) {
@@ -366,7 +374,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.FILE_UPLOAD]: VTextField,
   [FormFieldType.CHECKBOX]: VTextField,
   [FormFieldType.DATE_PICKER]: VDatePicker,
-  // [FormFieldType.DATE_INPUT]: VDateInput,
+  [FormFieldType.DATE_INPUT]: VDateInput,
   [FormFieldType.RADIO_GROUP]: VTextField,
   [FormFieldType.TIME_PICKER]: VTextField,
   [FormFieldType.BUTTON]: VTextField,
@@ -557,6 +565,7 @@ const updateFormFromJson = async (): Promise<void> => {
     };
   }
 };
+
 const saveFormToBackend = async (): Promise<void> => {
   try {
     if (!authStore.isAuthenticated) {
@@ -650,6 +659,10 @@ const createNewFormVersion = async () => {
       timeout: 3000,
     };
   }
+};
+
+const viewForms = () => {
+  router.push("/admin/forms");
 };
 </script>
 

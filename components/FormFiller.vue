@@ -64,13 +64,14 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.FILE_UPLOAD]: VTextField,
   [FormFieldType.CHECKBOX]: VTextField,
   [FormFieldType.DATE_PICKER]: VDatePicker,
+  [FormFieldType.DATE_INPUT]: VTextField,
   [FormFieldType.RADIO_GROUP]: VTextField,
   [FormFieldType.TIME_PICKER]: VTextField,
   [FormFieldType.BUTTON]: VTextField,
   [FormFieldType.AUTOCOMPLETE]: VTextField,
   [FormFieldType.NUMBER]: VTextField,
   [FormFieldType.EMAIL]: VTextField,
-  [FormFieldType.PASSWORD]: VTextField, // Assuming PASSWORD is a text field
+  [FormFieldType.PASSWORD]: VTextField,
 };
 
 const getComponentName = (field: { type: FormFieldType }): any => {
