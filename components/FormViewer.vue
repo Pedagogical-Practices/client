@@ -34,6 +34,7 @@ import {
   VCheckbox,
   VRadioGroup,
 } from "vuetify/components";
+import MapInput from "~/components/forms/MapInput.vue";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import { FormFieldType, type FormField, DataSourceType } from "~/types";
 import { useDataSourceStore } from "~/stores/dataSourceStore";
@@ -61,7 +62,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXTAREA]: VTextarea,
   [FormFieldType.SELECT]: VSelect,
   [FormFieldType.DATE]: VDatePicker,
-  [FormFieldType.MAP]: VTextField,
+  [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
   [FormFieldType.CHECKBOX]: VCheckbox,
   [FormFieldType.DATE_PICKER]: VDatePicker,

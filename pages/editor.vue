@@ -118,7 +118,7 @@
                       <v-col cols="10">
                         <component
                           :is="getComponentName(element.type)"
-                          :model-value="element.label"
+                          :model-value="element.value"
                           :label="element.label"
                           :rules="
                             element.rules
@@ -309,6 +309,7 @@ import {
   VDatePicker,
 } from "vuetify/components";
 import { VDateInput } from "vuetify/labs/VDateInput";
+import MapInput from "~/components/forms/MapInput.vue";
 import { definePageMeta } from "#imports";
 import { FormFieldType, type FormField } from "~/types";
 
@@ -370,7 +371,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXTAREA]: VTextarea,
   [FormFieldType.SELECT]: VSelect,
   [FormFieldType.DATE]: VDatePicker,
-  [FormFieldType.MAP]: VTextField,
+  [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
   [FormFieldType.CHECKBOX]: VTextField,
   [FormFieldType.DATE_PICKER]: VDatePicker,
@@ -413,7 +414,6 @@ const getElementIcon = (type: FormFieldType): string => {
 };
 
 const selectElementForEditing = (elementName: string): void => {
-  console.log("Editor: selectElementForEditing called for:", elementName);
   formElementStore.setSelectedElement(elementName);
 };
 
@@ -527,12 +527,10 @@ const copyJsonToClipboard = async (): Promise<void> => {
 
 const updateFormFromJson = async (): Promise<void> => {
   try {
-    console.log("Updating form from JSON:", editableFormJsonString.value);
     const parsedJson = JSON.parse(editableFormJsonString.value) as {
       name: string;
       fields: FormField[];
     };
-    console.log("Parsed JSON:", parsedJson);
     if (!parsedJson.name || !Array.isArray(parsedJson.fields)) {
       throw new Error("El JSON debe contener 'name' y 'fields' como array");
     }
@@ -582,7 +580,7 @@ const saveFormToBackend = async (): Promise<void> => {
       (element: FormField) => ({
         name: element.name,
         label: element.label,
-        type: element.type, // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly
+        type: element.type,
         options: element.options,
         rules: element.rules,
       })

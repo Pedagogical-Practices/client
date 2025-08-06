@@ -1,17 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type { FormField } from "~/types"; // Asegúrate de que esta ruta sea correcta
-
-// Definición local de FormField
-/*export interface FormField {
-  name: string;
-  label: string;
-  type: FormFieldType;
-  options?: Record<string, any>;
-  rules?: string[];
-  defaultValue?: string;
-}*/
-
+import type { FormField } from "~/types";
 interface FormElementState {
   formElements: FormField[];
   selectedElementName: string | null;
@@ -57,7 +46,6 @@ export const useFormElementStore = defineStore("formElement", () => {
   };
 
   const setSelectedElement = (elementName: string | null) => {
-    console.log("formElementStore: Setting selected element to:", elementName);
     selectedElementName.value = elementName;
   };
 
