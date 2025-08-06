@@ -10,7 +10,7 @@
         lg="4"
       >
         <v-card @click="viewStudentPractices(student.id)">
-          <v-card-title>{{ student.name }}</v-card-title>
+          <v-card-title>{{ student.firstName }} {{ student.lastName }}</v-card-title>
           <v-card-subtitle>{{ student.email }}</v-card-subtitle>
           <v-card-text>
             <v-chip color="primary" size="small">Ver Grupos</v-chip>

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useApolloClient } from '@nuxtjs/apollo';
+import { useApolloClient } from '@vue/apollo-composable';
 
 import practicesQuery from '~/queries/practices.gql';
 import practiceQuery from '~/queries/practice.gql';

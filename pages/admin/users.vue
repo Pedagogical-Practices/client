@@ -37,8 +37,15 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="editableUser.name"
+                  v-model="editableUser.firstName"
                   label="Nombre"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="editableUser.lastName"
+                  label="Apellido"
                   required
                 ></v-text-field>
               </v-col>
@@ -71,9 +78,11 @@
               </v-col-->
               <v-col cols="12">
                 <v-select
-                  v-model="editableUser.role"
+                  v-model="editableUser.roles"
                   :items="userRoles"
-                  label="Rol"
+                  label="Roles"
+                  multiple
+                  chips
                   required
                 ></v-select>
               </v-col>
@@ -137,17 +146,18 @@ const snackbar = ref({
 const openCreateModal = () => {
   isEditing.value = false;
   editableUser.value = {
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
-    role: UserRole.STUDENT,
+    roles: [UserRole.STUDENT], // Default role for new users
   };
   dialog.value = true;
 };
 
 const openEditModal = (user: any) => {
   isEditing.value = true;
-  editableUser.value = { ...user, password: "" }; // Initialize password to empty string
+  editableUser.value = { ...user, password: "", roles: user.roles || [] }; // Ensure roles is an array
   dialog.value = true;
 };
 
@@ -160,7 +170,6 @@ const closeModal = () => {
 const saveUser = async () => {
   try {
     if (isEditing.value) {
-      // Only send password if it's not empty
       const userToUpdate = { ...editableUser.value };
       if (userToUpdate.password === "") {
         delete userToUpdate.password;
@@ -168,7 +177,14 @@ const saveUser = async () => {
       await store.updateUser(userToUpdate.id, userToUpdate);
       showSnackbar("¡Usuario actualizado exitosamente!", "success");
     } else {
-      await store.createUser(editableUser.value);
+      const userToCreate = {
+        firstName: editableUser.value.firstName,
+        lastName: editableUser.value.lastName,
+        email: editableUser.value.email,
+        password: editableUser.value.password,
+        roles: editableUser.value.roles,
+      };
+      await store.createUser(userToCreate);
       showSnackbar("¡Usuario creado exitosamente!", "success");
     }
     closeModal();
@@ -214,10 +230,11 @@ const showSnackbar = (text: string, color: string) => {
 
 // Computed properties
 const headers = [
-  { title: "Nombre", value: "name" },
-  { title: "Email", value: "email" },
-  { title: "Rol", value: "role" },
-  { title: "Acciones", value: "actions", sortable: false },
+  { title: "Nombre", key: "firstName" },
+  { title: "Apellido", key: "lastName" },
+  { title: "Email", key: "email" },
+  { title: "Roles", key: "roles" },
+  { title: "Acciones", key: "actions", sortable: false },
 ];
 
 const formTitle = computed(() => {

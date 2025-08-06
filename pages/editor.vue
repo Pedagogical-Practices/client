@@ -330,9 +330,9 @@ const snackbar = ref<{
 watch(
   () => route.query.id,
   async (newId) => {
-    if (newId) {
+    if (newId && typeof newId === 'string' && newId.length > 0) {
       try {
-        await formStore.fetchFormById(newId as string);
+        await formStore.fetchFormById(newId);
       } catch (error: any) {
         console.error(
           "Error loading form by ID, resetting to new form:",
@@ -573,7 +573,7 @@ const saveFormToBackend = async (): Promise<void> => {
       (element: FormField) => ({
         name: element.name,
         label: element.label,
-        type: element.type,
+        type: element.type, // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly // Send the enum value directly
         options: element.options,
         rules: element.rules,
       })

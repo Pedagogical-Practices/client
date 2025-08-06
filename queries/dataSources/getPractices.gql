@@ -1,0 +1,6 @@
+query GetPractices {
+  practices {
+    id
+    name
+  }
+}

@@ -12,6 +12,7 @@ import GetFormQuery from "~/queries/form.gql";
 import GetFormsQuery from "~/queries/forms.gql";
 import DeleteFormMutation from "~/queries/deleteForm.gql";
 import { useFormElementStore } from "./formElementStore";
+import gql from "graphql-tag";
 
 export const useFormStore = defineStore("form", () => {
   const { client: apolloClient } = useApolloClient();
@@ -130,14 +131,16 @@ export const useFormStore = defineStore("form", () => {
       const result = await mutate({ formId });
       if (result?.errors) {
         throw new Error(
-          result.errors[0]?.message || "Error al crear nueva versión del formulario"
+          result.errors[0]?.message ||
+            "Error al crear nueva versión del formulario"
         );
       }
       return result?.data?.createNewFormVersion;
     } catch (error: any) {
       console.error("formStore: createNewFormVersion error:", error);
       throw new Error(
-        error.message || "Error desconocido al crear nueva versión del formulario."
+        error.message ||
+          "Error desconocido al crear nueva versión del formulario."
       );
     }
   };
