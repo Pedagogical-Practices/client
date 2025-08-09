@@ -3,6 +3,7 @@ query Form($id: ID!) {
     id
     name
     description
+    version
     fields {
       id
       name

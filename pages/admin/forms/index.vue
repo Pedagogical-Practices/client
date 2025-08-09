@@ -1,17 +1,24 @@
 <template>
   <v-container fluid class="pa-4">
     <v-row>
-      <v-col cols="12">
+      <v-col cols="12" class="text-h4 mb-4">
+        <h1 class="text-h4">Gestión de Formularios</h1>
+      </v-col>
+      <v-col cols="12" class="text-right mb-4">
+        <v-btn color="primary" class="mx-2" @click="createNewForm"
+          >Nuevo Formulario</v-btn
+        >
+        <v-btn
+          color="grey-darken-1"
+          to="/admin"
+          class="mx-2"
+          icon="mdi-security"
+        ></v-btn>
+      </v-col>
+      <v-col>
         <v-card elevation="2">
           <v-card-title class="d-flex justify-space-between align-center">
             <span>Listado de Formularios</span>
-            <v-btn
-              color="primary"
-              prepend-icon="mdi-file-document-plus"
-              @click="createNewForm"
-            >
-              Nuevo Formulario
-            </v-btn>
           </v-card-title>
           <v-card-text>
             <v-row>

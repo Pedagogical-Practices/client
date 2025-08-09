@@ -1,193 +1,214 @@
 <template>
   <v-container fluid class="pa-4">
     <v-row>
-      <v-col cols="12">
-        <v-card elevation="2">
-          <v-card-title class="d-flex justify-space-between align-center">
-            <span>Lista de Protocolos</span>
-            <v-btn
-              color="primary"
-              prepend-icon="mdi-file-document-plus"
-              @click="openCreateProtocolDialog"
-            >
-              Nuevo Protocolo
-            </v-btn>
-          </v-card-title>
-          <v-card-text>
-            <
-            <ProtocolList
-              :protocols="protocolStore.protocols"
-              @view="viewProtocol"
-            />
-          </v-card-text>
-        </v-card>
+      <v-col>
+        <h1 class="text-h4">Administración de Protocolos</h1>
+      </v-col>
+      <v-col class="text-right">
+        <v-btn color="primary" class="mx-2" @click="openCreateModal"
+          >Nuevo Protocolo</v-btn
+        >
+        <v-btn
+          color="grey-darken-1"
+          to="/admin"
+          class="mx-2"
+          icon="mdi-security"
+        ></v-btn>
       </v-col>
     </v-row>
 
-    <v-dialog v-model="dialog" max-width="600px" persistent>
+    <v-card class="mt-4">
+      <v-data-table
+        :headers="headers"
+        :items="protocolStore.protocols"
+        class="elevation-1"
+      >
+        <template v-slot:item.forms="{ item }">
+          <v-chip
+            v-for="form in item.forms.filter((f: any) => f)"
+            :key="form.id"
+            class="ma-1"
+            color="info"
+            size="small"
+            >{{ form.name }}</v-chip
+          >
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-icon small class="mr-2" @click="openEditModal(item)"
+            >mdi-pencil</v-icon
+          >
+          <v-icon small @click="confirmDelete(item)">mdi-delete</v-icon>
+        </template>
+      </v-data-table>
+    </v-card>
+
+    <!-- Modal de Creación/Edición -->
+    <v-dialog v-model="dialog" persistent max-width="600px">
       <v-card>
-        <v-card-title class="d-flex justify-space-between align-center">
-          <span>Crear Nuevo Protocolo</span>
-          <v-btn icon="mdi-close" @click="dialog = false"></v-btn>
+        <v-card-title>
+          <span class="text-h5">{{
+            isEditing ? "Editar Protocolo" : "Crear Protocolo"
+          }}</span>
         </v-card-title>
         <v-card-text>
-          <v-form @submit.prevent="createProtocol">
-            <v-text-field
-              v-model="newProtocol.name"
-              label="Nombre del Protocolo"
-              variant="outlined"
-              density="compact"
-              required
-            ></v-text-field>
-            <v-textarea
-              v-model="newProtocol.description"
-              label="Descripción"
-              variant="outlined"
-              density="compact"
-            ></v-textarea>
-            <v-text-field
-              v-model="newProtocol.productType"
-              label="Tipo de Producto"
-              variant="outlined"
-              density="compact"
-              hint="Ej: INFORME_MAPEO, RECURSO_DIGITAL"
-              persistent-hint
-            ></v-text-field>
-
-            <v-select
-              v-model="newProtocol.formIds"
-              :items="formStore.forms"
-              item-title="name"
-              item-value="_id"
-              label="Formularios"
-              variant="outlined"
-              density="compact"
-              multiple
-              chips
-              required
-            ></v-select>
-          </v-form>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="editableProtocol.name"
+                  label="Nombre"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-textarea
+                  v-model="editableProtocol.description"
+                  label="Descripción"
+                ></v-textarea>
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="editableProtocol.formIds"
+                  :items="formOptions"
+                  item-title="title"
+                  item-value="value"
+                  label="Formularios Asociados"
+                  multiple
+                  chips
+                  clearable
+                  required
+                ></v-select>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="editableProtocol.productType"
+                  label="Tipo de Producto"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="grey-darken-1" variant="text" @click="dialog = false">
-            Cancelar
-          </v-btn>
           <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            variant="elevated"
-            prepend-icon="mdi-content-save"
-            @click="createProtocol"
+          <v-btn color="blue darken-1" text @click="closeModal">Cancelar</v-btn>
+          <v-btn color="blue darken-1" text @click="saveProtocol"
+            >Guardar</v-btn
           >
-            Crear
-          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-snackbar
-      v-model="snackbar.show"
-      :color="snackbar.color"
-      :timeout="snackbar.timeout"
-      location="top right"
-    >
-      {{ snackbar.text }}
-      <template v-slot:actions>
-        <v-btn variant="text" @click="snackbar.show = false">Cerrar</v-btn>
-      </template>
-    </v-snackbar>
+    <!-- Modal de Confirmación de Borrado -->
+    <v-dialog v-model="deleteDialog" persistent max-width="400px">
+      <v-card>
+        <v-card-title class="text-h5">Confirmar Borrado</v-card-title>
+        <v-card-text
+          >¿Estás seguro de que quieres eliminar este protocolo? Esta acción no
+          se puede deshacer.</v-card-text
+        >
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="deleteDialog = false"
+            >Cancelar</v-btn
+          >
+          <v-btn color="red darken-1" text @click="deleteProtocolConfirmed"
+            >Eliminar</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-// import { useFormBuilderStore } from "~/stores/formBuilderStore";
-import ProtocolList from "~/components/ProtocolList.vue";
-
-import { useFormStore } from "~/stores/formStore"; // Importar el store de formularios
+import { ref, onMounted, computed } from "vue";
 import { useProtocolStore } from "~/stores/protocolStore";
-// import { useCourseStore } from "~/stores/courseStore"; // Ya no es necesario
+import { useFormStore } from "~/stores/formStore";
+import { type Protocol } from "~/types";
 
-//definePageMeta({});
-
-const router = useRouter();
-// const formBuilderStore = useFormBuilderStore();)
-const formStore = useFormStore();
 const protocolStore = useProtocolStore();
-// const courseStore = useCourseStore(); // Ya no es necesario
+const formStore = useFormStore();
+
+const headers = [
+  { title: "Nombre", value: "name" },
+  { title: "Descripción", value: "description" },
+  { title: "Formularios", value: "forms", sortable: false },
+  { title: "Tipo de Producto", value: "productType" },
+  { title: "Acciones", value: "actions", sortable: false },
+];
 
 const dialog = ref(false);
-const newProtocol = ref({
-  name: "",
-  description: "",
-  productType: "",
-  formIds: [] as string[], // Ahora es un array de IDs
-});
-const snackbar = ref({
-  show: false,
-  text: "",
-  color: "success",
-  timeout: 3000,
+const deleteDialog = ref(false);
+const isEditing = ref(false);
+const editableProtocol = ref<any>({});
+const protocolToDelete = ref<any>(null);
+
+const formOptions = computed(() =>
+  formStore.forms.map((form) => ({
+    title: form.name,
+    value: form.id,
+  }))
+);
+
+onMounted(() => {
+  protocolStore.fetchProtocols();
+  formStore.fetchForms(); // Cargar todos los formularios
 });
 
-onMounted(async () => {
-  console.log("protocols/index.vue: onMounted started"); // Log de inicio
-  await formStore.fetchForms(); // Asegurarse de cargar los formularios
-  console.log("protocols/index.vue: forms fetched"); // Log después de fetchForms
-  await protocolStore.fetchProtocols(); // Ya no necesita courseId
-  console.log("protocols/index.vue: protocols fetched"); // Log después de fetchProtocols
-});
-
-const openCreateProtocolDialog = () => {
-  newProtocol.value = { name: "", description: "", productType: "", formIds: [] }; // Inicializar formIds como array vacío
+const openCreateModal = () => {
+  isEditing.value = false;
+  editableProtocol.value = {
+    name: "",
+    description: "",
+    formIds: [], // Ahora es un array
+    productType: "",
+  };
   dialog.value = true;
 };
 
-const createProtocol = async () => {
-  try {
-    if (
-      !newProtocol.value.name ||
-      !newProtocol.value.description ||
-      !newProtocol.value.productType ||
-      newProtocol.value.formIds.length === 0 // Validar que se haya seleccionado al menos un formulario
-    ) {
-      throw new Error(
-        "Todos los campos son obligatorios y al menos un formulario debe ser seleccionado."
-      );
-    }
-    await protocolStore.createProtocol({
-      name: newProtocol.value.name,
-      description: newProtocol.value.description,
-      productType: newProtocol.value.productType,
-      formIds: newProtocol.value.formIds,
-    });
-    snackbar.value = {
-      show: true,
-      text: "¡Protocolo creado exitosamente!",
-      color: "success",
-      timeout: 3000,
+const openEditModal = async (protocol: Protocol) => {
+  await protocolStore.fetchProtocol(protocol.id);
+  isEditing.value = true;
+  if (protocolStore.currentProtocol) {
+    editableProtocol.value = {
+      ...protocolStore.currentProtocol,
+      formIds: protocolStore.currentProtocol.forms?.map((f) => f.id) || [],
     };
-    dialog.value = false;
-    await protocolStore.fetchProtocols(); // Refrescar la lista de protocolos
-  } catch (error: any) {
-    snackbar.value = {
-      show: true,
-      text: `Error: ${error.message}`,
-      color: "error",
-      timeout: 3000,
+  } else {
+    editableProtocol.value = {
+      ...protocol,
+      formIds: protocol.forms?.map((f) => f.id) || [],
     };
   }
+  dialog.value = true;
 };
 
-const viewProtocol = (protocolId: string) => {
-  router.push(`/protocols/${protocolId}`);
+const closeModal = () => {
+  dialog.value = false;
+  editableProtocol.value = {};
+  protocolStore.currentProtocol = null;
+};
+
+const saveProtocol = async () => {
+  if (isEditing.value) {
+    const { id, ...dataToUpdate } = editableProtocol.value;
+    await protocolStore.updateProtocol(id, dataToUpdate);
+  } else {
+    await protocolStore.createProtocol(editableProtocol.value);
+  }
+  closeModal();
+};
+
+const confirmDelete = (protocol: Protocol) => {
+  protocolToDelete.value = protocol;
+  deleteDialog.value = true;
+};
+
+const deleteProtocolConfirmed = async () => {
+  if (protocolToDelete.value) {
+    await protocolStore.deleteProtocol(protocolToDelete.value.id);
+  }
+  deleteDialog.value = false;
+  protocolToDelete.value = null;
 };
 </script>
-
-<style scoped>
-.v-card {
-  background-color: #fff;
-  border-radius: 8px;
-}
-</style>

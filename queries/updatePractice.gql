@@ -1,5 +1,5 @@
-mutation updatePractice($id: ID!, $input: UpdatePracticeInput!) {
-  updatePractice(id: $id, updatePracticeInput: $input) {
+mutation UpdatePractice($updatePracticeInput: UpdatePracticeInput!) {
+  updatePractice(updatePracticeInput: $updatePracticeInput) {
     id
     name
     description

@@ -5,7 +5,15 @@
         <h1 class="text-h4">Administración de Usuarios</h1>
       </v-col>
       <v-col class="text-right">
-        <v-btn color="primary" @click="openCreateModal">Crear Usuario</v-btn>
+        <v-btn class="mx-2" color="primary" @click="openCreateModal"
+          >Nuevo Usuario</v-btn
+        >
+        <v-btn
+          color="grey-darken-1"
+          to="/admin"
+          class="mx-2"
+          icon="mdi-security"
+        ></v-btn>
       </v-col>
     </v-row>
 

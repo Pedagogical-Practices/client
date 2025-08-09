@@ -78,7 +78,13 @@
       </v-col>
 
       <v-col cols="12" md="6">
-        <v-card to="/admin/forms" hover class="pa-2" height="180" variant="outlined">
+        <v-card
+          to="/admin/forms"
+          hover
+          class="pa-2"
+          height="180"
+          variant="outlined"
+        >
           <v-card-title>
             <v-icon left>mdi-form-select</v-icon>
             <span class="ml-2">Gestionar Formularios</span>
@@ -91,7 +97,7 @@
 
       <v-col cols="12" md="6">
         <v-card
-          to="/admin/upload-forms"
+          to="/admin/forms/upload-forms"
           hover
           class="pa-2"
           height="180"
@@ -103,6 +109,27 @@
           </v-card-title>
           <v-card-text class="card-text-scrollable">
             Cargar masivamente formularios desde archivos JSON.
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col cols="12" md="6">
+        <v-card
+          to="/admin/groups"
+          hover
+          class="pa-2"
+          height="180"
+          variant="outlined"
+        >
+          <v-card-title>
+            <v-icon left>mdi-account-group</v-icon>
+            <span class="ml-2">Gestionar Grupos</span>
+          </v-card-title>
+          <v-card-text class="card-text-scrollable">
+            Administrar los grupos de estudiantes y asignarles prácticas y
+            formularios.
           </v-card-text>
         </v-card>
       </v-col>

@@ -126,6 +126,7 @@ const getComponentProps = (field: FormField) => {
 watch(
   () => props.formDefinition,
   async (newVal) => {
+    console.log("Form definition updated:", newVal);
     if (newVal?.fields) {
       const currentModelValue = props.modelValue || {};
       localFormData.value = newVal.fields.reduce(

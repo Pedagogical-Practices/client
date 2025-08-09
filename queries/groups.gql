@@ -9,11 +9,13 @@ query groups {
     }
     tutor {
       id
-      name
+      firstName
+      lastName
     }
     students {
       id
-      name
+      firstName
+      lastName
     }
     institutions {
       id
