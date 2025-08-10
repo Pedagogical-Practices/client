@@ -171,6 +171,7 @@ const groupToDeleteId = ref<string | null>(null);
 const snackbar = ref({ show: false, text: "", color: "success" });
 
 const headers = [
+  { title: "Nombre del Grupo", value: "name" },
   { title: "Práctica Curricular", value: "practice.name" },
   { title: "Tutor", value: "tutor.firstName" },
   { title: "Nº Estudiantes", value: "students.length" },

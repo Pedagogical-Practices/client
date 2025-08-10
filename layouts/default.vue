@@ -6,7 +6,7 @@
           variant="text"
           @click.stop="drawer = !drawer"
         ></v-app-bar-nav-icon>
-        <v-toolbar-title>Control de grupos pedagógicos</v-toolbar-title>
+        <v-toolbar-title>Nombre de la APP</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn v-if="!authStore.isAuthenticated" to="/login" text>
           Iniciar Sesión
@@ -70,6 +70,8 @@ const allItems = [
       UserRole.STUDENT,
       UserRole.ASSESSOR,
       UserRole.FAMILY,
+      UserRole.TUTOR,
+      UserRole.COORDINATOR,
     ],
   },
   {
@@ -77,7 +79,7 @@ const allItems = [
     value: "editor",
     to: "/editor",
     icon: "mdi-text-box",
-    roles: [UserRole.ADMIN, UserRole.ASSESSOR],
+    roles: [UserRole.ADMIN, UserRole.ASSESSOR, UserRole.COORDINATOR],
   },
   {
     title: "Prácticas",
@@ -89,7 +91,6 @@ const allItems = [
       UserRole.COORDINATOR,
       UserRole.TUTOR,
       UserRole.ASSESSOR,
-      UserRole.STUDENT,
     ],
   },
   {
@@ -114,7 +115,6 @@ const allItems = [
       UserRole.COORDINATOR,
       UserRole.TUTOR,
       UserRole.ASSESSOR,
-      UserRole.STUDENT,
     ],
   },
   {

@@ -1,11 +1,11 @@
 <template>
   <v-autocomplete
     v-model="selectedItem"
-    :items="processedItems"
+    :items="items"
     :loading="loading"
     :search-input.sync="search"
     :label="label"
-    item-title="name"
+    :item-title="item => item.firstName && item.lastName ? `${item.firstName} ${item.lastName}` : item.name"
     item-value="id"
     hide-no-data
     hide-details
@@ -51,16 +51,7 @@ const loading = ref(false);
 const search = ref("");
 const selectedItem = ref<any>(props.modelValue);
 
-const processedItems = computed(() => {
-  if (props.specificType === 'teacher' || props.specificType === 'student') {
-    return items.value.map(user => {
-      const mutableUser = Object.assign({}, user);
-      mutableUser.name = `${mutableUser.firstName} ${mutableUser.lastName}`;
-      return mutableUser;
-    });
-  }
-  return items.value;
-});
+
 
 const fetchItems = async (query: string) => {
   loading.value = true;
@@ -197,7 +188,7 @@ onMounted(() => {
   fetchItems(""); // Cargar ítems al montar el componente
 });
 
-import UsersByIdsQuery from '~/queries/usersByIds.gql';
+import UsersByIdsQuery from "~/queries/usersByIds.gql";
 
 watch(
   () => props.modelValue,
@@ -205,14 +196,17 @@ watch(
     if (props.multiple) {
       if (Array.isArray(newValue) && newValue.length > 0) {
         let fetchedItems: any[] = [];
-        if (props.specificType === 'student' || props.specificType === 'teacher') {
+        if (
+          props.specificType === "student" ||
+          props.specificType === "teacher"
+        ) {
           const { data } = await apolloClient.query({
             query: UsersByIdsQuery,
             variables: { ids: newValue },
-            fetchPolicy: 'network-only',
+            fetchPolicy: "network-only",
           });
           fetchedItems = data?.usersByIds || [];
-        } else if (props.specificType === 'protocol') {
+        } else if (props.specificType === "protocol") {
           // Existing logic for protocols
           const { data } = await apolloClient.query({
             query: gql`
@@ -224,25 +218,22 @@ watch(
               }
             `,
             variables: { ids: newValue },
-            fetchPolicy: 'network-only',
+            fetchPolicy: "network-only",
           });
           fetchedItems = data?.protocolsByIds || [];
         }
         // Process items to add the name property for display
-        selectedItem.value = fetchedItems.map(item => {
-          const mutableItem = Object.assign({}, item);
-          if (mutableItem.firstName && mutableItem.lastName) {
-            mutableItem.name = `${mutableItem.firstName} ${mutableItem.lastName}`;
-          }
-          return mutableItem;
-        });
+        selectedItem.value = fetchedItems;
       } else {
         selectedItem.value = [];
       }
     } else {
-      if (newValue && typeof newValue === 'string') {
+      if (newValue && typeof newValue === "string") {
         let fetchedItem: any = null;
-        if (props.specificType === 'teacher' || props.specificType === 'student') {
+        if (
+          props.specificType === "teacher" ||
+          props.specificType === "student"
+        ) {
           const { data } = await apolloClient.query({
             query: gql`
               query User($id: ID!) {
@@ -256,10 +247,7 @@ watch(
             variables: { id: newValue },
           });
           fetchedItem = data?.user;
-          if (fetchedItem) {
-            fetchedItem.name = `${fetchedItem.firstName} ${fetchedItem.lastName}`;
-          }
-        } else if (props.specificType === 'practice') {
+        } else if (props.specificType === "practice") {
           // ... other types
         }
         selectedItem.value = fetchedItem;
