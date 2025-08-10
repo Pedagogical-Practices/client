@@ -53,10 +53,11 @@ const selectedItem = ref<any>(props.modelValue);
 
 const processedItems = computed(() => {
   if (props.specificType === 'teacher' || props.specificType === 'student') {
-    return items.value.map(user => ({
-      ...user,
-      name: `${user.firstName} ${user.lastName}`
-    }));
+    return items.value.map(user => {
+      const mutableUser = Object.assign({}, user);
+      mutableUser.name = `${mutableUser.firstName} ${mutableUser.lastName}`;
+      return mutableUser;
+    });
   }
   return items.value;
 });
@@ -229,10 +230,11 @@ watch(
         }
         // Process items to add the name property for display
         selectedItem.value = fetchedItems.map(item => {
-          if (item.firstName && item.lastName) {
-            return { ...item, name: `${item.firstName} ${item.lastName}` };
+          const mutableItem = Object.assign({}, item);
+          if (mutableItem.firstName && mutableItem.lastName) {
+            mutableItem.name = `${mutableItem.firstName} ${mutableItem.lastName}`;
           }
-          return item;
+          return mutableItem;
         });
       } else {
         selectedItem.value = [];

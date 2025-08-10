@@ -25,9 +25,7 @@
         <template v-slot:item.practice="{ item }">{{
           item.practice?.name
         }}</template>
-        <template v-slot:item.tutor="{ item }"
-          >{{ item.tutor?.firstName }} {{ item.tutor?.lastName }}</template
-        >
+        <template v-slot:item.tutor="{ item }">{{ item.tutor?.name }}</template>
         <template v-slot:item.students="{ item }">{{
           item.students?.length || 0
         }}</template>
@@ -160,12 +158,14 @@ const deleteDialog = ref(false);
 const isEditing = ref(false);
 const editableGroup = ref<
   Partial<Group> & {
-    practiceId?: string | null;
+    practiceId?: string; // Remove null, keep optional (implies undefined)
     tutorId?: string;
     studentIds?: string[];
     institutionIds?: string[];
   }
->({});
+>({
+  practiceId: null,
+});
 const groupToDeleteId = ref<string | null>(null);
 
 const snackbar = ref({ show: false, text: "", color: "success" });
@@ -197,7 +197,7 @@ const openCreateModal = () => {
   editableGroup.value = {
     name: "",
     period: "",
-    practiceId: null,
+    practiceId: undefined, // Changed from null to undefined
     tutorId: "",
     studentIds: [],
     institutionIds: [],
@@ -219,22 +219,39 @@ const openEditModal = (group: Group) => {
 
 const closeModal = () => {
   dialog.value = false;
-  editableGroup.value = {};
+  editableGroup.value = {
+    name: "",
+    period: "",
+    practiceId: undefined, // Changed from null to undefined
+    tutorId: "",
+    studentIds: [],
+    institutionIds: [],
+  };
 };
 
 const saveGroup = async () => {
   try {
     // Ensure practiceIdToSend is always a string ID
-    const practiceIdToSend =
+    let finalPracticeId: string | null = null;
+
+    // Asegurarse de que practiceId sea siempre un string ID
+    if (
       typeof editableGroup.value.practiceId === "object" &&
       editableGroup.value.practiceId !== null
-        ? (editableGroup.value.practiceId as any).id
-        : editableGroup.value.practiceId;
+    ) {
+      finalPracticeId = (editableGroup.value.practiceId as any).id;
+    } else {
+      finalPracticeId = editableGroup.value.practiceId as string;
+    }
+
+    if (!finalPracticeId) {
+      throw new Error("Debe seleccionar una Práctica Curricular.");
+    }
 
     const payload: any = {
       name: editableGroup.value.name,
       period: editableGroup.value.period,
-      practiceId: practiceIdToSend,
+      practiceId: finalPracticeId,
       tutorId: editableGroup.value.tutorId,
       studentIds: editableGroup.value.studentIds,
       institutionIds: editableGroup.value.institutionIds,
@@ -243,7 +260,7 @@ const saveGroup = async () => {
     if (isEditing.value) {
       if (!editableGroup.value.id) throw new Error("ID de grupo no encontrado");
       payload.id = editableGroup.value.id;
-      await groupStore.updateGroup(payload);
+      await groupStore.updateGroup(editableGroup.value.id, payload);
       showSnackbar("¡Grupo actualizado!", "success");
     } else {
       await groupStore.createGroup(payload);
