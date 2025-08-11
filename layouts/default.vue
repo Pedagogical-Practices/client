@@ -179,6 +179,13 @@ const allItems = [
     ],
   },
   {
+    title: "Mi Progreso",
+    value: "student-progress",
+    to: "/student/my-groups",
+    icon: "mdi-chart-timeline-variant",
+    roles: [UserRole.STUDENT],
+  },
+  {
     title: "Cerrar sesión",
     value: "logout",
     to: "/logout",

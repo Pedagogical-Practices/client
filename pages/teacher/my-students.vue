@@ -2,20 +2,33 @@
   <v-container>
     <h2>Mis Estudiantes Asesorados</h2>
     <v-row>
-      <v-col
-        v-for="student in uniqueStudents"
-        :key="student.id"
-        cols="12"
-        md="6"
-        lg="4"
-      >
-        <v-card @click="viewStudentPractices(student.id)">
-          <v-card-title>{{ student.firstName }} {{ student.lastName }}</v-card-title>
-          <v-card-subtitle>{{ student.email }}</v-card-subtitle>
-          <v-card-text>
-            <v-chip color="primary" size="small">Ver Grupos</v-chip>
-          </v-card-text>
-        </v-card>
+      <v-col cols="12">
+        <p v-if="groupStore.loading">Cargando estudiantes...</p>
+        <p v-else-if="teacherGroups.length === 0">No tienes grupos asignados como tutor.</p>
+        <v-expansion-panels v-else>
+          <v-expansion-panel
+            v-for="group in teacherGroups"
+            :key="group.id"
+            :title="`Grupo: ${group.name} (${group.period}) - Práctica: ${group.practice?.name}`"
+          >
+            <v-expansion-panel-text>
+              <v-list density="compact">
+                <v-list-subheader>Estudiantes en este grupo:</v-list-subheader>
+                <v-list-item
+                  v-for="student in group.students"
+                  :key="student.id"
+                  @click="viewStudentPractices(student.id, group.id)"
+                >
+                  <v-list-item-title>{{ student.firstName }} {{ student.lastName }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ student.email }}</v-list-item-subtitle>
+                  <template v-slot:append>
+                    <v-icon>mdi-chevron-right</v-icon>
+                  </template>
+                </v-list-item>
+              </v-list>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-col>
     </v-row>
   </v-container>
@@ -26,33 +39,32 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useGroupStore } from "~/stores/groupStore";
 import { useAuthStore } from "~/stores/authStore";
-import { User, UserRole } from "~/types";
+import { type Group, type User, UserRole } from "~/types"; // Import Group type
 
 const router = useRouter();
 const groupStore = useGroupStore();
 const authStore = useAuthStore();
 
-const students = ref<User[]>([]);
+// Instead of 'students', store the groups directly
+const teacherGroups = ref<Group[]>([]);
 
 onMounted(async () => {
   if (authStore.user?.id) {
     await groupStore.findGroupsByTutor(authStore.user.id);
-    // Extraer estudiantes únicos de los grupos asesorados
-    const fetchedStudents = groupStore.groups.flatMap((group) => group.students);
-    const uniqueStudentIds = new Set();
-    students.value = fetchedStudents.filter((student) => {
-      const isDuplicate = uniqueStudentIds.has(student.id);
-      uniqueStudentIds.add(student.id);
-      return !isDuplicate;
-    });
+    // The groups are already stored in groupStore.groups by findGroupsByTutor
+    teacherGroups.value = groupStore.groups;
   }
 });
 
-const uniqueStudents = computed(() => {
-  return students.value.filter(student => student.roles.includes(UserRole.STUDENT));
-});
+// Remove uniqueStudents computed property as it's no longer needed for display
+// const uniqueStudents = computed(() => {
+//   return students.value.filter((student) =>
+//     student.roles && Array.isArray(student.roles) && student.roles.includes(UserRole.STUDENT)
+//   );
+// });
 
-const viewStudentPractices = (studentId: string) => {
+const viewStudentPractices = (studentId: string, groupId: string) => {
+  // We might need to adjust this route later to include groupId if necessary
   router.push(`/teacher/students/${studentId}/practices`);
 };
 </script>

@@ -1,5 +1,5 @@
-query Submissions {
-  submissions {
+query submissionsByStudent($studentId: ID!) {
+  submissionsByStudent(studentId: $studentId) {
     id
     group {
       id

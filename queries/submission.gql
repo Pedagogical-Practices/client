@@ -1,34 +1,20 @@
 query Submission($id: ID!) {
   submission(id: $id) {
     id
-    practice {
+    group {
       id
-      student {
-        id
-        name
-      }
-      teacher {
-        id
-        name
-      }
+      name
     }
     protocol {
       id
       name
-      form {
-        id
-        name
-        fields {
-          name
-          label
-          type
-          options
-          rules
-        }
-      }
+    }
+    students {
+      id
+      firstName
+      lastName
     }
     formData
-    locationData
     score
     feedback
     createdAt
