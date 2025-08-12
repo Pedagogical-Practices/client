@@ -44,6 +44,7 @@ import FormFiller from "~/components/FormFiller.vue";
 const route = useRoute();
 const router = useRouter();
 const groupId = ref(route.params.groupId as string);
+const protocolId = ref(route.params.protocolId as string);
 const formId = ref(route.params.formId as string);
 const submissionId = ref(route.query.submissionId as string | undefined);
 const formStore = useFormStore();
@@ -66,7 +67,7 @@ const showSnackbar = (message: string, color: string) => {
 
 onMounted(async () => {
   if (formId.value) {
-    await formStore.fetchForm(formId.value);
+    await formStore.fetchFormById(formId.value);
   }
   if (groupId.value) {
     await groupStore.fetchGroup(groupId.value);
@@ -95,7 +96,8 @@ const handleSubmit = async (formData: Record<string, any>) => {
   try {
     await submissionStore.createSubmission({
       groupId: groupId.value,
-      protocolId: formId.value, // Use formId as protocolId
+      protocolId: protocolId.value,
+      formId: formId.value, // Now correctly passing formId
       studentIds: studentIds,
       formData: formData,
     });

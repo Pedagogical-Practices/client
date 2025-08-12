@@ -17,6 +17,13 @@
                 : []
             "
             v-bind="getComponentProps(field)"
+            :items="
+              field.type === FormFieldType.SELECT && field.dataSource
+                ? dynamicSelectOptions.get(field.name)
+                : field.options && field.options.items
+                  ? field.options.items
+                  : []
+            "
             class="mb-4"
             variant="outlined"
           />
@@ -42,6 +49,7 @@ import {
 } from "vuetify/components";
 import { FormFieldType } from "~/types";
 import { useDataSourceStore } from "~/stores/dataSourceStore";
+import { VDateInput } from "vuetify/labs/VDateInput";
 
 const props = defineProps<{
   formDefinition: any;
@@ -55,6 +63,11 @@ const formRef = ref<HTMLFormElement | null>(null);
 const formData = reactive<Record<string, any>>({});
 const dataSourceStore = useDataSourceStore();
 
+// Reactive map to store dynamically fetched options for select fields
+const dynamicSelectOptions = reactive<
+  Map<string, Array<{ title: string; value: string }>>
+>(new Map());
+
 const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXT]: VTextField,
   [FormFieldType.TEXTAREA]: VTextarea,
@@ -64,7 +77,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.FILE_UPLOAD]: VTextField,
   [FormFieldType.CHECKBOX]: VTextField,
   [FormFieldType.DATE_PICKER]: VDatePicker,
-  [FormFieldType.DATE_INPUT]: VTextField,
+  [FormFieldType.DATE_INPUT]: VDateInput,
   [FormFieldType.RADIO_GROUP]: VTextField,
   [FormFieldType.TIME_PICKER]: VTextField,
   [FormFieldType.BUTTON]: VTextField,
@@ -85,12 +98,22 @@ const getComponentProps = (field: any) => {
     if (field.options && field.options.items) {
       props.items = field.options.items;
     }
+    // Handle multiple selection if defined in field.multiple
+    if (field.multiple !== undefined) {
+      props.multiple = field.multiple;
+    }
   }
+
+  // Add common props
+  if (field.placeholder) props.placeholder = field.placeholder;
+  if (field.disabled) props.disabled = field.disabled;
+  if (field.readonly) props.readonly = field.readonly;
+  if (field.color) props.color = field.color;
 
   return props;
 };
 
-const initializeForm = () => {
+const initializeForm = async () => {
   const data = props.initialData || {};
   console.log("FormFiller.vue: initializeForm - using data:", data);
 
@@ -99,10 +122,26 @@ const initializeForm = () => {
     delete formData[key];
   }
 
-  props.formDefinition.fields.forEach((field: any) => {
+  // Initialize form fields and fetch dynamic options
+  for (const field of props.formDefinition.fields) {
     formData[field.name] =
       data[field.name] !== undefined ? data[field.name] : null;
-  });
+
+    if (field.type === FormFieldType.SELECT && field.dataSource) {
+      try {
+        const options = await dataSourceStore.fetchFormattedOptions(
+          field.dataSource
+        );
+        dynamicSelectOptions.set(field.name, options);
+      } catch (error) {
+        console.error(
+          `Error fetching data for ${field.name} (${field.dataSource}):`,
+          error
+        );
+        dynamicSelectOptions.set(field.name, []); // Set empty on error
+      }
+    }
+  }
 };
 
 onMounted(() => {

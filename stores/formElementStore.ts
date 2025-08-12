@@ -35,7 +35,8 @@ export const useFormElementStore = defineStore("formElement", () => {
     );
 
     if (index !== -1) {
-      Object.assign(formElements.value[index], updatedElement);
+      // Create a new object to ensure reactivity and avoid modifying immutable objects
+      formElements.value[index] = { ...formElements.value[index], ...updatedElement };
     } else {
       console.error(
         "Update failed: Element with name",

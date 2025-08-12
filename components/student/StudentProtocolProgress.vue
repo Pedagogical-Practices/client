@@ -39,7 +39,7 @@
                   <v-btn 
                     v-if="!getSubmissionStatus(form.id).completed"
                     color="primary"
-                    @click="fillForm(form.id)"
+                    @click="fillForm(protocol.id, form.id)"
                   >
                     Llenar Formulario
                   </v-btn>
@@ -53,7 +53,7 @@
                     </v-btn>
                     <v-btn 
                       variant="outlined"
-                      @click="editSubmission(form.id, getSubmissionStatus(form.id).submissionId)"
+                      @click="editSubmission(protocol.id, form.id, getSubmissionStatus(form.id).submissionId)"
                     >
                       Editar
                     </v-btn>
@@ -98,13 +98,16 @@ const router = useRouter();
 
 const submissionsByFormId = computed(() => {
   const map = new Map();
+  if (!props.submissions) return map;
+
   for (const sub of props.submissions) {
-    if (sub.protocol && sub.protocol.forms && sub.protocol.forms.length > 0) {
-        // Assuming one form per submission for simplicity of this logic
-        const formId = sub.protocol.forms[0].id;
-        if (!map.has(formId) || new Date(sub.createdAt) > new Date(map.get(formId).createdAt)) {
-            map.set(formId, sub);
-        }
+    // The backend now populates the form field on the submission
+    if (sub.form && sub.form.id) {
+      const formId = sub.form.id;
+      // Keep only the latest submission for each form
+      if (!map.has(formId) || new Date(sub.createdAt) > new Date(map.get(formId).createdAt)) {
+        map.set(formId, sub);
+      }
     }
   }
   return map;
@@ -135,16 +138,16 @@ const getSubmissionStatus = (formId) => {
   return { completed: false };
 };
 
-const fillForm = (formId) => {
-  router.push(`/fill-form/${props.groupId}/${formId}`);
+const fillForm = (protocolId, formId) => {
+  router.push(`/fill-form/${props.groupId}/${protocolId}/${formId}`);
 };
 
 const viewSubmission = (submissionId) => {
   router.push(`/submissions/${submissionId}`);
 };
 
-const editSubmission = (formId, submissionId) => {
-  router.push(`/fill-form/${props.groupId}/${formId}?submissionId=${submissionId}`);
+const editSubmission = (protocolId, formId, submissionId) => {
+  router.push(`/fill-form/${props.groupId}/${protocolId}/${formId}?submissionId=${submissionId}`);
 };
 
 const formatDate = (dateString) => {
