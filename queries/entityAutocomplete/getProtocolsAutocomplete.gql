@@ -1,5 +1,5 @@
-query Protocols($search: String) {
-  protocols(search: $search) {
+query Protocols {
+  protocols {
     id
     name
   }

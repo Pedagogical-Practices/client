@@ -1,0 +1,13 @@
+query submissionsByStudentAndGroup($studentId: ID!, $groupId: ID!) {
+  submissionsByStudentAndGroup(studentId: $studentId, groupId: $groupId) {
+    id
+    protocol {
+      id
+    }
+    # Assuming a submission is tied to a single form within the protocol for this logic
+    # The backend resolver for protocol on submission should be checked
+    # For now, we assume the form is implicitly known via the protocol
+    createdAt
+    updatedAt
+  }
+}

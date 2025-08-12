@@ -2,7 +2,6 @@ mutation UpdateSubmission($id: ID!, $input: UpdateSubmissionInput!) {
   updateSubmission(id: $id, input: $input) {
     id
     formData
-    locationData
     score
     feedback
     createdAt

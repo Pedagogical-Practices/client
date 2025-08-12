@@ -1,14 +1,16 @@
 mutation CreateSubmission($input: CreateSubmissionInput!) {
   createSubmission(input: $input) {
     id
-    practice {
+    group {
       id
     }
     protocol {
       id
     }
+    students {
+      id
+    }
     formData
-    locationData
     score
     feedback
     createdAt

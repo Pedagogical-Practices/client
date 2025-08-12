@@ -77,7 +77,7 @@ const formatValue = (key: string, value: any) => {
   if (key === 'docenteFormacion' && value) {
     // Assuming value is a user ID and we have user data available
     const user = authStore.users.find(u => u.id === value);
-    return user ? user.name : value;
+    return user ? `${user.firstName} ${user.lastName}` : value;
   }
 
   if (typeof value === 'object' && value !== null) {

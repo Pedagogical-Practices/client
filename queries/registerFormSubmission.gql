@@ -1,9 +1,0 @@
-mutation UpdatePractice($id: ID!, $input: UpdatePracticeInput!) {
-  updatePractice(id: $id, input: $input) {
-    id
-    status
-    submissions {
-      id
-    }
-  }
-}

@@ -2,8 +2,14 @@
   <v-container>
     <h1 class="text-h4 mb-4">Panel de Administración</h1>
     <v-row>
-      <v-col cols="12" md="4">
-        <v-card to="/admin/institutions" hover class="pa-2" height="180" variant="outlined">
+      <v-col cols="12" md="6">
+        <v-card
+          to="/admin/institutions"
+          hover
+          class="pa-2"
+          height="180"
+          variant="outlined"
+        >
           <v-card-title>
             <v-icon left>mdi-school</v-icon>
             <span class="ml-2">Gestionar Instituciones</span>
@@ -14,8 +20,14 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="4">
-        <v-card to="/admin/users" hover class="pa-2" height="180" variant="outlined">
+      <v-col cols="12" md="6">
+        <v-card
+          to="/admin/users"
+          hover
+          class="pa-2"
+          height="180"
+          variant="outlined"
+        >
           <v-card-title>
             <v-icon left>mdi-account-group</v-icon>
             <span class="ml-2">Gestionar Usuarios</span>
@@ -28,8 +40,14 @@
       </v-col>
 
       <!-- Añadir más tarjetas aquí para otras secciones de administración -->
-      <v-col cols="12" md="4">
-        <v-card to="/admin/protocols" hover class="pa-2" height="180" variant="outlined">
+      <v-col cols="12" md="6">
+        <v-card
+          to="/admin/protocols"
+          hover
+          class="pa-2"
+          height="180"
+          variant="outlined"
+        >
           <v-card-title>
             <v-icon left>mdi-file-document-multiple</v-icon>
             <span class="ml-2">Gestionar Protocolos</span>
@@ -41,11 +59,17 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="4">
-        <v-card to="/practices" hover class="pa-2" height="180" variant="outlined">
+      <v-col cols="12" md="6">
+        <v-card
+          to="/admin/practices"
+          hover
+          class="pa-2"
+          height="180"
+          variant="outlined"
+        >
           <v-card-title>
             <v-icon left>mdi-book-open-page-variant</v-icon>
-            <span class="ml-2">Gestionar Cursos</span>
+            <span class="ml-2">Gestionar Prácticas </span>
           </v-card-title>
           <v-card-text class="card-text-scrollable">
             Crear, editar y eliminar cursos de la malla curricular.
@@ -53,8 +77,14 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="4">
-        <v-card to="/forms" hover class="pa-2" height="180" variant="outlined">
+      <v-col cols="12" md="6">
+        <v-card
+          to="/admin/forms"
+          hover
+          class="pa-2"
+          height="180"
+          variant="outlined"
+        >
           <v-card-title>
             <v-icon left>mdi-form-select</v-icon>
             <span class="ml-2">Gestionar Formularios</span>
@@ -65,14 +95,41 @@
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="4">
-        <v-card to="/admin/upload-forms" hover class="pa-2" height="180" variant="outlined">
+      <v-col cols="12" md="6">
+        <v-card
+          to="/admin/forms/upload-forms"
+          hover
+          class="pa-2"
+          height="180"
+          variant="outlined"
+        >
           <v-card-title>
             <v-icon left>mdi-upload-multiple</v-icon>
             <span class="ml-2">Cargar Formularios</span>
           </v-card-title>
           <v-card-text class="card-text-scrollable">
             Cargar masivamente formularios desde archivos JSON.
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col cols="12" md="6">
+        <v-card
+          to="/admin/groups"
+          hover
+          class="pa-2"
+          height="180"
+          variant="outlined"
+        >
+          <v-card-title>
+            <v-icon left>mdi-account-group</v-icon>
+            <span class="ml-2">Gestionar Grupos</span>
+          </v-card-title>
+          <v-card-text class="card-text-scrollable">
+            Administrar los grupos de estudiantes y asignarles prácticas y
+            formularios.
           </v-card-text>
         </v-card>
       </v-col>

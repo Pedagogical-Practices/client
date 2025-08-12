@@ -3,7 +3,6 @@
     :model-value="!!selectedElement"
     @update:model-value="handleDialogClose"
     persistent
-    max-width="800px"
     scrollable
   >
     <v-card
@@ -407,15 +406,6 @@ watch(
           editableElement.value.dataSource || ""
         );
       }
-      console.log("ElementEditor: selectedElement newVal", newVal);
-      console.log(
-        "ElementEditor: editableElement.value after copy",
-        editableElement.value
-      );
-      console.log(
-        "ElementEditor: dataSource value",
-        editableElement.value?.dataSource
-      );
       rulesText.value = Array.isArray(editableElement.value?.rules)
         ? editableElement.value!.rules.join(",")
         : "";
@@ -516,10 +506,6 @@ const closeEditor = () => {
 
 const saveChanges = () => {
   if (!editableElement.value) return;
-  console.log(
-    "ElementEditor: Saving changes. editableElement.value BEFORE stringify:",
-    JSON.parse(JSON.stringify(editableElement.value))
-  );
   if (
     editableElement.value.type === "SELECT" ||
     editableElement.value.type === "RADIO_GROUP"

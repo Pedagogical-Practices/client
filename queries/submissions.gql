@@ -1,23 +1,20 @@
 query Submissions {
   submissions {
     id
-    practice {
+    group {
       id
-      student {
-        id
-        name
-      }
-      teacher {
-        id
-        name
-      }
+      name
     }
     protocol {
       id
       name
     }
+    students {
+      id
+      firstName
+      lastName
+    }
     formData
-    locationData
     score
     feedback
     createdAt

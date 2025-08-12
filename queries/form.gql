@@ -1,8 +1,9 @@
-query Form($id: String!) {
+query Form($id: ID!) {
   form(id: $id) {
     id
     name
     description
+    version
     fields {
       id
       name

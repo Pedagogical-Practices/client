@@ -1,6 +1,0 @@
-query Courses($search: String) {
-  courses(search: $search) {
-    id
-    name
-  }
-}

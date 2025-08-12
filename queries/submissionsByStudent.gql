@@ -1,0 +1,23 @@
+query submissionsByStudent($studentId: ID!) {
+  submissionsByStudent(studentId: $studentId) {
+    id
+    group {
+      id
+      name
+    }
+    protocol {
+      id
+      name
+    }
+    students {
+      id
+      firstName
+      lastName
+    }
+    formData
+    score
+    feedback
+    createdAt
+    updatedAt
+  }
+}

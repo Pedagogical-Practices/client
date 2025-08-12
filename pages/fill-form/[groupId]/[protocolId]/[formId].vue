@@ -44,6 +44,7 @@ import FormFiller from "~/components/FormFiller.vue";
 const route = useRoute();
 const router = useRouter();
 const groupId = ref(route.params.groupId as string);
+const protocolId = ref(route.params.protocolId as string);
 const formId = ref(route.params.formId as string);
 const submissionId = ref(route.query.submissionId as string | undefined);
 const formStore = useFormStore();
@@ -65,14 +66,14 @@ const showSnackbar = (message: string, color: string) => {
 };
 
 onMounted(async () => {
-  if (protocolId.value) {
-    await formStore.fetchForm(protocolId.value);
+  if (formId.value) {
+    await formStore.fetchFormById(formId.value);
   }
   if (groupId.value) {
-    await groupStore.fetchPractice(groupId.value);
+    await groupStore.fetchGroup(groupId.value);
     console.log(
-      "Practice fetched in fill-form page:",
-      groupStore.currentPractice
+      "Group fetched in fill-form page:",
+      groupStore.currentGroup
     );
 
     if (submissionId.value) {
@@ -80,7 +81,7 @@ onMounted(async () => {
       console.log("Existing submission loaded for editing:", submissionStore.currentSubmission);
     } else {
       submissionStore.setCurrentSubmission(null);
-      if (authStore.user?.role === 'STUDENT') {
+      if (authStore.user?.roles?.includes(UserRole.STUDENT)) {
         submissionStore.setCurrentSubmission({
           formData: { docenteFormacion: authStore.user.id },
         });
@@ -90,18 +91,19 @@ onMounted(async () => {
 });
 
 const handleSubmit = async (formData: Record<string, any>) => {
-  if (!protocolId.value || !groupId.value || !authStore.user) return;
+  if (!formId.value || !groupId.value || !authStore.user) return;
   const studentIds = groupStore.currentGroup?.students?.map(s => s.id) || [];
   try {
     await submissionStore.createSubmission({
       groupId: groupId.value,
       protocolId: protocolId.value,
+      formId: formId.value, // Now correctly passing formId
       studentIds: studentIds,
       formData: formData,
     });
     await groupStore.fetchGroup(groupId.value); // Forzar recarga
     showSnackbar("Formulario enviado exitosamente!", "success");
-    router.push(`/practices/${groupId.value}`);
+    router.push(`/groups/${groupId.value}`);
   } catch (error: any) {
     console.error("Error submitting form:", error);
     showSnackbar(`Error al enviar formulario: ${error.message}`, "error");
@@ -112,9 +114,9 @@ const handleUpdate = async ({ id, data }: { id: string; data: Record<string, any
   if (!id) return;
   try {
     await submissionStore.updateSubmission(id, { formData: data });
-    await groupStore.fetchPractice(groupId.value); // Forzar recarga
+    await groupStore.fetchGroup(groupId.value); // Forzar recarga
     showSnackbar("Formulario actualizado exitosamente!", "success");
-    router.push(`/practices/${groupId.value}`);
+    router.push(`/groups/${groupId.value}`);
   } catch (error: any) {
     console.error("Error updating form:", error);
     showSnackbar(`Error al actualizar formulario: ${error.message}`, "error");

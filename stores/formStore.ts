@@ -12,6 +12,7 @@ import GetFormQuery from "~/queries/form.gql";
 import GetFormsQuery from "~/queries/forms.gql";
 import DeleteFormMutation from "~/queries/deleteForm.gql";
 import { useFormElementStore } from "./formElementStore";
+import gql from "graphql-tag";
 
 export const useFormStore = defineStore("form", () => {
   const { client: apolloClient } = useApolloClient();
@@ -22,24 +23,31 @@ export const useFormStore = defineStore("form", () => {
   const forms = ref<Form[]>([]);
   const currentForm = ref<Form | null>(null);
   const formElementStore = useFormElementStore();
+  const loading = ref<boolean>(true);
 
   // Actions
   const createForm = async (input: any) => {
-    const { mutate } = useMutation(CreateFormMutation);
-    const result = await mutate({ input });
-    return result?.data?.createForm;
+    const { data } = await apolloClient.mutate({
+      mutation: CreateFormMutation,
+      variables: { input },
+    });
+    return data?.createForm;
   };
 
   const createManyForms = async (createFormInputs: any) => {
-    const { mutate } = useMutation(CreateManyFormsMutation);
-    const result = await mutate({ createFormInputs });
-    return result?.data?.createManyForms;
+    const { data } = await apolloClient.mutate({
+      mutation: CreateManyFormsMutation,
+      variables: { createFormInputs },
+    });
+    return data?.createManyForms;
   };
 
   const updateForm = async (id: string, input: any) => {
-    const { mutate } = useMutation(UpdateFormMutation);
-    const result = await mutate({ id, input });
-    return result?.data?.updateForm;
+    const { data } = await apolloClient.mutate({
+      mutation: UpdateFormMutation,
+      variables: { id, input },
+    });
+    return data?.updateForm;
   };
 
   const fetchFormById = async (id: string) => {
@@ -93,16 +101,15 @@ export const useFormStore = defineStore("form", () => {
   };
 
   const deleteForm = async (id: string): Promise<boolean> => {
-    // Nuevo método
-    const { mutate } = useMutation(DeleteFormMutation);
     try {
-      const result = await mutate({ id });
-      if (result?.errors) {
-        throw new Error(
-          result.errors[0]?.message || "Error al eliminar formulario"
-        );
+      const { data, errors } = await apolloClient.mutate({
+        mutation: DeleteFormMutation,
+        variables: { id },
+      });
+      if (errors) {
+        throw new Error(errors[0]?.message || "Error al eliminar formulario");
       }
-      return result?.data?.deleteForm;
+      return data?.deleteForm;
     } catch (error: any) {
       console.error("formStore: DeleteForm error:", error);
       throw new Error(
@@ -112,32 +119,35 @@ export const useFormStore = defineStore("form", () => {
   };
 
   const createNewFormVersion = async (formId: string): Promise<Form> => {
-    const { mutate } = useMutation(gql`
-      mutation createNewFormVersion($formId: ID!) {
-        createNewFormVersion(formId: $formId) {
-          id
-          name
-          version
-          parentForm {
-            id
-            name
-            version
-          }
-        }
-      }
-    `);
     try {
-      const result = await mutate({ formId });
-      if (result?.errors) {
+      const { data, errors } = await apolloClient.mutate({
+        mutation: gql`
+          mutation createNewFormVersion($formId: ID!) {
+            createNewFormVersion(formId: $formId) {
+              id
+              name
+              version
+              parentForm {
+                id
+                name
+                version
+              }
+            }
+          }
+        `,
+        variables: { formId },
+      });
+      if (errors) {
         throw new Error(
-          result.errors[0]?.message || "Error al crear nueva versión del formulario"
+          errors[0]?.message || "Error al crear nueva versión del formulario"
         );
       }
-      return result?.data?.createNewFormVersion;
+      return data?.createNewFormVersion;
     } catch (error: any) {
       console.error("formStore: createNewFormVersion error:", error);
       throw new Error(
-        error.message || "Error desconocido al crear nueva versión del formulario."
+        error.message ||
+          "Error desconocido al crear nueva versión del formulario."
       );
     }
   };

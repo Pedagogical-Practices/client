@@ -1,11 +1,19 @@
 <template>
-  <v-container>
+  <v-container fluid class="pa-4">
     <v-row>
       <v-col>
         <h1 class="text-h4">Administración de Protocolos</h1>
       </v-col>
       <v-col class="text-right">
-        <v-btn color="primary" @click="openCreateModal">Crear Protocolo</v-btn>
+        <v-btn color="primary" class="mx-2" @click="openCreateModal"
+          >Nuevo Protocolo</v-btn
+        >
+        <v-btn
+          color="grey-darken-1"
+          to="/admin"
+          class="mx-2"
+          icon="mdi-security"
+        ></v-btn>
       </v-col>
     </v-row>
 

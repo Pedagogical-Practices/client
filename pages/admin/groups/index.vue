@@ -1,153 +1,129 @@
 <template>
   <v-container fluid class="pa-4">
     <v-row>
-      <v-col cols="12">
-        <v-card elevation="2">
-          <v-card-title class="d-flex justify-space-between align-center">
-            <span>Gestión de Grupos</span>
-            <v-btn
-              color="primary"
-              prepend-icon="mdi-plus"
-              @click="openCreateGroupDialog"
-            >
-              Asignar Nuevo Grupo
-            </v-btn>
-          </v-card-title>
-          <v-card-text>
-            <v-data-table
-              :headers="headers"
-              :items="groupStore.groups"
-              :items-per-page="10"
-              class="elevation-1"
-            >
-              <template v-slot:item.student="{ item }">
-                {{ item.student?.name || "N/A" }}
-              </template>
-              <template v-slot:item.teacher="{ item }">
-                {{ item.teacher?.name || "N/A" }}
-              </template>
-              <template v-slot:item.course="{ item }">
-                {{ item.course?.name || "N/A" }}
-              </template>
-              <template v-slot:item.protocols="{ item }">
-                <div v-if="item.protocols && item.protocols.length">
-                  <v-chip
-                    v-for="protocol in item.protocols"
-                    :key="protocol.id"
-                    size="small"
-                    class="mr-1 mb-1"
-                  >
-                    {{ protocol.name }}
-                  </v-chip>
-                </div>
-                <span v-else>N/A</span>
-              </template>
-              <template v-slot:item.status="{ item }">
-                <v-chip :color="getStatusColor(item.status)" size="small">
-                  {{ item.status }}
-                </v-chip>
-              </template>
-              <template v-slot:item.actions="{ item }">
-                <v-btn
-                  size="small"
-                  color="info"
-                  icon="mdi-eye"
-                  class="mr-2"
-                  @click="viewGroup(item.id)"
-                  title="Ver Detalle"
-                ></v-btn>
-                <v-btn
-                  size="small"
-                  color="warning"
-                  icon="mdi-pencil"
-                  class="mr-2"
-                  @click="editGroup(item.id)"
-                  title="Editar Grupo"
-                ></v-btn>
-                <v-btn
-                  size="small"
-                  color="error"
-                  icon="mdi-delete"
-                  @click="confirmDeleteGroup(item.id)"
-                  title="Eliminar Grupo"
-                ></v-btn>
-              </template>
-            </v-data-table>
-          </v-card-text>
-        </v-card>
+      <v-col>
+        <h1 class="text-h4">Gestión de Grupos de Práctica</h1>
+      </v-col>
+      <v-col class="text-right">
+        <v-btn color="primary" @click="openCreateModal">Nuevo Grupo</v-btn>
+        <v-btn
+          color="grey-darken-1"
+          to="/admin"
+          class="mx-2"
+          icon="mdi-security"
+        ></v-btn>
       </v-col>
     </v-row>
 
-    <!-- Diálogo para crear/editar grupo -->
-    <v-dialog v-model="dialog" max-width="700px" persistent>
+    <v-card class="mt-4">
+      <v-data-table
+        :headers="headers"
+        :items="groupStore.groups"
+        :loading="groupStore.loading"
+        class="elevation-1"
+      >
+        <template v-slot:item.practice="{ item }">{{
+          item.practice?.name
+        }}</template>
+        <template v-slot:item.tutor="{ item }">{{ item.tutor?.name }}</template>
+        <template v-slot:item.students="{ item }">{{
+          item.students?.length || 0
+        }}</template>
+        <template v-slot:item.actions="{ item }">
+          <v-icon small class="mr-2" @click="openEditModal(item)"
+            >mdi-pencil</v-icon
+          >
+          <v-icon small @click="confirmDelete(item)">mdi-delete</v-icon>
+        </template>
+      </v-data-table>
+    </v-card>
+
+    <!-- Modal de Creación/Edición -->
+    <v-dialog v-model="dialog" persistent max-width="800px">
       <v-card>
-        <v-card-title class="d-flex justify-space-between align-center">
-          <span>{{ isEditMode ? "Editar Grupo" : "Asignar Nuevo Grupo" }}</span>
-          <v-btn icon="mdi-close" @click="closeDialog"></v-btn>
+        <v-card-title>
+          <span class="text-h5">{{
+            isEditing ? "Editar Grupo" : "Crear Grupo"
+          }}</span>
         </v-card-title>
         <v-card-text>
-          <v-form ref="groupFormRef">
-            <EntityAutocomplete
-              v-model="newGroup.studentId"
-              specific-type="student"
-              label="Docente en formación"
-              :multiple="false"
-            ></EntityAutocomplete>
-            <EntityAutocomplete
-              v-model="newGroup.teacherId"
-              specific-type="teacher"
-              label="Docente Asesor"
-              :multiple="false"
-            ></EntityAutocomplete>
-            <EntityAutocomplete
-              v-model="newGroup.protocolIds"
-              specific-type="protocol"
-              label="Protocolos"
-              :multiple="true"
-            ></EntityAutocomplete>
-            <EntityAutocomplete
-              v-model="newGroup.practiceId"
-              specific-type="practice"
-              label="Curso de Malla Curricular"
-              :multiple="false"
-            >
-            </EntityAutocomplete>
-          </v-form>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-select
+                  v-model="editableGroup.practiceId"
+                  :items="allPractices"
+                  item-title="name"
+                  item-value="id"
+                  label="Práctica Curricular"
+                  required
+                ></v-select>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="editableGroup.name"
+                  label="Nombre del Grupo"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="editableGroup.period"
+                  :items="periods"
+                  label="Periodo"
+                  required
+                ></v-select>
+              </v-col>
+              <v-col cols="12">
+                <entity-autocomplete
+                  v-model="editableGroup.tutorId"
+                  label="Tutor"
+                  specificType="teacher"
+                ></entity-autocomplete>
+              </v-col>
+              <v-col cols="12">
+                <entity-autocomplete
+                  v-model="editableGroup.studentIds"
+                  label="Estudiantes"
+                  specificType="student"
+                  multiple
+                ></entity-autocomplete>
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  v-model="editableGroup.institutionIds"
+                  :items="allInstitutions"
+                  item-title="name"
+                  item-value="id"
+                  label="Instituciones"
+                  multiple
+                  chips
+                ></v-select>
+              </v-col>
+            </v-row>
+          </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="grey-darken-1" variant="text" @click="closeDialog">
-            Cancelar
-          </v-btn>
           <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            variant="elevated"
-            prepend-icon="mdi-content-save"
-            @click="saveGroup"
-          >
-            {{ isEditMode ? "Guardar Cambios" : "Asignar" }}
-          </v-btn>
+          <v-btn color="blue darken-1" text @click="closeModal">Cancelar</v-btn>
+          <v-btn color="blue darken-1" text @click="saveGroup">Guardar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <!-- Diálogo de confirmación de eliminación -->
-    <v-dialog v-model="deleteConfirmDialog" max-width="500px">
+    <!-- Modal de Confirmación de Borrado -->
+    <v-dialog v-model="deleteDialog" persistent max-width="400px">
       <v-card>
-        <v-card-title class="headline">Confirmar Eliminación</v-card-title>
-        <v-card-text>
-          ¿Estás seguro de que quieres eliminar este grupo? Esta acción no se
-          puede deshacer.
-        </v-card-text>
+        <v-card-title class="text-h5">Confirmar Borrado</v-card-title>
+        <v-card-text
+          >¿Estás seguro de que quieres eliminar este grupo?</v-card-text
+        >
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="grey-darken-1"
-            variant="text"
-            @click="deleteConfirmDialog = false"
+          <v-btn color="blue darken-1" text @click="deleteDialog = false"
             >Cancelar</v-btn
           >
-          <v-btn color="error" variant="elevated" @click="deletePractice"
+          <v-btn color="red darken-1" text @click="deleteGroupConfirmed"
             >Eliminar</v-btn
           >
         </v-card-actions>
@@ -157,208 +133,166 @@
     <v-snackbar
       v-model="snackbar.show"
       :color="snackbar.color"
-      :timeout="snackbar.timeout"
+      :timeout="3000"
       location="top right"
     >
       {{ snackbar.text }}
-      <template v-slot:actions>
-        <v-btn variant="text" @click="snackbar.show = false">Cerrar</v-btn>
-      </template>
     </v-snackbar>
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import { useRouter } from "vue-router";
-import { PracticeStatus } from "~/types";
 import { useGroupStore } from "~/stores/groupStore";
-import { useAuthStore } from "~/stores/authStore";
-import { useProtocolStore } from "~/stores/protocolStore";
-
+import { usePracticeStore } from "~/stores/practiceStore";
+import { useInstitutionStore } from "~/stores/institutionStore";
+import { UserRole, type Group } from "~/types";
 import EntityAutocomplete from "~/components/EntityAutocomplete.vue";
 
-const router = useRouter();
 const groupStore = useGroupStore();
-const authStore = useAuthStore();
-const protocolStore = useProtocolStore();
+const practiceStore = usePracticeStore();
+const institutionStore = useInstitutionStore();
 
 const dialog = ref(false);
-const isEditMode = ref(false);
+const deleteDialog = ref(false);
+const isEditing = ref(false);
+const editableGroup = ref<
+  Partial<Group> & {
+    practiceId?: string; // Remove null, keep optional (implies undefined)
+    tutorId?: string;
+    studentIds?: string[];
+    institutionIds?: string[];
+  }
+>({
+  practiceId: null,
+});
+const groupToDeleteId = ref<string | null>(null);
 
-const closeDialog = () => {
-  dialog.value = false;
-  // groupFormRef.value?.reset(); // Limpiar el formulario
-};
+const snackbar = ref({ show: false, text: "", color: "success" });
 
-const newGroup = ref({
-  id: "", // Para modo edición
-  studentId: "",
-  teacherId: "",
-  protocolIds: [],
-  courseId: "",
-  status: PracticeStatus.PENDING, // Default para nuevo grupo
+const headers = [
+  { title: "Nombre del Grupo", value: "name" },
+  { title: "Práctica Curricular", value: "practice.name" },
+  { title: "Tutor", value: "tutor.firstName" },
+  { title: "Nº Estudiantes", value: "students.length" },
+  { title: "Acciones", value: "actions", sortable: false },
+];
+
+const allPractices = computed(() => practiceStore.practices);
+const allInstitutions = computed(() => institutionStore.institutions);
+
+const periods = computed(() => {
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 21 }, (_, i) => currentYear + i);
+  return years.flatMap((year) => [`${year}-1`, `${year}-2`]);
 });
 
-const openCreateGroupDialog = () => {
-  isEditMode.value = false;
-  newGroup.value = {
-    id: "",
-    studentId: "",
-    teacherId: "",
-    protocolIds: [],
-    courseId: "",
-    status: PracticeStatus.PENDING,
+onMounted(() => {
+  groupStore.fetchGroups();
+  practiceStore.fetchAllPractices();
+  institutionStore.fetchInstitutions();
+});
+
+const openCreateModal = () => {
+  isEditing.value = false;
+  editableGroup.value = {
+    name: "",
+    period: "",
+    practiceId: undefined, // Changed from null to undefined
+    tutorId: "",
+    studentIds: [],
+    institutionIds: [],
   };
   dialog.value = true;
 };
 
-const groupFormRef = ref<HTMLFormElement | null>(null);
+const openEditModal = (group: Group) => {
+  isEditing.value = true;
+  editableGroup.value = {
+    ...group,
+    practiceId: group.practice?.id, // Assign only the ID
+    tutorId: group.tutor?.id,
+    studentIds: group.students?.map((s) => s.id) || [],
+    institutionIds: group.institutions?.map((i) => i.id) || [],
+  };
+  dialog.value = true;
+};
 
-const groupToDeleteId = ref<string | null>(null);
-const deleteConfirmDialog = ref(false);
-
-const snackbar = ref({
-  show: false,
-  text: "",
-  color: "success",
-  timeout: 3000,
-});
-
-const headers = ref([
-  { title: "Docente en formación", key: "student" },
-  { title: "Docente Asesor", key: "teacher" },
-  { title: "Protocolos", key: "protocols" },
-  { title: "Curso de Malla Curricular", key: "practice.name" },
-  { title: "Estado", key: "status" },
-  { title: "Acciones", key: "actions", sortable: false },
-]);
-
-onMounted(async () => {
-  console.log("groups/index.vue: onMounted started.");
-  await groupStore.fetchGroups();
-  console.log("groups/index.vue: groups fetched.");
-  await protocolStore.fetchProtocols();
-  console.log("groups/index.vue: protocols fetched.");
-  await authStore.fetchUsers();
-  console.log("groups/index.vue: users fetched.");
-});
-
-const students = computed(() => {
-  console.log(
-    "groups/index.vue: Computing students. authStore.users:",
-    authStore.users
-  );
-  return (authStore.users || []).filter((user) => user.role === "STUDENT");
-});
-const advisors = computed(() => {
-  console.log(
-    "groups/index.vue: Computing advisors. authStore.users:",
-    authStore.users
-  );
-  return (authStore.users || []).filter(
-    (user) => user.role === "TEACHER_DIRECTIVE"
-  );
-});
-
-const getStatusColor = (status: PracticeStatus): string => {
-  switch (status) {
-    case PracticeStatus.ASSIGNED:
-      return "blue";
-    case PracticeStatus.IN_PROGRESS:
-      return "orange";
-    case PracticeStatus.COMPLETED:
-      return "green";
-    case PracticeStatus.REVIEWED:
-      return "purple";
-    default:
-      return "grey";
-  }
+const closeModal = () => {
+  dialog.value = false;
+  editableGroup.value = {
+    name: "",
+    period: "",
+    practiceId: undefined, // Changed from null to undefined
+    tutorId: "",
+    studentIds: [],
+    institutionIds: [],
+  };
 };
 
 const saveGroup = async () => {
-  const { valid } = await groupFormRef.value!.validate();
-  if (!valid) return;
-
   try {
-    if (isEditMode.value) {
-      await groupStore.updateGroup(newGroup.value.id, newGroup.value);
-      snackbar.value = {
-        show: true,
-        text: "¡Grupo actualizado exitosamente!",
-        color: "success",
-        timeout: 3000,
-      };
+    // Ensure practiceIdToSend is always a string ID
+    let finalPracticeId: string | null = null;
+
+    // Asegurarse de que practiceId sea siempre un string ID
+    if (
+      typeof editableGroup.value.practiceId === "object" &&
+      editableGroup.value.practiceId !== null
+    ) {
+      finalPracticeId = (editableGroup.value.practiceId as any).id;
     } else {
-      const { id, ...createData } = newGroup.value;
-      await groupStore.createGroup(createData);
-      snackbar.value = {
-        show: true,
-        text: "¡Grupo asignado exitosamente!",
-        color: "success",
-        timeout: 3000,
-      };
+      finalPracticeId = editableGroup.value.practiceId as string;
     }
-    closeDialog();
-    await groupStore.fetchGroups(); // Refrescar la lista
+
+    if (!finalPracticeId) {
+      throw new Error("Debe seleccionar una Práctica Curricular.");
+    }
+
+    const payload: any = {
+      name: editableGroup.value.name,
+      period: editableGroup.value.period,
+      practiceId: finalPracticeId,
+      tutorId: editableGroup.value.tutorId,
+      studentIds: editableGroup.value.studentIds,
+      institutionIds: editableGroup.value.institutionIds,
+    };
+
+    if (isEditing.value) {
+      if (!editableGroup.value.id) throw new Error("ID de grupo no encontrado");
+      payload.id = editableGroup.value.id;
+      await groupStore.updateGroup(editableGroup.value.id, payload);
+      showSnackbar("¡Grupo actualizado!", "success");
+    } else {
+      await groupStore.createGroup(payload);
+      showSnackbar("¡Grupo creado!", "success");
+    }
+    closeModal();
   } catch (error: any) {
-    console.error("Error al guardar grupo:", error);
-    snackbar.value = {
-      show: true,
-      text: `Error: ${error.message}`,
-      color: "error",
-      timeout: 3000,
-    };
+    showSnackbar(`Error: ${error.message}`, "error");
   }
 };
 
-const viewGroup = (id: string) => {
-  router.push(`/admin/groups/${id}`); // Navegar a la página de detalle del grupo
+const confirmDelete = (group: Group) => {
+  groupToDeleteId.value = group.id;
+  deleteDialog.value = true;
 };
 
-const editGroup = (id: string) => {
-  isEditMode.value = true;
-  const group = groupStore.groups.find((p) => p.id === id);
-  if (group) {
-    newGroup.value = {
-      id: group.id,
-      studentId: group.student.id,
-      teacherId: group.teacher.id,
-      protocolIds: group.protocols.map((p) => p.id),
-      practiceId: group.practice.id,
-      status: group.status,
-    };
-    dialog.value = true;
-  }
-};
-
-const confirmDeleteGroup = (id: string) => {
-  groupToDeleteId.value = id;
-  deleteConfirmDialog.value = true;
-};
-
-const deleteGroup = async () => {
-  try {
-    if (groupToDeleteId.value) {
+const deleteGroupConfirmed = async () => {
+  if (groupToDeleteId.value) {
+    try {
       await groupStore.deleteGroup(groupToDeleteId.value);
-      snackbar.value = {
-        show: true,
-        text: "¡Grupo eliminado exitosamente!",
-        color: "success",
-        timeout: 3000,
-      };
-      deleteConfirmDialog.value = false;
-      groupToDeleteId.value = null;
-      await groupStore.fetchGroups(); // Refrescar la lista
+      showSnackbar("Grupo eliminado", "success");
+    } catch (error: any) {
+      showSnackbar(`Error: ${error.message}`, "error");
     }
-  } catch (error: any) {
-    console.error("Error al eliminar grupo:", error);
-    snackbar.value = {
-      show: true,
-      text: `Error: ${error.message}`,
-      color: "error",
-      timeout: 3000,
-    };
   }
+  deleteDialog.value = false;
+};
+
+const showSnackbar = (text: string, color: string) => {
+  snackbar.value.text = text;
+  snackbar.value.color = color;
+  snackbar.value.show = true;
 };
 </script>

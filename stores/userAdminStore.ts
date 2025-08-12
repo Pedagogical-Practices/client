@@ -1,110 +1,76 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { useApolloClient, useMutation } from "@vue/apollo-composable";
-import { gql } from "graphql-tag";
+import { useApolloClient } from "@vue/apollo-composable";
 import type { User } from "~/types";
 
+// Importar queries/mutations
+import GetUsersQuery from "~/queries/admin/users/getUsers.gql";
+import CreateUserMutation from "~/queries/admin/users/createUser.gql";
+import UpdateUserMutation from "~/queries/admin/users/updateUser.gql";
+import DeleteUserMutation from "~/queries/admin/users/deleteUser.gql";
+
 export const useUserAdminStore = defineStore("userAdmin", () => {
+  const { client } = useApolloClient();
+
   // State
   const users = ref<User[]>([]);
   const loading = ref<boolean>(false);
   const error = ref<any>(null);
 
   // Actions
+  const _handleError = (e: any, context: string) => {
+    error.value = e;
+    console.error(`Error in ${context}:`, e);
+    throw e;
+  };
+
   const fetchUsers = async () => {
     loading.value = true;
     error.value = null;
     try {
-      const { client } = useApolloClient();
-      const { data, errors } = await client.query({
-        query: gql`
-          query GetUsers {
-            users {
-              id
-              name
-              email
-              role
-            }
-          }
-        `,
-        fetchPolicy: "network-only",
-      });
+      const { data, errors } = await client.query({ query: GetUsersQuery, fetchPolicy: "network-only" });
       if (errors) throw errors;
       users.value = data.users;
     } catch (e) {
-      error.value = e;
+      _handleError(e, "fetchUsers");
     } finally {
       loading.value = false;
     }
   };
 
-  const createUser = async (userData: any): Promise<User> => {
+  const createUser = async (userData: any): Promise<User | undefined> => {
     loading.value = true;
     try {
-      const { mutate } = useMutation(gql`
-        mutation CreateUser($input: CreateUserInput!) {
-          createUser(input: $input) {
-            id
-            name
-            email
-            role
-          }
-        }
-      `);
-      const result = await mutate({ input: userData });
-      if (result?.errors) throw result.errors;
+      const { data, errors } = await client.mutate({ mutation: CreateUserMutation, variables: { input: userData } });
+      if (errors) throw errors;
       await fetchUsers();
-      return result?.data?.createUser;
+      return data?.createUser;
     } catch (e) {
-      error.value = e;
-      throw e;
-    } finally {
-      loading.value = false;
+      _handleError(e, "createUser");
     }
   };
 
-  const updateUser = async (id: string, userData: any): Promise<User> => {
+  const updateUser = async (userData: any): Promise<User | undefined> => {
     loading.value = true;
     try {
-      const { mutate } = useMutation(gql`
-        mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
-          updateUser(id: $id, input: $input) {
-            id
-            name
-            email
-            role
-          }
-        }
-      `);
-      const result = await mutate({ id, input: userData });
-      if (result?.errors) throw result.errors;
+      const { data, errors } = await client.mutate({ mutation: UpdateUserMutation, variables: { input: userData } });
+      if (errors) throw errors;
       await fetchUsers();
-      return result?.data?.updateUser;
+      return data?.updateUser;
     } catch (e) {
-      error.value = e;
-      throw e;
-    } finally {
-      loading.value = false;
+      _handleError(e, "updateUser");
     }
   };
 
-  const deleteUser = async (id: string): Promise<boolean> => {
+  const deleteUser = async (id: string): Promise<boolean | undefined> => {
     loading.value = true;
     try {
-      const { mutate } = useMutation(gql`
-        mutation DeleteUser($id: ID!) {
-          deleteUser(id: $id)
-        }
-      `);
-      const result = await mutate({ id });
-      if (result?.errors) throw result.errors;
+      const { data, errors } = await client.mutate({ mutation: DeleteUserMutation, variables: { id } });
+      if (errors) throw errors;
       await fetchUsers();
-      return result?.data?.deleteUser;
+      return data?.deleteUser;
     } catch (e) {
-      error.value = e;
-      throw e;
-    } finally {
-      loading.value = false;
+      _handleError(e, "deleteUser");
     }
   };
 
