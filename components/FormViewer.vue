@@ -34,6 +34,7 @@ import {
   VCheckbox,
   VRadioGroup,
 } from "vuetify/components";
+import MapInput from "~/components/forms/MapInput.vue";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import { FormFieldType, type FormField, DataSourceType } from "~/types";
 import { useDataSourceStore } from "~/stores/dataSourceStore";
@@ -61,11 +62,11 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXTAREA]: VTextarea,
   [FormFieldType.SELECT]: VSelect,
   [FormFieldType.DATE]: VDatePicker,
-  [FormFieldType.MAP]: VTextField,
+  [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
   [FormFieldType.CHECKBOX]: VCheckbox,
-  // [FormFieldType.DATE_PICKER]: VDatePicker,
-  [FormFieldType.DATE_PICKER]: VDateInput,
+  [FormFieldType.DATE_PICKER]: VDatePicker,
+  [FormFieldType.DATE_INPUT]: VDateInput,
   [FormFieldType.RADIO_GROUP]: VRadioGroup,
   [FormFieldType.TIME_PICKER]: VTextField,
   [FormFieldType.BUTTON]: VTextField,
@@ -125,6 +126,7 @@ const getComponentProps = (field: FormField) => {
 watch(
   () => props.formDefinition,
   async (newVal) => {
+    console.log("Form definition updated:", newVal);
     if (newVal?.fields) {
       const currentModelValue = props.modelValue || {};
       localFormData.value = newVal.fields.reduce(

@@ -37,7 +37,19 @@ export const useGroupStore = defineStore("group", () => {
         fetchPolicy: "network-only",
       });
       if (errors) throw errors;
-      groups.value = data.groups;
+      groups.value = data.groups.map((group: any) => ({
+        ...group,
+        practice: group.practice
+          ? Object.assign({}, group.practice)
+          : group.practice,
+        tutor: group.tutor ? Object.assign({}, group.tutor) : group.tutor,
+        students: group.students
+          ? group.students.map((s: any) => Object.assign({}, s))
+          : group.students,
+        institutions: group.institutions
+          ? group.institutions.map((i: any) => Object.assign({}, i))
+          : group.institutions,
+      }));
     } catch (error: any) {
       _handleError(error, "fetchGroups");
     } finally {
@@ -53,7 +65,19 @@ export const useGroupStore = defineStore("group", () => {
         fetchPolicy: "network-only",
       });
       if (errors) throw errors;
-      groups.value = data.myGroups;
+      groups.value = data.myGroups.map((group: any) => ({
+        ...group,
+        practice: group.practice
+          ? Object.assign({}, group.practice)
+          : group.practice,
+        tutor: group.tutor ? Object.assign({}, group.tutor) : group.tutor,
+        students: group.students
+          ? group.students.map((s: any) => Object.assign({}, s))
+          : group.students,
+        institutions: group.institutions
+          ? group.institutions.map((i: any) => Object.assign({}, i))
+          : group.institutions,
+      }));
     } catch (error: any) {
       _handleError(error, "fetchMyGroups");
     } finally {

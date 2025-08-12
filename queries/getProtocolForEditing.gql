@@ -6,6 +6,8 @@ query GetProtocolForEditing($id: ID!) {
     productType
     forms {
       id
+      name
+      description
     }
   }
 }

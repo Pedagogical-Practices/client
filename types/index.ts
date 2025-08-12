@@ -10,7 +10,8 @@ export enum UserRole {
 
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   roles: UserRole[];
   createdAt?: string;
@@ -26,7 +27,7 @@ export enum FormFieldType {
   FILE_UPLOAD = "FILE_UPLOAD",
   CHECKBOX = "CHECKBOX",
   DATE_PICKER = "DATE_PICKER",
-  // DATE_INPUT = "DATE_INPUT",
+  DATE_INPUT = "DATE_INPUT",
   RADIO_GROUP = "RADIO_GROUP",
   TIME_PICKER = "TIME_PICKER",
   BUTTON = "BUTTON",
@@ -110,6 +111,13 @@ export interface Practice {
   updatedAt?: string;
 }
 
+export enum SubmissionStatus {
+  SUBMITTED = "SUBMITTED",
+  REVIEWED = "REVIEWED",
+  APPROVED = "APPROVED",
+  NEEDS_REVISION = "NEEDS_REVISION",
+}
+
 export interface Submission {
   id: string;
   group: Group;
@@ -119,6 +127,7 @@ export interface Submission {
   locationData?: Record<string, any>;
   score?: number;
   feedback?: string;
+  status?: SubmissionStatus; // Add status field
   createdAt?: string;
   updatedAt?: string;
 }

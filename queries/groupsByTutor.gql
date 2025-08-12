@@ -9,11 +9,15 @@ query groupsByTutor($tutorId: ID!) {
     }
     tutor {
       id
-      name
+      firstName
+      lastName
+      roles
     }
     students {
       id
-      name
+      firstName
+      lastName
+      roles
     }
     institutions {
       id

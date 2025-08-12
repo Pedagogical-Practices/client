@@ -47,6 +47,14 @@
           title="Crear Nueva Versión"
         >
         </v-btn>
+        <v-btn
+          class="ma-1"
+          color="indigo"
+          @click="viewForms"
+          icon="mdi-form-select"
+          title="Ver formularios"
+        >
+        </v-btn>
       </v-col>
     </v-row>
     <v-row v-if="formStore.currentForm?.version">
@@ -110,7 +118,7 @@
                       <v-col cols="10">
                         <component
                           :is="getComponentName(element.type)"
-                          :model-value="element.label"
+                          :model-value="element.value"
                           :label="element.label"
                           :rules="
                             element.rules
@@ -299,8 +307,9 @@ import {
   VTextarea,
   VSelect,
   VDatePicker,
-  // VDateInput,
 } from "vuetify/components";
+import { VDateInput } from "vuetify/labs/VDateInput";
+import MapInput from "~/components/forms/MapInput.vue";
 import { definePageMeta } from "#imports";
 import { FormFieldType, type FormField } from "~/types";
 
@@ -330,9 +339,9 @@ const snackbar = ref<{
 watch(
   () => route.query.id,
   async (newId) => {
-    if (newId) {
+    if (newId && typeof newId === "string" && newId.length > 0) {
       try {
-        await formStore.fetchFormById(newId as string);
+        await formStore.fetchFormById(newId);
       } catch (error: any) {
         console.error(
           "Error loading form by ID, resetting to new form:",
@@ -362,11 +371,11 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXTAREA]: VTextarea,
   [FormFieldType.SELECT]: VSelect,
   [FormFieldType.DATE]: VDatePicker,
-  [FormFieldType.MAP]: VTextField,
+  [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
   [FormFieldType.CHECKBOX]: VTextField,
   [FormFieldType.DATE_PICKER]: VDatePicker,
-  // [FormFieldType.DATE_INPUT]: VDateInput,
+  [FormFieldType.DATE_INPUT]: VDateInput,
   [FormFieldType.RADIO_GROUP]: VTextField,
   [FormFieldType.TIME_PICKER]: VTextField,
   [FormFieldType.BUTTON]: VTextField,
@@ -405,7 +414,6 @@ const getElementIcon = (type: FormFieldType): string => {
 };
 
 const selectElementForEditing = (elementName: string): void => {
-  console.log("Editor: selectElementForEditing called for:", elementName);
   formElementStore.setSelectedElement(elementName);
 };
 
@@ -519,12 +527,10 @@ const copyJsonToClipboard = async (): Promise<void> => {
 
 const updateFormFromJson = async (): Promise<void> => {
   try {
-    console.log("Updating form from JSON:", editableFormJsonString.value);
     const parsedJson = JSON.parse(editableFormJsonString.value) as {
       name: string;
       fields: FormField[];
     };
-    console.log("Parsed JSON:", parsedJson);
     if (!parsedJson.name || !Array.isArray(parsedJson.fields)) {
       throw new Error("El JSON debe contener 'name' y 'fields' como array");
     }
@@ -557,6 +563,7 @@ const updateFormFromJson = async (): Promise<void> => {
     };
   }
 };
+
 const saveFormToBackend = async (): Promise<void> => {
   try {
     if (!authStore.isAuthenticated) {
@@ -650,6 +657,10 @@ const createNewFormVersion = async () => {
       timeout: 3000,
     };
   }
+};
+
+const viewForms = () => {
+  router.push("/admin/forms");
 };
 </script>
 

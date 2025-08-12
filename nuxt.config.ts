@@ -35,9 +35,10 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      GQL_HOST: process.env.GQL_HOST || "http://127.0.0.1:4000/graphql",
+      googleMapsApiKey: process.env.NUXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     },
   },
+  plugins: ["~/plugins/google-maps.client.ts"],
   apollo: {
     clients: {
       default: {

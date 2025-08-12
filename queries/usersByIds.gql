@@ -1,0 +1,8 @@
+query UsersByIds($ids: [ID!]!) {
+  usersByIds(ids: $ids) {
+    id
+    firstName
+    lastName
+    roles
+  }
+}

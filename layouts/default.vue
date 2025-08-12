@@ -6,7 +6,7 @@
           variant="text"
           @click.stop="drawer = !drawer"
         ></v-app-bar-nav-icon>
-        <v-toolbar-title>Control de grupos pedagógicos</v-toolbar-title>
+        <v-toolbar-title>Nombre de la APP</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn v-if="!authStore.isAuthenticated" to="/login" text>
           Iniciar Sesión
@@ -70,6 +70,8 @@ const allItems = [
       UserRole.STUDENT,
       UserRole.ASSESSOR,
       UserRole.FAMILY,
+      UserRole.TUTOR,
+      UserRole.COORDINATOR,
     ],
   },
   {
@@ -77,28 +79,64 @@ const allItems = [
     value: "editor",
     to: "/editor",
     icon: "mdi-text-box",
-    roles: [UserRole.ADMIN, UserRole.ASSESSOR],
+    roles: [UserRole.ADMIN, UserRole.ASSESSOR, UserRole.COORDINATOR],
   },
   {
     title: "Prácticas",
-    value: "practices",
+    value: "admin-practices",
     to: "/practices",
     icon: "mdi-book-open-page-variant",
-    roles: [UserRole.ADMIN],
+    roles: [
+      UserRole.ADMIN,
+      UserRole.COORDINATOR,
+      UserRole.TUTOR,
+      UserRole.ASSESSOR,
+    ],
   },
   {
     title: "Formularios",
-    value: "forms",
+    value: "admin-forms",
     to: "/forms",
     icon: "mdi-form-select",
-    roles: [UserRole.ADMIN],
+    roles: [
+      UserRole.ADMIN,
+      UserRole.COORDINATOR,
+      UserRole.TUTOR,
+      UserRole.ASSESSOR,
+    ],
   },
   {
     title: "Protocolos",
+    value: "admin-protocols",
+    to: "/protocols",
+    icon: "mdi-package",
+    roles: [
+      UserRole.ADMIN,
+      UserRole.COORDINATOR,
+      UserRole.TUTOR,
+      UserRole.ASSESSOR,
+    ],
+  },
+  {
+    title: "Mis Prácticas",
+    value: "practices",
+    to: "/practices",
+    icon: "mdi-book-open-page-variant",
+    roles: [UserRole.STUDENT, UserRole.ASSESSOR, UserRole.TUTOR],
+  },
+  {
+    title: "Mis Formularios",
+    value: "forms",
+    to: "/forms",
+    icon: "mdi-form-select",
+    roles: [UserRole.STUDENT, UserRole.ASSESSOR, UserRole.TUTOR],
+  },
+  {
+    title: "Mis Protocolos",
     value: "protocols",
     to: "/protocols",
     icon: "mdi-package",
-    roles: [UserRole.ADMIN, UserRole.ASSESSOR, UserRole.STUDENT],
+    roles: [UserRole.STUDENT, UserRole.ASSESSOR, UserRole.TUTOR],
   },
   {
     title: "Perfil",
@@ -110,6 +148,8 @@ const allItems = [
       UserRole.STUDENT,
       UserRole.ASSESSOR,
       UserRole.FAMILY,
+      UserRole.TUTOR,
+      UserRole.COORDINATOR,
     ],
   },
   {
@@ -117,13 +157,6 @@ const allItems = [
     value: "admin",
     to: "/admin",
     icon: "mdi-security",
-    roles: [UserRole.ADMIN],
-  },
-  {
-    title: "Usuarios",
-    value: "users",
-    to: "/admin/users",
-    icon: "mdi-account-group",
     roles: [UserRole.ADMIN],
   },
   {
@@ -144,6 +177,13 @@ const allItems = [
       UserRole.ASSESSOR,
       UserRole.FAMILY,
     ],
+  },
+  {
+    title: "Mi Progreso",
+    value: "student-progress",
+    to: "/student/my-groups",
+    icon: "mdi-chart-timeline-variant",
+    roles: [UserRole.STUDENT],
   },
   {
     title: "Cerrar sesión",

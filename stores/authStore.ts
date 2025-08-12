@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { navigateTo } from "nuxt/app";
 import { ref, computed } from "vue";
-import { useApolloClient, useMutation } from "@vue/apollo-composable";
+import { useApolloClient } from "@vue/apollo-composable";
 import { gql } from "graphql-tag";
 
 import { UserRole } from "~/types";
@@ -9,31 +9,40 @@ import type { User } from "~/types";
 
 // GQL documents
 import LoginMutation from "~/queries/login.gql";
+import CreateUserMutation from "~/queries/createUser.gql";
+import UpdateUserMutation from "~/queries/updateUser.gql";
+import DeleteUserMutation from "~/queries/deleteUser.gql";
+import GetUsersQuery from "~/queries/users.gql";
+import GetUserByIdQuery from "~/queries/user.gql";
 
 export const useAuthStore = defineStore(
   "auth",
   () => {
+    const { onLogin, onLogout } = useApollo();
     const { client: apolloClient } = useApolloClient();
+
     // State
     const user = ref<User | null>(null);
     const users = ref<User[]>([]);
 
     // Actions
     const login = async (email: string, password: string): Promise<void> => {
-      const { onLogin } = useApollo();
-      const { mutate } = useMutation(LoginMutation);
-
       try {
-        const result = await mutate({ email, password });
+        const { data, errors } = await apolloClient.mutate({
+          mutation: LoginMutation,
+          variables: { email, password },
+        });
 
-        if (result?.errors) {
-          throw new Error(result.errors[0]?.message || "Error en login");
+        if (errors) {
+          throw new Error(errors[0]?.message || "Error en login");
         }
 
-        const { user: loggedInUser, token } = result?.data?.login;
+        const { user: loggedInUser, token } = data?.login;
         user.value = loggedInUser;
-        await onLogin(token);
-        await navigateTo(user.value?.roles?.includes(UserRole.ADMIN) ? "/admin" : "/");
+        await onLogin(token); // Usa el onLogin del scope principal
+        await navigateTo(
+          user.value?.roles?.includes(UserRole.ADMIN) ? "/admin" : "/"
+        );
       } catch (error: any) {
         console.error("authStore: Login error:", error);
         throw new Error(
@@ -43,25 +52,15 @@ export const useAuthStore = defineStore(
     };
 
     const createUser = async (userInput: any): Promise<User> => {
-      const { mutate } = useMutation(gql`
-        mutation CreateUser($input: CreateUserInput!) {
-          createUser(input: $input) {
-            id
-            firstName
-            lastName
-            email
-            roles
-          }
-        }
-      `);
       try {
-        const result = await mutate({ input: userInput });
-        if (result?.errors) {
-          throw new Error(
-            result.errors[0]?.message || "Error al crear usuario"
-          );
+        const { data, errors } = await apolloClient.mutate({
+          mutation: CreateUserMutation,
+          variables: { input: userInput },
+        });
+        if (errors) {
+          throw new Error(errors[0]?.message || "Error al crear usuario");
         }
-        return result?.data?.createUser;
+        return data?.createUser;
       } catch (error: any) {
         console.error("authStore: CreateUser error:", error);
         throw new Error(error.message || "Error desconocido al crear usuario.");
@@ -69,25 +68,15 @@ export const useAuthStore = defineStore(
     };
 
     const updateUser = async (id: string, userInput: any): Promise<User> => {
-      const { mutate } = useMutation(gql`
-        mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
-          updateUser(id: $id, input: $input) {
-            id
-            firstName
-            lastName
-            email
-            roles
-          }
-        }
-      `);
       try {
-        const result = await mutate({ id, input: userInput });
-        if (result?.errors) {
-          throw new Error(
-            result.errors[0]?.message || "Error al actualizar usuario"
-          );
+        const { data, errors } = await apolloClient.mutate({
+          mutation: UpdateUserMutation,
+          variables: { id, input: userInput },
+        });
+        if (errors) {
+          throw new Error(errors[0]?.message || "Error al actualizar usuario");
         }
-        return result?.data?.updateUser;
+        return data?.updateUser;
       } catch (error: any) {
         console.error("authStore: UpdateUser error:", error);
         throw new Error(
@@ -97,19 +86,15 @@ export const useAuthStore = defineStore(
     };
 
     const deleteUser = async (id: string): Promise<boolean> => {
-      const { mutate } = useMutation(gql`
-        mutation DeleteUser($id: ID!) {
-          deleteUser(id: $id)
-        }
-      `);
       try {
-        const result = await mutate({ id });
-        if (result?.errors) {
-          throw new Error(
-            result.errors[0]?.message || "Error al eliminar usuario"
-          );
+        const { data, errors } = await apolloClient.mutate({
+          mutation: DeleteUserMutation,
+          variables: { id },
+        });
+        if (errors) {
+          throw new Error(errors[0]?.message || "Error al eliminar usuario");
         }
-        return result?.data?.deleteUser;
+        return data?.deleteUser;
       } catch (error: any) {
         console.error("authStore: DeleteUser error:", error);
         throw new Error(
@@ -119,9 +104,8 @@ export const useAuthStore = defineStore(
     };
 
     const logout = async (): Promise<void> => {
-      const { onLogout } = useApollo();
       user.value = null;
-      await onLogout();
+      await onLogout(); // Usa el onLogout del scope principal
       await navigateTo("/login");
     };
 
@@ -132,17 +116,7 @@ export const useAuthStore = defineStore(
     const fetchUsers = async () => {
       try {
         const { data, errors } = await apolloClient.query({
-          query: gql`
-            query GetUsers {
-              users {
-                id
-                firstName
-                lastName
-                email
-                roles
-              }
-            }
-          `,
+          query: GetUsersQuery,
           fetchPolicy: "network-only",
         });
         if (errors) throw errors;
@@ -158,17 +132,7 @@ export const useAuthStore = defineStore(
     const fetchUserById = async (id: string): Promise<User | null> => {
       try {
         const { data, errors } = await apolloClient.query({
-          query: gql`
-            query GetUserById($id: ID!) {
-              user(id: $id) {
-                id
-                firstName
-                lastName
-                email
-                roles
-              }
-            }
-          `,
+          query: GetUserByIdQuery,
           variables: { id },
           fetchPolicy: "network-only",
         });
@@ -205,7 +169,7 @@ export const useAuthStore = defineStore(
   {
     // Pinia Persist configuration
     persist: {
-      storage: piniaPluginPersistedstate.localStorage(),
+      storage: "localStorage", // Sintaxis corregida
       paths: ["user"],
     },
   }

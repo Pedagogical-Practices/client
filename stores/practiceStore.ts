@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useApolloClient } from '@nuxtjs/apollo';
+import { useApolloClient } from '@vue/apollo-composable';
 
 import practicesQuery from '~/queries/practices.gql';
 import practiceQuery from '~/queries/practice.gql';
@@ -70,14 +70,14 @@ export const usePracticeStore = defineStore('practice', {
       }
     },
 
-    async updatePractice(id, input) {
+    async updatePractice(input) {
       this.loading = true;
       this.error = null;
       try {
         const { client } = useApolloClient();
         const { data } = await client.mutate({
           mutation: updatePracticeMutation,
-          variables: { id, input },
+          variables: { updatePracticeInput: input },
         });
         const index = this.practices.findIndex(p => p.id === id);
         if (index !== -1) {

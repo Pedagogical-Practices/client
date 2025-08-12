@@ -4,6 +4,7 @@ query Forms {
     name
     description
     fields {
+      id
       name
       label
       type
