@@ -8,16 +8,6 @@ export enum UserRole {
   VISITOR = "VISITOR",
 }
 
-export interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  roles: UserRole[];
-  createdAt?: string;
-  updatedAt?: string;
-}
-
 export enum FormFieldType {
   TEXT = "TEXT",
   TEXTAREA = "TEXTAREA",
@@ -45,6 +35,30 @@ export enum DataSourceType {
   FORMS = "forms",
   PROTOCOLS = "protocols",
   USERS = "users",
+}
+
+export enum SubmissionStatus {
+  SUBMITTED = "SUBMITTED",
+  REVIEWED = "REVIEWED",
+  APPROVED = "APPROVED",
+  NEEDS_REVISION = "NEEDS_REVISION",
+}
+
+export enum PracticeStatus {
+  PENDING = "PENDING",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  ARCHIVED = "ARCHIVED",
+}
+
+export interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  roles: UserRole[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface FormField {
@@ -95,13 +109,6 @@ export interface Protocol {
   updatedAt?: string;
 }
 
-export enum PracticeStatus {
-  PENDING = "PENDING",
-  IN_PROGRESS = "IN_PROGRESS",
-  COMPLETED = "COMPLETED",
-  ARCHIVED = "ARCHIVED",
-}
-
 export interface Practice {
   id: string;
   name: string;
@@ -109,13 +116,6 @@ export interface Practice {
   protocols?: Protocol[];
   createdAt?: string;
   updatedAt?: string;
-}
-
-export enum SubmissionStatus {
-  SUBMITTED = "SUBMITTED",
-  REVIEWED = "REVIEWED",
-  APPROVED = "APPROVED",
-  NEEDS_REVISION = "NEEDS_REVISION",
 }
 
 export interface Submission {
@@ -127,7 +127,7 @@ export interface Submission {
   locationData?: Record<string, any>;
   score?: number;
   feedback?: string;
-  status?: SubmissionStatus; // Add status field
+  status?: SubmissionStatus;
   createdAt?: string;
   updatedAt?: string;
 }

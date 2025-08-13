@@ -147,16 +147,8 @@ watch(
             const fetchedOptions = await dataSourceStore.fetchFormattedOptions(
               field.dataSource
             );
-            dynamicOptions.value[field.dataSource] = fetchedOptions
-              .split("\n")
-              .filter((line) => line)
-              .map((line) => {
-                const parts = line.split("|");
-                return {
-                  value: parts[0],
-                  title: parts.length > 1 ? parts[1] : parts[0],
-                };
-              });
+            // Directly use the array of objects returned by the store
+            dynamicOptions.value[field.dataSource] = fetchedOptions;
           }
         }
       }

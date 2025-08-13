@@ -300,6 +300,7 @@ import { availableElements } from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
 import FormViewer from "~/components/FormViewer.vue";
 import BulkFormUploader from "~/components/forms/BulkFormUploader.vue";
+import DynamicSelect from "~/components/forms/DynamicSelect.vue";
 
 import { type AvailableElementDefinition } from "~/types";
 import {
@@ -307,6 +308,7 @@ import {
   VTextarea,
   VSelect,
   VDatePicker,
+  VCheckbox,
 } from "vuetify/components";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import MapInput from "~/components/forms/MapInput.vue";
@@ -352,7 +354,9 @@ watch(
         formStore.formName = "";
         snackbar.value = {
           show: true,
-          text: `Error al cargar el formulario: ${error.message || "Formulario no encontrado"}. Creando nuevo formulario.`,
+          text: `Error al cargar el formulario: ${
+            error.message || "Formulario no encontrado"
+          }. Creando nuevo formulario.`,
           color: "error",
           timeout: 5000,
         };
@@ -369,11 +373,11 @@ watch(
 const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXT]: VTextField,
   [FormFieldType.TEXTAREA]: VTextarea,
-  [FormFieldType.SELECT]: VSelect,
+  [FormFieldType.SELECT]: VSelect, // Default to VSelect
   [FormFieldType.DATE]: VDatePicker,
   [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
-  [FormFieldType.CHECKBOX]: VTextField,
+  [FormFieldType.CHECKBOX]: VCheckbox,
   [FormFieldType.DATE_PICKER]: VDatePicker,
   [FormFieldType.DATE_INPUT]: VDateInput,
   [FormFieldType.RADIO_GROUP]: VTextField,
@@ -385,15 +389,21 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.PASSWORD]: VTextField,
 };
 
-const getComponentName = (type: FormFieldType): any => {
-  return componentMap[type] || VTextField;
+const getComponentName = (field: FormField): any => {
+  if (field.type === FormFieldType.SELECT && field.dataSource) {
+    return DynamicSelect;
+  }
+  return componentMap[field.type] || VTextField;
 };
 
 const getComponentProps = (field: FormField) => {
   const props: Record<string, any> = {};
 
   if (field.type === FormFieldType.SELECT) {
-    if (
+    if (field.dataSource) {
+      // Pass the whole field to DynamicSelect
+      props.field = field;
+    } else if (
       field.options &&
       typeof field.options === "object" &&
       !Array.isArray(field.options) &&
@@ -577,13 +587,10 @@ const saveFormToBackend = async (): Promise<void> => {
 
     let result;
     const formFields = formElementStore.formElements.map(
-      (element: FormField) => ({
-        name: element.name,
-        label: element.label,
-        type: element.type,
-        options: element.options,
-        rules: element.rules,
-      })
+      (element: FormField) => {
+        const { id, __typename, ...rest } = element; // Omit id and __typename
+        return rest;
+      }
     );
 
     if (formStore.editingFormId) {
@@ -615,7 +622,7 @@ const saveFormToBackend = async (): Promise<void> => {
       color: "success",
       timeout: 3000,
     };
-    router.push("/forms");
+    router.push("/admin/forms");
   } catch (error: any) {
     console.error("Error al guardar:", error);
     snackbar.value = {

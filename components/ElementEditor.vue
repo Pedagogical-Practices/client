@@ -506,26 +506,36 @@ const closeEditor = () => {
 
 const saveChanges = () => {
   if (!editableElement.value) return;
-  if (
+
+  // If a dataSource is selected, clear the manual options to avoid conflicts.
+  if (editableElement.value.dataSource) {
+    editableElement.value.options = [];
+  } else if (
+    // Only parse options from text if there is NO data source
     editableElement.value.type === "SELECT" ||
     editableElement.value.type === "RADIO_GROUP"
   ) {
-    editableElement.value.options = selectItemsText.value
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line)
-      .map((line) => {
-        const parts = line.split("|");
-        if (parts.length === 2)
-          return { value: parts[0].trim(), label: parts[1].trim() };
-        return { value: line, label: line };
-      });
+    if (typeof selectItemsText.value === "string") {
+      editableElement.value.options = selectItemsText.value
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line)
+        .map((line) => {
+          const parts = line.split("|");
+          if (parts.length === 2)
+            return { value: parts[0].trim(), label: parts[1].trim() };
+          return { value: line, label: line };
+        });
+    }
   }
+
   editableElement.value.rules = rulesText.value
     .split(",")
     .map((r) => r.trim())
     .filter((r) => r);
+
   formElement.updateElement(JSON.parse(JSON.stringify(editableElement.value)));
+  closeEditor(); // Close the dialog after saving
 };
 </script>
 
