@@ -3,7 +3,7 @@
     <v-row v-for="(field, index) in formDefinition.fields" :key="field.name">
       <v-col cols="12">
         <component
-          :is="getComponentName(field.type)"
+          :is="getComponentName(field)"
           v-model="localFormData[field.name]"
           :label="field.label"
           :rules="
@@ -32,12 +32,15 @@ import {
   VSelect,
   VDatePicker,
   VCheckbox,
-  VRadioGroup,
 } from "vuetify/components";
 import MapInput from "~/components/forms/MapInput.vue";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import { FormFieldType, type FormField, DataSourceType } from "~/types";
 import { useDataSourceStore } from "~/stores/dataSourceStore";
+import CheckboxGroup from "~/components/forms/CheckboxGroup.vue";
+import DynamicSelect from "~/components/forms/DynamicSelect.vue";
+import RadioGroup from "~/components/forms/RadioGroup.vue";
+import TypographyElement from "~/components/forms/TypographyElement.vue";
 
 export interface Form {
   id?: string;
@@ -65,9 +68,11 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
   [FormFieldType.CHECKBOX]: VCheckbox,
+  [FormFieldType.CHECKBOX_GROUP]: CheckboxGroup,
+  [FormFieldType.RADIO_GROUP]: RadioGroup,
+  [FormFieldType.TYPOGRAPHY]: TypographyElement,
   [FormFieldType.DATE_PICKER]: VDatePicker,
   [FormFieldType.DATE_INPUT]: VDateInput,
-  [FormFieldType.RADIO_GROUP]: VRadioGroup,
   [FormFieldType.TIME_PICKER]: VTextField,
   [FormFieldType.BUTTON]: VTextField,
   [FormFieldType.AUTOCOMPLETE]: VTextField,
@@ -76,8 +81,11 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.PASSWORD]: VTextField,
 };
 
-const getComponentName = (type: FormFieldType): any => {
-  return componentMap[type] || VTextField;
+const getComponentName = (field: FormField): any => {
+  if (field.type === FormFieldType.SELECT && field.dataSource) {
+    return DynamicSelect;
+  }
+  return componentMap[field.type] || VTextField;
 };
 
 const getComponentProps = (field: FormField) => {
@@ -92,7 +100,7 @@ const getComponentProps = (field: FormField) => {
 
   if (field.type === FormFieldType.SELECT) {
     if (field.dataSource) {
-      props.items = dynamicOptions.value[field.dataSource] || [];
+      props.field = field;
     } else if (field.options) {
       if (Array.isArray(field.options)) {
         props.items = field.options;
@@ -101,6 +109,18 @@ const getComponentProps = (field: FormField) => {
       }
     }
     props.multiple = field.multiple || false;
+  } else if (
+    field.type === FormFieldType.CHECKBOX_GROUP ||
+    field.type === FormFieldType.RADIO_GROUP
+  ) {
+    props.options = field.options || [];
+  } else if (field.type === FormFieldType.TYPOGRAPHY) {
+    props.text = field.text;
+    props.variant = field.variant;
+    props.fontWeight = field.fontWeight;
+    props.textAlign = field.textAlign;
+    props.textDecoration = field.textDecoration;
+    props.textTransform = field.textTransform;
   }
 
   if (field.type === FormFieldType.TEXTAREA) {

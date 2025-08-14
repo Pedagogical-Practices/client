@@ -117,7 +117,7 @@
                       </v-col>
                       <v-col cols="10">
                         <component
-                          :is="getComponentName(element.type)"
+                          :is="getComponentName(element)"
                           :model-value="element.value"
                           :label="element.label"
                           :rules="
@@ -301,6 +301,9 @@ import ElementEditor from "~/components/ElementEditor.vue";
 import FormViewer from "~/components/FormViewer.vue";
 import BulkFormUploader from "~/components/forms/BulkFormUploader.vue";
 import DynamicSelect from "~/components/forms/DynamicSelect.vue";
+import CheckboxGroup from "~/components/forms/CheckboxGroup.vue";
+import RadioGroup from "~/components/forms/RadioGroup.vue";
+import TypographyElement from "~/components/forms/TypographyElement.vue";
 
 import { type AvailableElementDefinition } from "~/types";
 import {
@@ -378,9 +381,11 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
   [FormFieldType.CHECKBOX]: VCheckbox,
+  [FormFieldType.CHECKBOX_GROUP]: CheckboxGroup,
+  [FormFieldType.RADIO_GROUP]: RadioGroup,
+  [FormFieldType.TYPOGRAPHY]: TypographyElement,
   [FormFieldType.DATE_PICKER]: VDatePicker,
   [FormFieldType.DATE_INPUT]: VDateInput,
-  [FormFieldType.RADIO_GROUP]: VTextField,
   [FormFieldType.TIME_PICKER]: VTextField,
   [FormFieldType.BUTTON]: VTextField,
   [FormFieldType.AUTOCOMPLETE]: VTextField,
@@ -411,6 +416,18 @@ const getComponentProps = (field: FormField) => {
     ) {
       props.items = (field.options as { items: any[] }).items;
     }
+  } else if (
+    field.type === FormFieldType.CHECKBOX_GROUP ||
+    field.type === FormFieldType.RADIO_GROUP
+  ) {
+    props.options = field.options || [];
+  } else if (field.type === FormFieldType.TYPOGRAPHY) {
+    props.text = field.text;
+    props.variant = field.variant;
+    props.fontWeight = field.fontWeight;
+    props.textAlign = field.textAlign;
+    props.textDecoration = field.textDecoration;
+    props.textTransform = field.textTransform;
   }
 
   return props;

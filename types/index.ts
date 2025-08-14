@@ -16,9 +16,11 @@ export enum FormFieldType {
   MAP = "MAP",
   FILE_UPLOAD = "FILE_UPLOAD",
   CHECKBOX = "CHECKBOX",
+  CHECKBOX_GROUP = "CHECKBOX_GROUP",
+  RADIO_GROUP = "RADIO_GROUP",
+  TYPOGRAPHY = "TYPOGRAPHY",
   DATE_PICKER = "DATE_PICKER",
   DATE_INPUT = "DATE_INPUT",
-  RADIO_GROUP = "RADIO_GROUP",
   TIME_PICKER = "TIME_PICKER",
   BUTTON = "BUTTON",
   AUTOCOMPLETE = "AUTOCOMPLETE",
@@ -88,6 +90,13 @@ export interface FormField {
   height?: string;
   multiple?: boolean;
   color?: string;
+  // Typography properties
+  text?: string;
+  variant?: string;
+  fontWeight?: string;
+  textAlign?: string;
+  textDecoration?: string;
+  textTransform?: string;
 }
 
 export interface Form {
