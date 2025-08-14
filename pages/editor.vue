@@ -100,6 +100,7 @@
                 <li
                   v-for="(element, index) in formElementStore.formElements"
                   :key="element.name"
+                  :ref="(el) => { if (el) elementRefs[index] = el }"
                   class="form-element-item pa-3"
                   :class="{
                     'selected-element':
@@ -289,7 +290,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useFormElementStore } from "~/stores/formElementStore";
 import { useFormStore } from "~/stores/formStore";
@@ -328,6 +329,7 @@ const show = ref<boolean>(false);
 const isDragOver = ref<boolean>(false);
 const showPreview = ref<boolean>(false);
 const showBulkUpload = ref<boolean>(false);
+const elementRefs = ref<any[]>([]);
 const snackbar = ref<{
   show: boolean;
   text: string;
@@ -339,6 +341,22 @@ const snackbar = ref<{
   color: "success",
   timeout: 3000,
 });
+
+watch(
+  () => formElementStore.formElements,
+  (newElements, oldElements) => {
+    if (newElements.length > oldElements.length) {
+      // Element was added
+      nextTick(() => {
+        const lastElementRef = elementRefs.value[newElements.length - 1];
+        if (lastElementRef) {
+          lastElementRef.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      });
+    }
+  },
+  { deep: true }
+);
 
 watch(
   () => route.query.id,
@@ -700,17 +718,19 @@ const viewForms = () => {
   background-color: #f7f8fc;
 }
 .available-elements-col {
-  height: calc(100vh - 64px);
+  height: calc(100vh - 150px); /* Adjust height considering header/other elements */
   overflow-y: auto;
   position: sticky;
-  top: 64px;
+  top: 80px; /* Adjust top position */
 }
 .form-builder-col {
+  height: calc(100vh - 150px); /* Match the height */
+  overflow-y: auto; /* Make this column scrollable */
 }
 .drop-zone {
   border: 2px dashed #bdbdbd;
   padding: 16px;
-  min-height: 250px;
+  min-height: 100%; /* Make drop zone fill the scrollable area */
   transition:
     background-color 0.3s ease,
     border-color 0.3s ease;
