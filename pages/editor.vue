@@ -132,7 +132,6 @@
                           "
                           v-bind="getComponentProps(element)"
                           class="component-preview"
-                          variant="outlined"
                         />
                       </v-col>
                       <v-col cols="1">
@@ -433,6 +432,9 @@ const getComponentProps = (field: FormField) => {
     props.textDecoration = field.textDecoration;
     props.textTransform = field.textTransform;
     props.tag = field.tag;
+  } else {
+    // Apply default variant for other components that support it
+    props.variant = "outlined";
   }
 
   return props;

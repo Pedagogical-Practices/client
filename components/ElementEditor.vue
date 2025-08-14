@@ -124,6 +124,17 @@
                     clearable
                   ></v-select>
                 </v-col>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="editableElement.tag"
+                    :items="semanticTags"
+                    label="Semantic Tag"
+                    hint="The HTML tag to use (e.g., h1, p)."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                  ></v-select>
+                </v-col>
               </template>
 
               <template
@@ -528,6 +539,8 @@ const textTransforms = [
   "text-capitalize",
   "text-none",
 ];
+
+const semanticTags = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "span"];
 
 const elementTypes = computed(() =>
   availableElements.map((el) => ({
