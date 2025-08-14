@@ -60,7 +60,7 @@
               >
                 <v-col cols="12">
                   <v-textarea
-                    v-model="editableElement.text"
+                    v-model="editableElement.value"
                     label="Content"
                     hint="The text to be displayed."
                     persistent-hint

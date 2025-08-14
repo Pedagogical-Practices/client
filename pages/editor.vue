@@ -9,6 +9,12 @@
           v-model="formStore.formName"
         ></v-text-field>
       </v-col>
+      <!--v-chip v-if="formStore.currentForm?.version" color="info">
+        Versión Actual: {{ formStore.currentForm?.version }}
+        <span v-if="formStore.currentForm?.parentForm">
+          (Basado en v{{ formStore.currentForm?.parentForm.version }})
+        </span>
+      </v-chip-->
       <v-col cols="6" class="d-flex justify-end align-center">
         <v-btn
           class="ma-1"
@@ -57,16 +63,6 @@
         </v-btn>
       </v-col>
     </v-row>
-    <v-row v-if="formStore.currentForm?.version">
-      <v-col cols="12">
-        <v-chip color="info" class="mb-4">
-          Versión Actual: {{ formStore.currentForm?.version }}
-          <span v-if="formStore.currentForm?.parentForm">
-            (Basado en v{{ formStore.currentForm?.parentForm.version }})
-          </span>
-        </v-chip>
-      </v-col>
-    </v-row>
     <v-row>
       <v-col cols="12" md="4" class="available-elements-col">
         <AvailableElements />
@@ -100,7 +96,11 @@
                 <li
                   v-for="(element, index) in formElementStore.formElements"
                   :key="element.name"
-                  :ref="(el) => { if (el) elementRefs[index] = el }"
+                  :ref="
+                    (el) => {
+                      if (el) elementRefs[index] = el;
+                    }
+                  "
                   class="form-element-item pa-3"
                   :class="{
                     'selected-element':
@@ -350,7 +350,10 @@ watch(
       nextTick(() => {
         const lastElementRef = elementRefs.value[newElements.length - 1];
         if (lastElementRef) {
-          lastElementRef.scrollIntoView({ behavior: "smooth", block: "center" });
+          lastElementRef.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
         }
       });
     }
@@ -443,7 +446,7 @@ const getComponentProps = (field: FormField) => {
     field.type === FormFieldType.TYPOGRAPHY_HEADING ||
     field.type === FormFieldType.TYPOGRAPHY_BODY
   ) {
-    props.text = field.text;
+    props.value = field.value;
     props.variant = field.variant;
     props.fontWeight = field.fontWeight;
     props.textAlign = field.textAlign;
@@ -718,7 +721,9 @@ const viewForms = () => {
   background-color: #f7f8fc;
 }
 .available-elements-col {
-  height: calc(100vh - 150px); /* Adjust height considering header/other elements */
+  height: calc(
+    100vh - 150px
+  ); /* Adjust height considering header/other elements */
   overflow-y: auto;
   position: sticky;
   top: 80px; /* Adjust top position */

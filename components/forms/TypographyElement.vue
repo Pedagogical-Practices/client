@@ -1,6 +1,6 @@
 <template>
   <component :is="tag || 'div'" :class="styleClasses">
-    {{ text }}
+    {{ value }}
   </component>
 </template>
 
@@ -8,7 +8,7 @@
 import { computed } from 'vue';
 
 const props = defineProps<{
-  text: string;
+  value: string; // Changed from text to value
   variant: string;
   fontWeight?: string;
   textAlign?: string;

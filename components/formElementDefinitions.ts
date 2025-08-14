@@ -10,9 +10,8 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       name: "typography_heading",
       label: "Heading",
-      value: "Título de prueba",
+      value: "Heading Text",
       type: FormFieldType.TYPOGRAPHY_HEADING,
-      text: "Heading Text",
       variant: "text-h4",
       fontWeight: "font-weight-bold",
       textAlign: "text-left",
@@ -29,9 +28,8 @@ export const availableElements: AvailableElementDefinition[] = [
     defaultConfig: {
       name: "typography_body",
       label: "Body Text",
-      value: "Párrafo de prueba",
+      value: "Body text content.",
       type: FormFieldType.TYPOGRAPHY_BODY,
-      text: "Body text content.",
       variant: "text-body-1",
       fontWeight: "font-weight-regular",
       textAlign: "text-left",

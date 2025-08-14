@@ -119,7 +119,7 @@ const getComponentProps = (field: FormField) => {
     field.type === FormFieldType.TYPOGRAPHY_HEADING ||
     field.type === FormFieldType.TYPOGRAPHY_BODY
   ) {
-    props.text = field.text;
+    props.value = field.value;
     props.variant = field.variant;
     props.fontWeight = field.fontWeight;
     props.textAlign = field.textAlign;
