@@ -41,6 +41,7 @@ import CheckboxGroup from "~/components/forms/CheckboxGroup.vue";
 import DynamicSelect from "~/components/forms/DynamicSelect.vue";
 import RadioGroup from "~/components/forms/RadioGroup.vue";
 import TypographyElement from "~/components/forms/TypographyElement.vue";
+import Repeater from "~/components/forms/Repeater.vue";
 
 export interface Form {
   id?: string;
@@ -72,6 +73,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.RADIO_GROUP]: RadioGroup,
   [FormFieldType.TYPOGRAPHY_HEADING]: TypographyElement,
   [FormFieldType.TYPOGRAPHY_BODY]: TypographyElement,
+  [FormFieldType.REPEATER]: Repeater,
   [FormFieldType.DATE_PICKER]: VDatePicker,
   [FormFieldType.DATE_INPUT]: VDateInput,
   [FormFieldType.TIME_PICKER]: VTextField,
@@ -112,7 +114,8 @@ const getComponentProps = (field: FormField) => {
     props.multiple = field.multiple || false;
   } else if (
     field.type === FormFieldType.CHECKBOX_GROUP ||
-    field.type === FormFieldType.RADIO_GROUP
+    field.type === FormFieldType.RADIO_GROUP ||
+    field.type === FormFieldType.REPEATER
   ) {
     props.options = field.options || [];
   } else if (

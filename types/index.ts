@@ -28,6 +28,7 @@ export enum FormFieldType {
   NUMBER = "NUMBER",
   EMAIL = "EMAIL",
   PASSWORD = "PASSWORD",
+  REPEATER = "REPEATER",
 }
 
 export enum DataSourceType {

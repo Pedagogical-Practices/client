@@ -64,10 +64,10 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" md="4" class="available-elements-col">
+      <v-col cols="12" md="3" class="available-elements-col">
         <AvailableElements />
       </v-col>
-      <v-col cols="12" md="8" class="form-builder-col">
+      <v-col cols="12" md="9" class="form-builder-col">
         <v-card
           class="drop-zone mb-4 pa-2"
           :class="{ 'drag-over': isDragOver }"
@@ -155,6 +155,14 @@
                             @click.stop="selectElementForEditing(element.name)"
                             title="Edit Element"
                             icon="mdi-pencil-outline"
+                          ></v-btn>
+                          <v-btn
+                            size="x-small"
+                            variant="text"
+                            color="info"
+                            @click.stop="formElementStore.duplicateElement(element.name)"
+                            title="Duplicate Element"
+                            icon="mdi-content-copy"
                           ></v-btn>
                           <v-btn
                             size="x-small"
@@ -303,6 +311,7 @@ import BulkFormUploader from "~/components/forms/BulkFormUploader.vue";
 import DynamicSelect from "~/components/forms/DynamicSelect.vue";
 import CheckboxGroup from "~/components/forms/CheckboxGroup.vue";
 import RadioGroup from "~/components/forms/RadioGroup.vue";
+import Repeater from "~/components/forms/Repeater.vue";
 
 import { type AvailableElementDefinition } from "~/types";
 import {
@@ -405,6 +414,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.RADIO_GROUP]: RadioGroup,
   [FormFieldType.TYPOGRAPHY_HEADING]: TypographyElement,
   [FormFieldType.TYPOGRAPHY_BODY]: TypographyElement,
+  [FormFieldType.REPEATER]: Repeater,
   [FormFieldType.DATE_PICKER]: VDatePicker,
   [FormFieldType.DATE_INPUT]: VDateInput,
   [FormFieldType.TIME_PICKER]: VTextField,

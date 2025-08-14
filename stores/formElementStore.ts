@@ -108,6 +108,28 @@ export const useFormElementStore = defineStore("formElement", () => {
     }
   };
 
+  const duplicateElement = (elementName: string) => {
+    const originalElement = formElements.value.find(
+      (el) => el.name === elementName
+    );
+    if (!originalElement) return;
+
+    const newElement = JSON.parse(JSON.stringify(originalElement));
+
+    // Generate a new unique name
+    newElement.name = `field_${Date.now()}_${Math.random()
+      .toString(36)
+      .substring(2, 9)}`;
+
+    const originalIndex = formElements.value.findIndex(
+      (el) => el.name === elementName
+    );
+
+    if (originalIndex !== -1) {
+      formElements.value.splice(originalIndex + 1, 0, newElement);
+    }
+  };
+
   // Getters
   const getElement = computed(
     () =>
@@ -135,6 +157,7 @@ export const useFormElementStore = defineStore("formElement", () => {
     chargeFieldsOnForm,
     moveElementUp,
     moveElementDown,
+    duplicateElement,
     getElement,
     getFormElements,
     getSelectedElement,
