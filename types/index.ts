@@ -18,7 +18,8 @@ export enum FormFieldType {
   CHECKBOX = "CHECKBOX",
   CHECKBOX_GROUP = "CHECKBOX_GROUP",
   RADIO_GROUP = "RADIO_GROUP",
-  TYPOGRAPHY = "TYPOGRAPHY",
+  TYPOGRAPHY_HEADING = "TYPOGRAPHY_HEADING",
+  TYPOGRAPHY_BODY = "TYPOGRAPHY_BODY",
   DATE_PICKER = "DATE_PICKER",
   DATE_INPUT = "DATE_INPUT",
   TIME_PICKER = "TIME_PICKER",
@@ -97,6 +98,7 @@ export interface FormField {
   textAlign?: string;
   textDecoration?: string;
   textTransform?: string;
+  tag?: string;
 }
 
 export interface Form {

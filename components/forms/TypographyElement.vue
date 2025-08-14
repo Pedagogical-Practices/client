@@ -1,7 +1,7 @@
 <template>
-  <div :class="styleClasses">
+  <component :is="tag || 'div'" :class="styleClasses">
     {{ text }}
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -14,6 +14,7 @@ const props = defineProps<{
   textAlign?: string;
   textDecoration?: string;
   textTransform?: string;
+  tag?: string; // Prop for semantic HTML tag
 }>();
 
 const styleClasses = computed(() => {

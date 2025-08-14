@@ -52,7 +52,12 @@
               </v-col>
 
               <!-- Fields for Typography Element -->
-              <template v-if="editableElement.type === 'TYPOGRAPHY'">
+              <template
+                v-if="
+                  editableElement.type === 'TYPOGRAPHY_HEADING' ||
+                  editableElement.type === 'TYPOGRAPHY_BODY'
+                "
+              >
                 <v-col cols="12">
                   <v-textarea
                     v-model="editableElement.text"
@@ -108,7 +113,7 @@
                     clearable
                   ></v-select>
                 </v-col>
-                 <v-col cols="12" md="6">
+                <v-col cols="12" md="6">
                   <v-select
                     v-model="editableElement.textDecoration"
                     :items="textDecorations"
@@ -121,9 +126,13 @@
                 </v-col>
               </template>
 
-              <!-- Fields for other Input Elements -->
-              <template v-if="editableElement.type !== 'TYPOGRAPHY'">
-                 <v-col cols="12" md="6">
+              <template
+                v-if="
+                  editableElement.type !== 'TYPOGRAPHY_HEADING' &&
+                  editableElement.type !== 'TYPOGRAPHY_BODY'
+                "
+              >
+                <v-col cols="12" md="6">
                   <v-text-field
                     v-model="editableElement.label"
                     label="Label"
@@ -176,7 +185,15 @@
                 <v-col cols="12" md="6" v-if="editableElement.type === 'TEXT'">
                   <v-select
                     v-model="editableElement.specificType"
-                    :items="['text', 'number', 'email', 'password', 'tel', 'url', 'date']"
+                    :items="[
+                      'text',
+                      'number',
+                      'email',
+                      'password',
+                      'tel',
+                      'url',
+                      'date',
+                    ]"
                     label="Input Type"
                     hint="HTML input type (for text fields)."
                     persistent-hint
@@ -184,7 +201,11 @@
                     variant="filled"
                   ></v-select>
                 </v-col>
-                <v-col cols="12" md="6" v-if="editableElement.type === 'TEXTAREA'">
+                <v-col
+                  cols="12"
+                  md="6"
+                  v-if="editableElement.type === 'TEXTAREA'"
+                >
                   <v-text-field
                     type="number"
                     v-model.number="editableElement.height"
@@ -195,7 +216,11 @@
                     variant="filled"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" md="6" v-if="editableElement.type === 'BUTTON'">
+                <v-col
+                  cols="12"
+                  md="6"
+                  v-if="editableElement.type === 'BUTTON'"
+                >
                   <v-text-field
                     v-model="editableElement.color"
                     label="Button Color"
@@ -208,7 +233,10 @@
                 <v-col
                   cols="12"
                   md="6"
-                  v-if="editableElement.type === FormFieldType.SELECT || editableElement.type === FormFieldType.AUTOCOMPLETE"
+                  v-if="
+                    editableElement.type === FormFieldType.SELECT ||
+                    editableElement.type === FormFieldType.AUTOCOMPLETE
+                  "
                 >
                   <v-select
                     v-model="editableElement.dataSource"
@@ -458,14 +486,48 @@ const selectItemsText = ref("");
 const rulesText = ref("");
 
 const typographyVariants = [
-  'text-h1', 'text-h2', 'text-h3', 'text-h4', 'text-h5', 'text-h6',
-  'text-subtitle-1', 'text-subtitle-2', 'text-body-1', 'text-body-2',
-  'text-button', 'text-caption', 'text-overline'
+  "text-h1",
+  "text-h2",
+  "text-h3",
+  "text-h4",
+  "text-h5",
+  "text-h6",
+  "text-subtitle-1",
+  "text-subtitle-2",
+  "text-body-1",
+  "text-body-2",
+  "text-button",
+  "text-caption",
+  "text-overline",
 ];
-const textAlignments = ['text-left', 'text-center', 'text-right', 'text-justify', 'text-start', 'text-end'];
-const fontWeights = ['font-weight-black', 'font-weight-bold', 'font-weight-medium', 'font-weight-regular', 'font-weight-light', 'font-weight-thin'];
-const textDecorations = ['text-decoration-none', 'text-decoration-overline', 'text-decoration-underline', 'text-decoration-line-through'];
-const textTransforms = ['text-uppercase', 'text-lowercase', 'text-capitalize', 'text-none'];
+const textAlignments = [
+  "text-left",
+  "text-center",
+  "text-right",
+  "text-justify",
+  "text-start",
+  "text-end",
+];
+const fontWeights = [
+  "font-weight-black",
+  "font-weight-bold",
+  "font-weight-medium",
+  "font-weight-regular",
+  "font-weight-light",
+  "font-weight-thin",
+];
+const textDecorations = [
+  "text-decoration-none",
+  "text-decoration-overline",
+  "text-decoration-underline",
+  "text-decoration-line-through",
+];
+const textTransforms = [
+  "text-uppercase",
+  "text-lowercase",
+  "text-capitalize",
+  "text-none",
+];
 
 const elementTypes = computed(() =>
   availableElements.map((el) => ({

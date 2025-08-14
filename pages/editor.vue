@@ -303,7 +303,6 @@ import BulkFormUploader from "~/components/forms/BulkFormUploader.vue";
 import DynamicSelect from "~/components/forms/DynamicSelect.vue";
 import CheckboxGroup from "~/components/forms/CheckboxGroup.vue";
 import RadioGroup from "~/components/forms/RadioGroup.vue";
-import TypographyElement from "~/components/forms/TypographyElement.vue";
 
 import { type AvailableElementDefinition } from "~/types";
 import {
@@ -315,6 +314,7 @@ import {
 } from "vuetify/components";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import MapInput from "~/components/forms/MapInput.vue";
+import TypographyElement from "~/components/forms/TypographyElement.vue";
 import { definePageMeta } from "#imports";
 import { FormFieldType, type FormField } from "~/types";
 
@@ -383,7 +383,8 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.CHECKBOX]: VCheckbox,
   [FormFieldType.CHECKBOX_GROUP]: CheckboxGroup,
   [FormFieldType.RADIO_GROUP]: RadioGroup,
-  [FormFieldType.TYPOGRAPHY]: TypographyElement,
+  [FormFieldType.TYPOGRAPHY_HEADING]: TypographyElement,
+  [FormFieldType.TYPOGRAPHY_BODY]: TypographyElement,
   [FormFieldType.DATE_PICKER]: VDatePicker,
   [FormFieldType.DATE_INPUT]: VDateInput,
   [FormFieldType.TIME_PICKER]: VTextField,
@@ -421,13 +422,17 @@ const getComponentProps = (field: FormField) => {
     field.type === FormFieldType.RADIO_GROUP
   ) {
     props.options = field.options || [];
-  } else if (field.type === FormFieldType.TYPOGRAPHY) {
+  } else if (
+    field.type === FormFieldType.TYPOGRAPHY_HEADING ||
+    field.type === FormFieldType.TYPOGRAPHY_BODY
+  ) {
     props.text = field.text;
     props.variant = field.variant;
     props.fontWeight = field.fontWeight;
     props.textAlign = field.textAlign;
     props.textDecoration = field.textDecoration;
     props.textTransform = field.textTransform;
+    props.tag = field.tag;
   }
 
   return props;
