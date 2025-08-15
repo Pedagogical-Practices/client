@@ -21,7 +21,7 @@ const dataSourceConfigs: Record<DataSourceType, DataSourceConfig> = {
   [DataSourceType.FORMS]: { query: GetForms, dataKey: "forms" },
   [DataSourceType.PROTOCOLS]: { query: GetProtocols, dataKey: "protocols" },
   [DataSourceType.PRACTICES]: { query: GetPractices, dataKey: "practices" },
-  [DataSourceType.COURSES]: { query: GetPractices, dataKey: "practices" },
+  [DataSourceType.COURSES]: { query: GetPractices, dataKey: "practices" }, // Legacy support
   [DataSourceType.INSTITUTIONS]: { query: GetInstitutions, dataKey: "institutions" },
   [DataSourceType.USERS]: { query: GetUsers, dataKey: "users" },
 };
@@ -31,10 +31,6 @@ export const useDataSourceStore = defineStore("dataSource", () => {
   const authStore = useAuthStore();
 
   const fetchFormattedOptions = async (dataSource: DataSourceType): Promise<Array<{ title: string; value: string }>> => {
-    console.log(
-      "dataSourceStore: fetchFormattedOptions called with",
-      dataSource
-    );
     if (!dataSource) return [];
 
     const config = dataSourceConfigs[dataSource];
@@ -43,46 +39,48 @@ export const useDataSourceStore = defineStore("dataSource", () => {
       return [];
     }
 
-    console.log("dataSourceStore: Generated query:", config.query);
-
     try {
-      console.log("dataSourceStore: Executing query", config.query);
-      const { data, errors } = await client.query({ query: config.query });
+      const { data, errors } = await client.query({ 
+        query: config.query, 
+        fetchPolicy: 'network-only' 
+      });
 
       if (errors) {
         console.error("dataSourceStore: GraphQL errors", errors);
         throw new Error(errors.map((e) => e.message).join(", "));
       }
 
-      console.log("dataSourceStore: Data received", data);
-
       if (data && data[config.dataKey]) {
         let items = data[config.dataKey];
         
-        // Filter users by role if dataSource is STUDENTS or TEACHERS
+        // Safer filtering for roles
         if (dataSource === DataSourceType.TEACHERS) {
           items = items.filter(
-            (user: any) => user.roles.includes(UserRole.TEACHER_DIRECTIVE)
+            (user: any) => user && user.roles && (user.roles.includes(UserRole.TEACHER_DIRECTIVE) || user.roles.includes(UserRole.TUTOR))
           );
         } else if (dataSource === DataSourceType.STUDENTS) {
-          items = items.filter((user: any) => user.roles.includes(UserRole.STUDENT));
+          items = items.filter((user: any) => user && user.roles && user.roles.includes(UserRole.STUDENT));
         }
 
+        // Improved and safer mapping logic
         const formatted = items.map((item: any) => {
-          let title = item.name; // Default to item.name
-          if (item.firstName && item.lastName) {
-            title = `${item.firstName} ${item.lastName}`;
+          let title = item.name; // Default for institutions, forms, etc.
+
+          // Specific, robust logic for users
+          if (dataSource === DataSourceType.STUDENTS || dataSource === DataSourceType.TEACHERS || dataSource === DataSourceType.USERS) {
+            const nameParts = [item.firstName, item.middleName, item.lastName, item.secondLastName];
+            title = nameParts.filter(part => part).join(' '); // Filters out null/undefined parts and joins
           }
+          
           return { title: title, value: item.id };
         });
-        console.log("dataSourceStore: Formatted options", formatted);
+
         return formatted;
       }
     } catch (err) {
       console.error(`Error fetching data for ${dataSource}:`, err);
     }
 
-    console.log("dataSourceStore: Returning empty array");
     return [];
   };
 

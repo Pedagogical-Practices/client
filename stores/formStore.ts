@@ -24,6 +24,7 @@ export const useFormStore = defineStore("form", () => {
   const currentForm = ref<Form | null>(null);
   const formElementStore = useFormElementStore();
   const loading = ref<boolean>(true);
+  const version = ref<string>("1.0.0");
 
   // Actions
   const createForm = async (input: any) => {

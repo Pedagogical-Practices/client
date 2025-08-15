@@ -1,5 +1,5 @@
 {
-  "name": "Protocolo 1: Mapeo Del Sector De Influencia De La Institución Educativa",
+  "name": "PP1 - Protocolo 1: Mapeo Del Sector De Influencia De La Institución Educativa",
   "fields": [
     {
       "__typename": "FormField",
@@ -35,7 +35,7 @@
       "id": null,
       "name": "field_1755090836467_9siq22e",
       "label": "Institución educativa",
-      "type": "SELECT",
+      "type": "SELECT_DYNAMIC",
       "options": [],
       "rules": [],
       "defaultValue": null,
@@ -64,7 +64,7 @@
       "id": null,
       "name": "field_1755095445649_4sciqef",
       "label": "Nombre del observador",
-      "type": "SELECT",
+      "type": "SELECT_DYNAMIC",
       "options": [],
       "rules": [],
       "defaultValue": null,
