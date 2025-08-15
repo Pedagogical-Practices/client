@@ -1,29 +1,13 @@
 <template>
-  <v-card class="pa-4">
+  <v-card class="pa-4" variant="outlined">
     <v-card-title class="text-h5">{{ formDefinition.name }}</v-card-title>
     <v-card-text>
       <v-form ref="formRef">
         <div v-for="field in formDefinition.fields" :key="field.name">
           <component
-            :is="getComponentName(field)"
+            :is="componentMap[field.type] || VTextField"
             v-model="formData[field.name]"
-            :label="field.label"
-            :rules="
-              field.rules
-                ? field.rules.map(
-                    (rule: any) => (v: any) =>
-                      !!v || rule !== 'required' || 'Campo requerido'
-                  )
-                : []
-            "
             v-bind="getComponentProps(field)"
-            :items="
-              field.type === FormFieldType.SELECT && field.dataSource
-                ? dynamicSelectOptions.get(field.name)
-                : field.options && field.options.items
-                  ? field.options.items
-                  : []
-            "
             class="mb-4"
             variant="outlined"
           />
@@ -46,10 +30,18 @@ import {
   VTextarea,
   VSelect,
   VDatePicker,
+  VCheckbox,
 } from "vuetify/components";
-import { FormFieldType } from "~/types";
-import { useDataSourceStore } from "~/stores/dataSourceStore";
+import MapInput from "~/components/forms/MapInput.vue";
 import { VDateInput } from "vuetify/labs/VDateInput";
+import { FormFieldType, type FormField } from "~/types";
+import { useDataSourceStore } from "~/stores/dataSourceStore";
+import CheckboxGroup from "~/components/forms/CheckboxGroup.vue";
+import DynamicSelect from "~/components/forms/DynamicSelect.vue";
+import RadioGroup from "~/components/forms/RadioGroup.vue";
+import TypographyElement from "~/components/forms/TypographyElement.vue";
+import Repeater from "~/components/forms/Repeater.vue";
+import Radiomatrix from "~/components/forms/RadioMatrix.vue";
 
 const props = defineProps<{
   formDefinition: any;
@@ -63,7 +55,6 @@ const formRef = ref<HTMLFormElement | null>(null);
 const formData = reactive<Record<string, any>>({});
 const dataSourceStore = useDataSourceStore();
 
-// Reactive map to store dynamically fetched options for select fields
 const dynamicSelectOptions = reactive<
   Map<string, Array<{ title: string; value: string }>>
 >(new Map());
@@ -71,14 +62,20 @@ const dynamicSelectOptions = reactive<
 const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXT]: VTextField,
   [FormFieldType.TEXTAREA]: VTextarea,
-  [FormFieldType.SELECT]: VSelect,
+  [FormFieldType.SELECT_SIMPLE]: VSelect,
+  [FormFieldType.SELECT_DYNAMIC]: DynamicSelect,
   [FormFieldType.DATE]: VDatePicker,
-  [FormFieldType.MAP]: VTextField,
+  [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
-  [FormFieldType.CHECKBOX]: VTextField,
+  [FormFieldType.CHECKBOX]: VCheckbox,
+  [FormFieldType.CHECKBOX_GROUP]: CheckboxGroup,
+  [FormFieldType.RADIO_GROUP]: RadioGroup,
+  [FormFieldType.TYPOGRAPHY_HEADING]: TypographyElement,
+  [FormFieldType.TYPOGRAPHY_BODY]: TypographyElement,
+  [FormFieldType.REPEATER]: Repeater,
+  [FormFieldType.RADIOMATRIX]: Radiomatrix,
   [FormFieldType.DATE_PICKER]: VDatePicker,
   [FormFieldType.DATE_INPUT]: VDateInput,
-  [FormFieldType.RADIO_GROUP]: VTextField,
   [FormFieldType.TIME_PICKER]: VTextField,
   [FormFieldType.BUTTON]: VTextField,
   [FormFieldType.AUTOCOMPLETE]: VTextField,
@@ -87,28 +84,57 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.PASSWORD]: VTextField,
 };
 
-const getComponentName = (field: { type: FormFieldType }): any => {
-  return componentMap[field.type] || VTextField;
-};
+const getComponentProps = (field: FormField) => {
+  const props: Record<string, any> = {
+    label: field.label,
+    placeholder: field.placeholder,
+    hint: field.hint,
+    required: field.required,
+    disabled: field.disabled,
+    readonly: field.readonly,
+    rules: field.rules ? field.rules.map((rule: any) => (v: any) => !!v || rule !== 'required' || 'Campo requerido') : [],
+  };
 
-const getComponentProps = (field: any) => {
-  const props: Record<string, any> = {};
-
-  if (field.type === FormFieldType.SELECT) {
-    if (field.options && field.options.items) {
-      props.items = field.options.items;
+  if (field.type === FormFieldType.SELECT_DYNAMIC) {
+    props.field = field;
+  } else if (field.type === FormFieldType.SELECT_SIMPLE) {
+    if (field.options) {
+      if (Array.isArray(field.options)) {
+        props.items = field.options;
+      } else {
+        props.items = field.options.items || [];
+      }
     }
-    // Handle multiple selection if defined in field.multiple
-    if (field.multiple !== undefined) {
-      props.multiple = field.multiple;
-    }
+    props.multiple = field.multiple || false;
+  } else if (
+    field.type === FormFieldType.CHECKBOX_GROUP ||
+    field.type === FormFieldType.RADIO_GROUP ||
+    field.type === FormFieldType.REPEATER
+  ) {
+    props.options = field.options || [];
+  } else if (field.type === FormFieldType.RADIOMATRIX) {
+    props.items = field.options?.items || [];
+    props.options = field.options?.columns || [];
+  } else if (
+    field.type === FormFieldType.TYPOGRAPHY_HEADING ||
+    field.type === FormFieldType.TYPOGRAPHY_BODY
+  ) {
+    props.value = field.value;
+    props.variant = field.variant;
+    props.fontWeight = field.fontWeight;
+    props.textAlign = field.textAlign;
+    props.textDecoration = field.textDecoration;
+    props.textTransform = field.textTransform;
+    props.tag = field.tag;
   }
 
-  // Add common props
-  if (field.placeholder) props.placeholder = field.placeholder;
-  if (field.disabled) props.disabled = field.disabled;
-  if (field.readonly) props.readonly = field.readonly;
-  if (field.color) props.color = field.color;
+  if (field.type === FormFieldType.TEXTAREA) {
+    props.rows = field.height || 4;
+  }
+
+  if (field.type === FormFieldType.CHECKBOX) {
+    props.modelValue = field.value || false;
+  }
 
   return props;
 };
@@ -117,17 +143,15 @@ const initializeForm = async () => {
   const data = props.initialData || {};
   console.log("FormFiller.vue: initializeForm - using data:", data);
 
-  // Clear existing properties from formData to ensure a fresh state
   for (const key in formData) {
     delete formData[key];
   }
 
-  // Initialize form fields and fetch dynamic options
   for (const field of props.formDefinition.fields) {
     formData[field.name] =
       data[field.name] !== undefined ? data[field.name] : null;
 
-    if (field.type === FormFieldType.SELECT && field.dataSource) {
+    if (field.type === FormFieldType.SELECT_DYNAMIC && field.dataSource) {
       try {
         const options = await dataSourceStore.fetchFormattedOptions(
           field.dataSource
@@ -138,7 +162,7 @@ const initializeForm = async () => {
           `Error fetching data for ${field.name} (${field.dataSource}):`,
           error
         );
-        dynamicSelectOptions.set(field.name, []); // Set empty on error
+        dynamicSelectOptions.set(field.name, []);
       }
     }
   }

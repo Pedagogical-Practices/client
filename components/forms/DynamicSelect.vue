@@ -2,20 +2,20 @@
   <EntityAutocomplete
     :model-value="modelValue"
     @update:model-value="emit('update:modelValue', $event)"
-    :specific-type="field.dataSource"
+    :specificType="field.dataSource ?? ''"
     :label="field.label"
     :multiple="field.multiple"
   />
 </template>
 
 <script setup lang="ts">
-import EntityAutocomplete from '~/components/EntityAutocomplete.vue';
-import type { FormField } from '~/types';
+import EntityAutocomplete from "~/components/EntityAutocomplete.vue";
+import type { FormField } from "~/types";
 
-const props = defineProps<{
+defineProps<{
   modelValue: any;
   field: FormField;
 }>();
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 </script>

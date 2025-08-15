@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
-import { defineProps, defineEmits, computed } from "vue";
+import { computed } from "vue";
 
 const props = defineProps<{
   label?: string; // Made optional

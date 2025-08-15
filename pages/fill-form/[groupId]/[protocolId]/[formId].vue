@@ -8,15 +8,17 @@
     >
       {{ snackbar.message }}
       <template v-slot:actions>
-        <v-btn color="white" variant="text" @click="snackbar.show = false">Cerrar</v-btn>
+        <v-btn color="white" variant="text" @click="snackbar.show = false"
+          >Cerrar</v-btn
+        >
       </template>
     </v-snackbar>
     <v-row>
       <v-col cols="12">
-        <h2 class="text-h5 primary--text">Llenar Formulario</h2>
+        <!--h2 class="text-h5 primary--text">Llenar Formulario</h2>
         <p v-if="formStore.currentForm">
           Formulario: {{ formStore.currentForm.name }}
-        </p>
+        </p-->
 
         <FormFiller
           v-if="formStore.currentForm"
@@ -39,6 +41,7 @@ import { useFormStore } from "~/stores/formStore";
 import { useGroupStore } from "~/stores/groupStore";
 import { useSubmissionStore } from "~/stores/submissionStore";
 import { useAuthStore } from "~/stores/authStore";
+import { UserRole } from "~/types";
 import FormFiller from "~/components/FormFiller.vue";
 
 const route = useRoute();
@@ -71,14 +74,14 @@ onMounted(async () => {
   }
   if (groupId.value) {
     await groupStore.fetchGroup(groupId.value);
-    console.log(
-      "Group fetched in fill-form page:",
-      groupStore.currentGroup
-    );
+    console.log("Group fetched in fill-form page:", groupStore.currentGroup);
 
     if (submissionId.value) {
       await submissionStore.fetchSubmission(submissionId.value);
-      console.log("Existing submission loaded for editing:", submissionStore.currentSubmission);
+      console.log(
+        "Existing submission loaded for editing:",
+        submissionStore.currentSubmission
+      );
     } else {
       submissionStore.setCurrentSubmission(null);
       if (authStore.user?.roles?.includes(UserRole.STUDENT)) {
@@ -92,7 +95,7 @@ onMounted(async () => {
 
 const handleSubmit = async (formData: Record<string, any>) => {
   if (!formId.value || !groupId.value || !authStore.user) return;
-  const studentIds = groupStore.currentGroup?.students?.map(s => s.id) || [];
+  const studentIds = groupStore.currentGroup?.students?.map((s) => s.id) || [];
   try {
     await submissionStore.createSubmission({
       groupId: groupId.value,
@@ -110,7 +113,13 @@ const handleSubmit = async (formData: Record<string, any>) => {
   }
 };
 
-const handleUpdate = async ({ id, data }: { id: string; data: Record<string, any> }) => {
+const handleUpdate = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: Record<string, any>;
+}) => {
   if (!id) return;
   try {
     await submissionStore.updateSubmission(id, { formData: data });

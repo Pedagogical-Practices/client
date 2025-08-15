@@ -118,7 +118,7 @@
                       </v-col>
                       <v-col cols="10">
                         <component
-                          :is="getComponentName(element)"
+                          :is="componentMap[element.type] || VTextField"
                           :model-value="element.value"
                           :label="element.label"
                           :rules="
@@ -133,6 +133,7 @@
                           "
                           v-bind="getComponentProps(element)"
                           class="component-preview"
+                          :field="element"
                         />
                       </v-col>
                       <v-col cols="1">
@@ -160,7 +161,9 @@
                             size="x-small"
                             variant="text"
                             color="info"
-                            @click.stop="formElementStore.duplicateElement(element.name)"
+                            @click.stop="
+                              formElementStore.duplicateElement(element.name)
+                            "
                             title="Duplicate Element"
                             icon="mdi-content-copy"
                           ></v-btn>
@@ -312,6 +315,7 @@ import DynamicSelect from "~/components/forms/DynamicSelect.vue";
 import CheckboxGroup from "~/components/forms/CheckboxGroup.vue";
 import RadioGroup from "~/components/forms/RadioGroup.vue";
 import Repeater from "~/components/forms/Repeater.vue";
+import RadioMatrix from "~/components/forms/RadioMatrix.vue";
 
 import { type AvailableElementDefinition } from "~/types";
 import {
@@ -405,7 +409,8 @@ watch(
 const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXT]: VTextField,
   [FormFieldType.TEXTAREA]: VTextarea,
-  [FormFieldType.SELECT]: VSelect, // Default to VSelect
+  [FormFieldType.SELECT_SIMPLE]: VSelect,
+  [FormFieldType.SELECT_DYNAMIC]: DynamicSelect,
   [FormFieldType.DATE]: VDatePicker,
   [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
@@ -423,30 +428,23 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.NUMBER]: VTextField,
   [FormFieldType.EMAIL]: VTextField,
   [FormFieldType.PASSWORD]: VTextField,
-};
-
-const getComponentName = (field: FormField): any => {
-  if (field.type === FormFieldType.SELECT && field.dataSource) {
-    return DynamicSelect;
-  }
-  return componentMap[field.type] || VTextField;
+  [FormFieldType.RADIOMATRIX]: RadioMatrix,
 };
 
 const getComponentProps = (field: FormField) => {
-  const props: Record<string, any> = {};
+  const props: Record<string, any> = {
+    variant: "outlined", // Apply variant to all for consistency
+  };
 
-  if (field.type === FormFieldType.SELECT) {
-    if (field.dataSource) {
-      // Pass the whole field to DynamicSelect
-      props.field = field;
-    } else if (
-      field.options &&
-      typeof field.options === "object" &&
-      !Array.isArray(field.options) &&
-      "items" in field.options
-    ) {
-      props.items = (field.options as { items: any[] }).items;
+  if (field.type === FormFieldType.SELECT_DYNAMIC) {
+    props.field = field;
+  } else if (field.type === FormFieldType.SELECT_SIMPLE) {
+    if (Array.isArray(field.options)) {
+      props.items = field.options;
     }
+    props.multiple = field.multiple || false;
+    props['item-title'] = 'label';
+    props['item-value'] = 'value';
   } else if (
     field.type === FormFieldType.CHECKBOX_GROUP ||
     field.type === FormFieldType.RADIO_GROUP
@@ -457,15 +455,12 @@ const getComponentProps = (field: FormField) => {
     field.type === FormFieldType.TYPOGRAPHY_BODY
   ) {
     props.value = field.value;
-    props.variant = field.variant;
+    props.variant = field.variant; // Allow override for typography
     props.fontWeight = field.fontWeight;
     props.textAlign = field.textAlign;
     props.textDecoration = field.textDecoration;
     props.textTransform = field.textTransform;
     props.tag = field.tag;
-  } else {
-    // Apply default variant for other components that support it
-    props.variant = "outlined";
   }
 
   return props;
