@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="2" class="available-elements-card">
+  <v-card elevation="2" class="available-elements-card" variant="outlined">
     <v-card-title class="text-subtitle-1 font-weight-medium pa-3">
       Available Elements
     </v-card-title>
@@ -20,16 +20,6 @@
         <v-list-item-title class="text-body-2">{{
           elementDef.displayName
         }}</v-list-item-title>
-        <template v-slot:append>
-          <v-btn
-            size="x-small"
-            variant="outlined"
-            color="grey-darken-1"
-            icon="mdi-plus"
-            @click.stop="addElementByClick(elementDef)"
-            title="Add to form"
-          ></v-btn>
-        </template>
       </v-list-item>
     </v-list>
   </v-card>

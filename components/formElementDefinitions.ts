@@ -127,9 +127,9 @@ export const availableElements: AvailableElementDefinition[] = [
     },
   },
   {
-    name: "Select con DataSource",
+    name: "Select DataSource",
     type: FormFieldType.SELECT_DYNAMIC,
-    displayName: "Select con DataSource",
+    displayName: "Select DataSource",
     icon: "mdi-database-search",
     defaultConfig: {
       name: "select_dynamic",

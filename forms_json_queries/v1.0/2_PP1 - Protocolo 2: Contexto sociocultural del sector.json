@@ -1,5 +1,5 @@
 {
-  "name": "Protocolo 2: Contexto sociocultural del sector",
+  "name": "PP1 - Protocolo 2: Contexto sociocultural del sector",
   "fields": [
     {
       "__typename": "FormField",
@@ -35,7 +35,7 @@
       "id": null,
       "name": "field_1755098124140_vlnqgho",
       "label": "Institución educativa",
-      "type": "SELECT",
+      "type": "SELECT_DYNAMIC",
       "options": [],
       "rules": [],
       "defaultValue": null,
@@ -151,7 +151,7 @@
       "id": null,
       "name": "field_1755098205957_2ftf2pl",
       "label": "Nombre del observador",
-      "type": "SELECT",
+      "type": "SELECT_DYNAMIC",
       "options": [],
       "rules": [],
       "defaultValue": null,
