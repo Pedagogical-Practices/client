@@ -1,0 +1,1404 @@
+{
+  "name": "Protocolo 2: Contexto sociocultural del sector",
+  "fields": [
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755098107040_h128o61",
+      "label": "Fecha",
+      "type": "DATE_INPUT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "YYYY-MM-DD",
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755098124140_vlnqgho",
+      "label": "Institución educativa",
+      "type": "SELECT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "institutions",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": false,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755098152323_njvt0vr",
+      "label": "Nombre del barrio",
+      "type": "TEXT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "text",
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755098153192_luerhnf",
+      "label": "Nombre del sector",
+      "type": "TEXT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "text",
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755098190346_113397o",
+      "label": "Tiempo de la entrevista",
+      "type": "TEXT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "text",
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755098205957_2ftf2pl",
+      "label": "Nombre del observador",
+      "type": "SELECT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "students",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": false,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755178617860_pcfbrvz",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "1. FUENTE DE INFORMACIÓN",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755112475146_q3dvkbm",
+      "label": "a. Actividad del entrevistado",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Líder espiritual",
+          "value": "lider_espiritual",
+          "isOtherOption": false
+        },
+        {
+          "label": "Agente del cuadrante de la policía",
+          "value": "agente_cuadrante_policia",
+          "isOtherOption": false
+        },
+        {
+          "label": "Padre de familia",
+          "value": "padre_familia",
+          "isOtherOption": false
+        },
+        {
+          "label": "Estudiante",
+          "value": "estudiante",
+          "isOtherOption": false
+        },
+        {
+          "label": "Tendero",
+          "value": "tendero",
+          "isOtherOption": false
+        },
+        {
+          "label": "Presidente o miembro de la Junta de Acción Comunal",
+          "value": "presidente_jac",
+          "isOtherOption": false
+        },
+        {
+          "label": "Otro ¿Cúal?",
+          "value": "other",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755112861201_qpock2g",
+      "label": "b. Nivel de escolaridad",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Analfabeta",
+          "value": "analfabeta",
+          "isOtherOption": false
+        },
+        {
+          "label": "Básica primaria",
+          "value": "basica_primaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Básica secundaria",
+          "value": "basica_secundaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Media académica",
+          "value": "media_academica",
+          "isOtherOption": false
+        },
+        {
+          "label": "Técnico",
+          "value": "tecnico",
+          "isOtherOption": false
+        },
+        {
+          "label": "Tecnólogo",
+          "value": "tecnologo",
+          "isOtherOption": false
+        },
+        {
+          "label": "Profesional",
+          "value": "profesional",
+          "isOtherOption": false
+        },
+        {
+          "label": "¿En qué área?",
+          "value": "area",
+          "isOtherOption": true
+        },
+        {
+          "label": "Otro ¿Cuál?",
+          "value": "otra_cual",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755178836244_m9y4p91",
+      "label": "c. Tiempo de habitación en el barrio",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Menos de 3 años ",
+          "value": "option1",
+          "isOtherOption": false
+        },
+        {
+          "label": "De 3 a 5 años",
+          "value": "option2",
+          "isOtherOption": false
+        },
+        {
+          "label": "Más de 5 años",
+          "value": "other",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755178952359_vjz5c83",
+      "label": "d. Actividad de ingreso",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Empleado",
+          "value": "empleado",
+          "isOtherOption": true
+        },
+        {
+          "label": "Independientes",
+          "value": "independiente",
+          "isOtherOption": true
+        },
+        {
+          "label": "Trabajo informal",
+          "value": "trabajo_informal",
+          "isOtherOption": true
+        },
+        {
+          "label": "Ninguno",
+          "value": "ninguno",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755179109346_e86ypir",
+      "label": "e. Vivienda",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Casa formal",
+          "value": "casa_formal",
+          "isOtherOption": false
+        },
+        {
+          "label": "Apartamento",
+          "value": "apartamento",
+          "isOtherOption": false
+        },
+        {
+          "label": "Habitación (Cuarto)",
+          "value": "habitacion_cuarto",
+          "isOtherOption": false
+        },
+        {
+          "label": "Rancho",
+          "value": "rancho",
+          "isOtherOption": false
+        },
+        {
+          "label": "Calle",
+          "value": "calle",
+          "isOtherOption": false
+        },
+        {
+          "label": "Otro ¿Cuál?",
+          "value": "otro_cual",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755179319949_akyd7oa",
+      "label": "Observaciones",
+      "type": "TEXTAREA",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "textarea",
+      "height": "4",
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755179607619_v1vhma0",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "2.\tCARACTERÍSTICAS DEL SECTOR",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755179627180_tpw0jhj",
+      "label": "a.\tNivel socio económico",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Estrato 5 o mayor",
+          "value": "estrato_5_o_mayor",
+          "isOtherOption": false
+        },
+        {
+          "label": "Estrato 4",
+          "value": "estrato_4",
+          "isOtherOption": false
+        },
+        {
+          "label": "Estrato 3",
+          "value": "estrato_3",
+          "isOtherOption": false
+        },
+        {
+          "label": "Estrato 2",
+          "value": "estrato_2",
+          "isOtherOption": false
+        },
+        {
+          "label": "Estrato 1",
+          "value": "estrato_1",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755179867946_ygewqsm",
+      "label": "b.\tServicios básicos",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Alcantarillado",
+          "value": "alcantarillado",
+          "isOtherOption": false
+        },
+        {
+          "label": "Agua potable",
+          "value": "agua_potable",
+          "isOtherOption": false
+        },
+        {
+          "label": "Alumbrado público",
+          "value": "alumbrado_publico",
+          "isOtherOption": false
+        },
+        {
+          "label": "Energía eléctrica",
+          "value": "energia_electrica",
+          "isOtherOption": false
+        },
+        {
+          "label": "Gas natural",
+          "value": "gas_natural",
+          "isOtherOption": false
+        },
+        {
+          "label": "Internet",
+          "value": "internet",
+          "isOtherOption": false
+        },
+        {
+          "label": "Limpieza de espacios públicos",
+          "value": "limpieza_espacios_publicos",
+          "isOtherOption": false
+        },
+        {
+          "label": "Pavimentación de las vías",
+          "value": "pavimentacion_vias",
+          "isOtherOption": false
+        },
+        {
+          "label": "Recolección de basuras",
+          "value": "recoleccion_basuras",
+          "isOtherOption": false
+        },
+        {
+          "label": "Salud",
+          "value": "salud",
+          "isOtherOption": false
+        },
+        {
+          "label": "Seguridad",
+          "value": "seguridad",
+          "isOtherOption": false
+        },
+        {
+          "label": "Señal de televisión",
+          "value": "senal_television",
+          "isOtherOption": false
+        },
+        {
+          "label": "Transporte público",
+          "value": "transporte_publico",
+          "isOtherOption": false
+        },
+        {
+          "label": "Vías de acceso",
+          "value": "vias_acceso",
+          "isOtherOption": false
+        },
+        {
+          "label": "Zonas peatonales (aceras)",
+          "value": "zonas_peatonales",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755180393343_3a1xsu1",
+      "label": "c.\tServicios TIC",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "WiFi público",
+          "value": "wifi_publico",
+          "isOtherOption": false
+        },
+        {
+          "label": "Café internet",
+          "value": "cafe_internet",
+          "isOtherOption": false
+        },
+        {
+          "label": "Punto vive digital",
+          "value": "punto_vive_digital",
+          "isOtherOption": false
+        },
+        {
+          "label": "Venta de minutos",
+          "value": "venta_de_minutos",
+          "isOtherOption": false
+        },
+        {
+          "label": "Radio comunitaria",
+          "value": "radio_comunitaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Salas de videojuegos",
+          "value": "salas_de_videojuegos",
+          "isOtherOption": false
+        },
+        {
+          "label": "Ninguno",
+          "value": "ninguno",
+          "isOtherOption": false
+        },
+        {
+          "label": "Otros. ¿Cuál(es)?",
+          "value": "otros_cuales",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755180500615_v87tchv",
+      "label": "d.\tTipos de viviendas",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Casas",
+          "value": "casas",
+          "isOtherOption": false
+        },
+        {
+          "label": "Apartamentos (Edificios)",
+          "value": "apartamentos_edificios",
+          "isOtherOption": false
+        },
+        {
+          "label": "Habitaciones (Cuartos que hacen parte de una casa, pero tiene entrada independiente)",
+          "value": "habitaciones",
+          "isOtherOption": false
+        },
+        {
+          "label": "Rancho",
+          "value": "rancho",
+          "isOtherOption": false
+        },
+        {
+          "label": "Otra. ¿Cuál?",
+          "value": "otra_cual",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755180646522_ir78f45",
+      "label": "e.\tRecreación",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Parque",
+          "value": "parque",
+          "isOtherOption": false
+        },
+        {
+          "label": "Centros o áreas deportivas",
+          "value": "centros_deportivos",
+          "isOtherOption": false
+        },
+        {
+          "label": "Lugares de reunión de la comunidad",
+          "value": "lugares_reunion_comunidad",
+          "isOtherOption": false
+        },
+        {
+          "label": "Formas de recreación no organizadas. ¿Cuáles?",
+          "value": "otras_recreaciones",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755180744505_po77wz1",
+      "label": "Observaciones",
+      "type": "TEXTAREA",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "textarea",
+      "height": "4",
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755180772064_vwcsy3t",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "3.\tESTRUCTURAS Y FENÓMENOS SOCIALES",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755185409397_hgy51kr",
+      "label": "a.\tActividades económicas",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Agricultura, ganadería y/o pesca",
+          "value": "agricultura_ganaderia_pesca",
+          "isOtherOption": false
+        },
+        {
+          "label": "Comercio de bienes (Ej. tiendas, mercados)",
+          "value": "comercio_bienes",
+          "isOtherOption": false
+        },
+        {
+          "label": "Comercio de servicios (Ej. salones de belleza, talleres, hoteles)",
+          "value": "comercio_servicios",
+          "isOtherOption": false
+        },
+        {
+          "label": "Pequeña empresa (Ej. carpintería, alfarería)",
+          "value": "pequena_empresa",
+          "isOtherOption": false
+        },
+        {
+          "label": "Industria",
+          "value": "industria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Informalidad (Ej. ventas ambulantes)",
+          "value": "informalidad",
+          "isOtherOption": false
+        },
+        {
+          "label": "Otros. ¿Cuál?",
+          "value": "otros_cual",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755185565733_tjn5thq",
+      "label": "b.\tInstituciones sociales",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Asociaciones o Fundaciones",
+          "value": "asociaciones_o_fundaciones",
+          "isOtherOption": false
+        },
+        {
+          "label": "Camus o Centros de salud",
+          "value": "camus_o_centros_de_salud",
+          "isOtherOption": false
+        },
+        {
+          "label": "Bibliotecas",
+          "value": "bibliotecas",
+          "isOtherOption": false
+        },
+        {
+          "label": "Bomberos",
+          "value": "bomberos",
+          "isOtherOption": false
+        },
+        {
+          "label": "Centros de Desarrollo Infantil (CDI)",
+          "value": "centros_de_desarrollo_infantil_cdi",
+          "isOtherOption": false
+        },
+        {
+          "label": "Centros para jóvenes",
+          "value": "centros_para_jovenes",
+          "isOtherOption": false
+        },
+        {
+          "label": "Centros para ancianos",
+          "value": "centros_para_ancianos",
+          "isOtherOption": false
+        },
+        {
+          "label": "CAI (policía)",
+          "value": "cai_policia",
+          "isOtherOption": false
+        },
+        {
+          "label": "Juntas De Acción Comunal",
+          "value": "juntas_de_accion_comunal",
+          "isOtherOption": false
+        },
+        {
+          "label": "Religiosas",
+          "value": "religiosas",
+          "isOtherOption": false
+        },
+        {
+          "label": "Otros. ¿Cuál?",
+          "value": "otros_cual",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755185663764_a5tawf9",
+      "label": "c.\tFenómenos sociales",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Alcoholismo",
+          "value": "alcoholismo",
+          "isOtherOption": false
+        },
+        {
+          "label": "Delincuencia",
+          "value": "delincuencia",
+          "isOtherOption": false
+        },
+        {
+          "label": "Desempleo",
+          "value": "desempleo",
+          "isOtherOption": false
+        },
+        {
+          "label": "Discriminación social",
+          "value": "discriminacion_social",
+          "isOtherOption": false
+        },
+        {
+          "label": "Drogadicción",
+          "value": "drogadiccion",
+          "isOtherOption": false
+        },
+        {
+          "label": "Familias desplazadas",
+          "value": "familias_desplazadas",
+          "isOtherOption": false
+        },
+        {
+          "label": "Grupos al margen de la ley",
+          "value": "grupos_al_margen_de_la_ley",
+          "isOtherOption": false
+        },
+        {
+          "label": "Marginalidad y pobreza",
+          "value": "marginalidad_y_pobreza",
+          "isOtherOption": false
+        },
+        {
+          "label": "Migración de otros países",
+          "value": "migracion_de_otros_paises",
+          "isOtherOption": false
+        },
+        {
+          "label": "Pandillas",
+          "value": "pandillas",
+          "isOtherOption": false
+        },
+        {
+          "label": "Personas de la calle (niños, jóvenes o adultos)",
+          "value": "personas_de_la_calle_ninos_jovenes_o_adultos",
+          "isOtherOption": false
+        },
+        {
+          "label": "Prostitución",
+          "value": "prostitucion",
+          "isOtherOption": false
+        },
+        {
+          "label": "Reinsertados",
+          "value": "reinsertados",
+          "isOtherOption": false
+        },
+        {
+          "label": "Segmentación de la comunidad",
+          "value": "segmentacion_de_la_comunidad",
+          "isOtherOption": false
+        },
+        {
+          "label": "Subestratificación económica y social",
+          "value": "subestratificacion_economica_y_social",
+          "isOtherOption": false
+        },
+        {
+          "label": "Violencia familiar",
+          "value": "violencia_familiar",
+          "isOtherOption": false
+        },
+        {
+          "label": "Otros ¿Cuál(es)?",
+          "value": "otros_cuales",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755185890498_3lt6una",
+      "label": "d.\t¿Cuáles considera son las áreas fuertes (cosas buenas) de la comunidad?",
+      "type": "TEXTAREA",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "textarea",
+      "height": "4",
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755185901352_b3tk1y2",
+      "label": "e.\t¿Cuáles considera son las áreas débiles (problemáticas) de la comunidad?",
+      "type": "TEXTAREA",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "textarea",
+      "height": "4",
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755185922495_shdvrb4",
+      "label": "f.\t¿Cómo son las relaciones entre los vecinos de esta comunidad? ",
+      "type": "TEXTAREA",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "textarea",
+      "height": "4",
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755185948828_phdle8g",
+      "label": "g.\t¿Hay instituciones educativas en el sector?",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Si. ¿Cuál(es)?",
+          "value": "si_cuales",
+          "isOtherOption": true
+        },
+        {
+          "label": "No",
+          "value": "no",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755186238270_xp12fki",
+      "label": "h.\t¿Cómo son las relaciones entre la comunidad y la institución educativa? ¿Qué actividades realizan en conjunto?",
+      "type": "TEXTAREA",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "textarea",
+      "height": "4",
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755186267095_bng9xjf",
+      "label": "Observaciones",
+      "type": "TEXTAREA",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "textarea",
+      "height": "4",
+      "multiple": null,
+      "color": null
+    }
+  ]
+}

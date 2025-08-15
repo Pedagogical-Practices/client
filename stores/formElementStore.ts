@@ -1,10 +1,42 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type { FormField } from "~/types";
+import { FormFieldType, type FormField } from "~/types";
+
 interface FormElementState {
   formElements: FormField[];
   selectedElementName: string | null;
 }
+
+// Helper function to sanitize form fields
+const sanitizeFields = (fields: FormField[]): FormField[] => {
+  return fields.map((field) => {
+    if (
+      (field.type === FormFieldType.CHECKBOX_GROUP ||
+        field.type === FormFieldType.RADIO_GROUP) &&
+      (field.value === null || field.value === undefined)
+    ) {
+      return {
+        ...field,
+        value: {},
+      };
+    }
+    return field;
+  });
+};
+
+const sanitizeField = (field: FormField): FormField => {
+  if (
+    (field.type === FormFieldType.CHECKBOX_GROUP ||
+      field.type === FormFieldType.RADIO_GROUP) &&
+    (field.value === null || field.value === undefined)
+  ) {
+    return {
+      ...field,
+      value: {},
+    };
+  }
+  return field;
+};
 
 export const useFormElementStore = defineStore("formElement", () => {
   // State
@@ -13,11 +45,11 @@ export const useFormElementStore = defineStore("formElement", () => {
 
   // Actions
   const addElement = (element: FormField) => {
-    formElements.value.push(element);
+    formElements.value.push(sanitizeField(element));
   };
 
   const chargeFieldsOnForm = (fields: FormField[]) => {
-    formElements.value = fields;
+    formElements.value = sanitizeFields(fields);
   };
 
   const removeElement = (elementName: string) => {
@@ -30,17 +62,20 @@ export const useFormElementStore = defineStore("formElement", () => {
   };
 
   const updateElement = (updatedElement: FormField) => {
+    const sanitizedElement = sanitizeField(updatedElement);
     const index = formElements.value.findIndex(
-      (el) => el.name === updatedElement.name
+      (el) => el.name === sanitizedElement.name
     );
 
     if (index !== -1) {
-      // Create a new object to ensure reactivity and avoid modifying immutable objects
-      formElements.value[index] = { ...formElements.value[index], ...updatedElement };
+      // Create a new array with the updated element to avoid reactivity issues
+      const newFormElements = [...formElements.value];
+      newFormElements[index] = sanitizedElement;
+      formElements.value = newFormElements;
     } else {
       console.error(
         "Update failed: Element with name",
-        updatedElement.name,
+        sanitizedElement.name,
         "not found in store."
       );
     }
@@ -51,7 +86,7 @@ export const useFormElementStore = defineStore("formElement", () => {
   };
 
   const initializeForm = (elements: FormField[]) => {
-    formElements.value = elements;
+    formElements.value = sanitizeFields(elements);
     selectedElementName.value = null;
   };
 
@@ -70,6 +105,28 @@ export const useFormElementStore = defineStore("formElement", () => {
       const element = formElements.value[index];
       formElements.value.splice(index, 1);
       formElements.value.splice(index + 1, 0, element);
+    }
+  };
+
+  const duplicateElement = (elementName: string) => {
+    const originalElement = formElements.value.find(
+      (el) => el.name === elementName
+    );
+    if (!originalElement) return;
+
+    const newElement = JSON.parse(JSON.stringify(originalElement));
+
+    // Generate a new unique name
+    newElement.name = `field_${Date.now()}_${Math.random()
+      .toString(36)
+      .substring(2, 9)}`;
+
+    const originalIndex = formElements.value.findIndex(
+      (el) => el.name === elementName
+    );
+
+    if (originalIndex !== -1) {
+      formElements.value.splice(originalIndex + 1, 0, newElement);
     }
   };
 
@@ -100,6 +157,7 @@ export const useFormElementStore = defineStore("formElement", () => {
     chargeFieldsOnForm,
     moveElementUp,
     moveElementDown,
+    duplicateElement,
     getElement,
     getFormElements,
     getSelectedElement,
