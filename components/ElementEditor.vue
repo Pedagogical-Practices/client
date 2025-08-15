@@ -315,23 +315,8 @@
                 <v-col cols="12">
                   <v-textarea
                     v-model="selectItemsText"
-                    :label="
-                      editableElement.type === FormFieldType.CHECKBOX_GROUP
-                        ? 'Checkbox Options (JSON format)'
-                        : editableElement.type === FormFieldType.REPEATER
-                          ? 'Repeater Fields Schema (JSON format)'
-                          : editableElement.type === FormFieldType.RADIOMATRIX
-                            ? 'Radio Matrix Options (JSON format)'
-                            : 'Dropdown/Radio Options (one per line)'
-                    "
-                    :hint="
-                      editableElement.type === FormFieldType.CHECKBOX_GROUP ||
-                      editableElement.type === FormFieldType.RADIO_GROUP ||
-                      editableElement.type === FormFieldType.REPEATER ||
-                      editableElement.type === FormFieldType.RADIOMATRIX
-                        ? 'JSON format is required.'
-                        : 'Format: value|label, one per line.'
-                    "
+                    label="Options (JSON format)"
+                    hint="JSON array of objects. e.g., [{ 'label': 'Lunes', 'value': 'LUN' }]"
                     persistent-hint
                     rows="5"
                     density="compact"
@@ -380,17 +365,6 @@
                   variant="filled"
                 ></v-textarea>
               </v-col>
-              <!--v-col cols="12" md="6">
-                <v-select
-                  v-model="editableElement.requirementLevel"
-                  :items="['Required', 'Optional', 'Conditional']"
-                  label="Requirement Level (obligatoriedad)"
-                  hint="Semantic requirement level."
-                  persistent-hint
-                  density="compact"
-                  variant="filled"
-                ></v-select>
-              </v-col-->
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="editableElement.name"
@@ -457,45 +431,19 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-  <v-dialog v-model="showPreview" fullscreen>
-    <v-card>
-      <v-card-title
-        class="d-flex justify-space-between align-center headline-bar"
-      >
-        <span class="text-h6 font-weight-medium">Form Preview</span>
-        <v-btn
-          icon="mdi-close"
-          variant="text"
-          @click="showPreview = false"
-        ></v-btn>
-      </v-card-title>
-      <v-card-text>
-        <FormViewer
-          :formDefinition="{ fields: formElement.getFormElements() }"
-        />
-      </v-card-text>
-    </v-card>
-  </v-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, toRaw, reactive } from "vue";
+import { ref, watch, computed } from "vue";
 import { useFormElementStore } from "~/stores/formElementStore";
-import { useDataSourceStore } from "~/stores/dataSourceStore";
-import FormViewer from "~/components/FormViewer.vue";
 import { availableElements } from "./formElementDefinitions";
 import { type FormField, FormFieldType, DataSourceType } from "~/types";
 
-const DataSourceTypeEnum = DataSourceType;
-//"~/components/formElementDefinitions";
-
 const formElement = useFormElementStore();
-const dataSourceStore = useDataSourceStore();
 
 const selectedElement = computed(() => formElement.getSelectedElement);
 const editableElement = ref<FormField | null>(null);
 const currentTab = ref("general");
-const showPreview = ref(false);
 
 const selectItemsText = ref("");
 const rulesText = ref("");
@@ -543,7 +491,6 @@ const textTransforms = [
   "text-capitalize",
   "text-none",
 ];
-
 const semanticTags = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "span"];
 
 const elementTypes = computed(() =>
@@ -555,41 +502,25 @@ const elementTypes = computed(() =>
 
 watch(
   selectedElement,
-  async (newVal) => {
+  (newVal) => {
     if (newVal) {
       editableElement.value = JSON.parse(JSON.stringify(newVal));
-      if (typeof editableElement.value.dataSource !== "string") {
-        editableElement.value.dataSource = String(
-          editableElement.value.dataSource || ""
-        );
-      }
       rulesText.value = Array.isArray(editableElement.value?.rules)
         ? editableElement.value!.rules.join(",")
         : "";
       currentTab.value = "general";
 
-      if (editableElement.value?.dataSource) {
-        selectItemsText.value = await dataSourceStore.fetchFormattedOptions(
-          editableElement.value.dataSource
-        );
-      } else if (
-        editableElement.value.type === FormFieldType.CHECKBOX_GROUP ||
+      if (
+        editableElement.value.type === FormFieldType.SELECT_SIMPLE ||
         editableElement.value.type === FormFieldType.RADIO_GROUP ||
+        editableElement.value.type === FormFieldType.CHECKBOX_GROUP ||
         editableElement.value.type === FormFieldType.REPEATER ||
         editableElement.value.type === FormFieldType.RADIOMATRIX
       ) {
-        selectItemsText.value = JSON.stringify(
-          editableElement.value.options || [],
-          null,
-          2
-        );
-      } else if (Array.isArray(editableElement.value?.options)) {
-        selectItemsText.value = editableElement.value.options
-          .map((opt: any) => {
-            if (typeof opt === "string") return opt;
-            return `${opt.value}|${opt.label || opt.text}`;
-          })
-          .join("\n");
+        const options = Array.isArray(editableElement.value.options)
+          ? editableElement.value.options
+          : [];
+        selectItemsText.value = JSON.stringify(options, null, 2);
       } else {
         selectItemsText.value = "";
       }
@@ -598,20 +529,6 @@ watch(
     }
   },
   { deep: true, immediate: true }
-);
-
-watch(
-  () => editableElement.value?.dataSource,
-  async (newDataSource) => {
-    if (
-      editableElement.value?.type === "SELECT" ||
-      editableElement.value?.type === "AUTOCOMPLETE"
-    ) {
-      selectItemsText.value = newDataSource
-        ? await dataSourceStore.fetchFormattedOptions(newDataSource)
-        : "";
-    }
-  }
 );
 
 const handleTypeChange = (newType: string) => {
@@ -625,7 +542,6 @@ const handleTypeChange = (newType: string) => {
     JSON.stringify(newElementDef.defaultConfig)
   );
 
-  // Preserve common properties
   const preservedProps = {
     id: oldElement.id,
     label: oldElement.label,
@@ -641,21 +557,16 @@ const handleTypeChange = (newType: string) => {
     description: oldElement.description,
   };
 
-  // Create the new element state by merging defaults and preserved props
   editableElement.value = {
     ...newDefaultConfig,
     ...preservedProps,
-    type: newType, // Ensure the new type is set
-    // Ensure dataSource is preserved or initialized for select/dynamic-select types
+    type: newType,
     dataSource:
-      newType === "SELECT" ||
-      newType === "DYNAMIC-SLECT" ||
-      newType === "AUTOCOMPLETE"
+      newType === FormFieldType.SELECT_DYNAMIC
         ? oldElement.dataSource || ""
         : undefined,
   };
 
-  // Reset specific text fields
   rulesText.value = Array.isArray(editableElement.value?.rules)
     ? editableElement.value?.rules.join(",")
     : "";
@@ -668,16 +579,18 @@ const handleDialogClose = (value: boolean) => {
 
 const closeEditor = () => {
   formElement.setSelectedElement(null);
-  editableElement.value = null;
 };
 
 const saveChanges = () => {
   if (!editableElement.value) return;
 
-  // If a dataSource is selected, clear the manual options to avoid conflicts.
-  if (editableElement.value.dataSource) {
+  if (
+    editableElement.value.dataSource &&
+    editableElement.value.type === FormFieldType.SELECT_DYNAMIC
+  ) {
     editableElement.value.options = [];
   } else if (
+    editableElement.value.type === FormFieldType.SELECT_SIMPLE ||
     editableElement.value.type === FormFieldType.CHECKBOX_GROUP ||
     editableElement.value.type === FormFieldType.RADIO_GROUP ||
     editableElement.value.type === FormFieldType.REPEATER ||
@@ -687,21 +600,7 @@ const saveChanges = () => {
       editableElement.value.options = JSON.parse(selectItemsText.value);
     } catch (e) {
       console.error("Invalid JSON for options", e);
-      // Optionally, show a snackbar error to the user
-      return; // Prevent saving with invalid options
-    }
-  } else if (editableElement.value.type === FormFieldType.SELECT_SIMPLE) {
-    if (typeof selectItemsText.value === "string") {
-      editableElement.value.options = selectItemsText.value
-        .split("\n")
-        .map((line) => line.trim())
-        .filter((line) => line)
-        .map((line) => {
-          const parts = line.split("|");
-          if (parts.length === 2)
-            return { value: parts[0].trim(), label: parts[1].trim() };
-          return { value: line, label: line };
-        });
+      return;
     }
   }
 
@@ -711,39 +610,34 @@ const saveChanges = () => {
     .filter((r) => r);
 
   formElement.updateElement(JSON.parse(JSON.stringify(editableElement.value)));
-  closeEditor(); // Close the dialog after saving
+  closeEditor();
 };
 </script>
 
 <style scoped>
 .element-editor-card {
-  border-radius: 8px; /* More modern rounded corners */
+  border-radius: 8px;
 }
 .headline-bar {
-  background-color: #f5f5f5; /* Light grey for title bar */
+  background-color: #f5f5f5;
   padding: 12px 16px;
 }
 .editor-tabs {
-  border-bottom: 1px solid #e0e0e0; /* Separator for tabs */
+  border-bottom: 1px solid #e0e0e0;
 }
 .tab-content-window {
-  /* The pa-4 class is already applied to the v-window */
 }
 .tab-pane {
-  /* Each v-window-item */
-  padding-top: 12px; /* Add some top padding inside tab panes */
+  padding-top: 12px;
 }
 
 .v-card-text {
-  /* This is the main scrollable area */
-  /* pa-0 was set, so children need padding */
 }
 .editor-actions {
-  background-color: #f9f9f9; /* Light background for actions */
+  background-color: #f9f9f9;
   border-top: 1px solid #e0e0e0;
 }
 
-/* Ensure switches have enough space */
 .v-switch {
   margin-top: 4px;
   margin-bottom: 4px;

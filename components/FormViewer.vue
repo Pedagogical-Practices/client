@@ -108,6 +108,8 @@ const getComponentProps = (field: FormField) => {
       }
     }
     props.multiple = field.multiple || false;
+    props['item-title'] = 'label';
+    props['item-value'] = 'value';
   } else if (
     field.type === FormFieldType.CHECKBOX_GROUP ||
     field.type === FormFieldType.RADIO_GROUP ||

@@ -432,20 +432,19 @@ const componentMap: Record<FormFieldType, any> = {
 };
 
 const getComponentProps = (field: FormField) => {
-  const props: Record<string, any> = {};
+  const props: Record<string, any> = {
+    variant: "outlined", // Apply variant to all for consistency
+  };
 
-  if (field.type === FormFieldType.SELECT) {
-    if (field.dataSource) {
-      // Pass the whole field to DynamicSelect
-      props.field = field;
-    } else if (
-      field.options &&
-      typeof field.options === "object" &&
-      !Array.isArray(field.options) &&
-      "items" in field.options
-    ) {
-      props.items = (field.options as { items: any[] }).items;
+  if (field.type === FormFieldType.SELECT_DYNAMIC) {
+    props.field = field;
+  } else if (field.type === FormFieldType.SELECT_SIMPLE) {
+    if (Array.isArray(field.options)) {
+      props.items = field.options;
     }
+    props.multiple = field.multiple || false;
+    props['item-title'] = 'label';
+    props['item-value'] = 'value';
   } else if (
     field.type === FormFieldType.CHECKBOX_GROUP ||
     field.type === FormFieldType.RADIO_GROUP
@@ -456,15 +455,12 @@ const getComponentProps = (field: FormField) => {
     field.type === FormFieldType.TYPOGRAPHY_BODY
   ) {
     props.value = field.value;
-    props.variant = field.variant;
+    props.variant = field.variant; // Allow override for typography
     props.fontWeight = field.fontWeight;
     props.textAlign = field.textAlign;
     props.textDecoration = field.textDecoration;
     props.textTransform = field.textTransform;
     props.tag = field.tag;
-  } else {
-    // Apply default variant for other components that support it
-    props.variant = "outlined";
   }
 
   return props;

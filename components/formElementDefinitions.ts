@@ -104,7 +104,11 @@ export const availableElements: AvailableElementDefinition[] = [
       name: "select_simple",
       label: "Select Simple",
       type: FormFieldType.SELECT_SIMPLE,
-      options: { items: ["Option 1", "Option 2", "Option 3"] },
+      options: [
+        { label: "Option 1", value: "option1" },
+        { label: "Option 2", value: "option2" },
+        { label: "Option 3", value: "option3" },
+      ],
       rules: [],
       value: "",
       variableName: "",
