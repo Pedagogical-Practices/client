@@ -42,6 +42,7 @@ import DynamicSelect from "~/components/forms/DynamicSelect.vue";
 import RadioGroup from "~/components/forms/RadioGroup.vue";
 import TypographyElement from "~/components/forms/TypographyElement.vue";
 import Repeater from "~/components/forms/Repeater.vue";
+import Radiomatrix from "~/components/forms/RadioMatrix.vue";
 
 export interface Form {
   id?: string;
@@ -74,6 +75,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TYPOGRAPHY_HEADING]: TypographyElement,
   [FormFieldType.TYPOGRAPHY_BODY]: TypographyElement,
   [FormFieldType.REPEATER]: Repeater,
+  [FormFieldType.RADIOMATRIX]: Radiomatrix, // New mapping
   [FormFieldType.DATE_PICKER]: VDatePicker,
   [FormFieldType.DATE_INPUT]: VDateInput,
   [FormFieldType.TIME_PICKER]: VTextField,
@@ -118,6 +120,9 @@ const getComponentProps = (field: FormField) => {
     field.type === FormFieldType.REPEATER
   ) {
     props.options = field.options || [];
+  } else if (field.type === FormFieldType.RADIOMATRIX) {
+    props.items = field.options?.items || [];
+    props.options = field.options?.columns || [];
   } else if (
     field.type === FormFieldType.TYPOGRAPHY_HEADING ||
     field.type === FormFieldType.TYPOGRAPHY_BODY

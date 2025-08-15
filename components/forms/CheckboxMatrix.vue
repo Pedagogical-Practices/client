@@ -1,11 +1,13 @@
 <template>
   <div class="checkbox-matrix-container pa-2 border rounded">
-    <v-label>{{ label }}</v-label>
+    <v-card-text>{{ label }} </v-card-text>
     <v-table density="compact">
       <thead>
         <tr>
           <th class="text-left">Item</th>
-          <th v-for="option in options" :key="option.value" class="text-center">{{ option.text }}</th>
+          <th v-for="option in options" :key="option.value" class="text-center">
+            {{ option.text }}
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -24,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted } from "vue";
 
 const props = defineProps<{
   label?: string; // Made optional
@@ -33,7 +35,7 @@ const props = defineProps<{
   options: { text: string; value: any }[];
 }>();
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 
 const localValue = ref<Record<string, any>>({});
 
@@ -41,12 +43,12 @@ const localValue = ref<Record<string, any>>({});
 onMounted(() => {
   const initialValue = { ...(props.modelValue || {}) };
   let updated = false;
-  (props.items || []).forEach(item => {
+  (props.items || []).forEach((item) => {
     if (!(item in initialValue)) {
       initialValue[item] = {};
       updated = true;
     }
-    (props.options || []).forEach(option => {
+    (props.options || []).forEach((option) => {
       if (!(option.value in initialValue[item])) {
         initialValue[item][option.value] = false; // Default to false
         updated = true;
@@ -55,22 +57,30 @@ onMounted(() => {
   });
   localValue.value = initialValue;
   if (updated) {
-    emit('update:modelValue', localValue.value);
+    emit("update:modelValue", localValue.value);
   }
 });
 
-watch(() => props.modelValue, (newValue) => {
-  if (JSON.stringify(newValue) !== JSON.stringify(localValue.value)) {
-    localValue.value = { ...(newValue || {}) };
-  }
-}, { deep: true });
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (JSON.stringify(newValue) !== JSON.stringify(localValue.value)) {
+      localValue.value = { ...(newValue || {}) };
+    }
+  },
+  { deep: true }
+);
 
-watch(localValue, (newValue) => {
-  emit('update:modelValue', newValue);
-}, { deep: true });
+watch(
+  localValue,
+  (newValue) => {
+    emit("update:modelValue", newValue);
+  },
+  { deep: true }
+);
 
 // Provide a default value for label if it's undefined
-const label = computed(() => props.label || '');
+const label = computed(() => props.label || "");
 </script>
 
 <style scoped>

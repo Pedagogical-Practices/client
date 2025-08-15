@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-label>{{ label }}</v-label>
+    <v-card-text>{{ label }} </v-card-text>
     <div class="checkbox-group-container mt-2">
       <div v-for="option in options" :key="option.value" class="checkbox-item">
         <v-checkbox
@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed } from "vue";
 
 interface CheckboxOption {
   label: string;
@@ -38,31 +38,39 @@ const props = defineProps<{
   modelValue: Record<string, any>;
 }>();
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 
-const otherValue = ref('');
+const otherValue = ref("");
 
 // Initialize otherValue when the component loads or the model changes
-watch(() => props.modelValue, (newValue) => {
-  const otherOption = props.options.find(opt => opt.isOtherOption);
-  if (otherOption && newValue && typeof newValue[otherOption.value] === 'string') {
-    otherValue.value = newValue[otherOption.value];
-  } else {
-    otherValue.value = '';
-  }
-}, { immediate: true, deep: true });
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    const otherOption = props.options.find((opt) => opt.isOtherOption);
+    if (
+      otherOption &&
+      newValue &&
+      typeof newValue[otherOption.value] === "string"
+    ) {
+      otherValue.value = newValue[otherOption.value];
+    } else {
+      otherValue.value = "";
+    }
+  },
+  { immediate: true, deep: true }
+);
 
 const selectedValues = computed({
   get() {
-    if (!props.modelValue || typeof props.modelValue !== 'object') {
+    if (!props.modelValue || typeof props.modelValue !== "object") {
       return [];
     }
-    return Object.keys(props.modelValue).filter(key => props.modelValue[key]);
+    return Object.keys(props.modelValue).filter((key) => props.modelValue[key]);
   },
   set(newValues) {
     const newModelValue: Record<string, any> = {};
-    newValues.forEach(value => {
-      const option = props.options.find(opt => opt.value === value);
+    newValues.forEach((value) => {
+      const option = props.options.find((opt) => opt.value === value);
       if (option?.isOtherOption) {
         // When the 'other' checkbox is checked, we use the value from the otherValue ref.
         newModelValue[value] = otherValue.value || true;
@@ -70,20 +78,19 @@ const selectedValues = computed({
         newModelValue[value] = true;
       }
     });
-    emit('update:modelValue', newModelValue);
-  }
+    emit("update:modelValue", newModelValue);
+  },
 });
 
 // Watch for changes in the 'other' text field and update the model if the 'other' checkbox is checked
 watch(otherValue, (newText) => {
-  const otherOption = props.options.find(opt => opt.isOtherOption);
+  const otherOption = props.options.find((opt) => opt.isOtherOption);
   if (otherOption && selectedValues.value.includes(otherOption.value)) {
     const newModelValue = { ...props.modelValue };
     newModelValue[otherOption.value] = newText || true;
-    emit('update:modelValue', newModelValue);
+    emit("update:modelValue", newModelValue);
   }
 });
-
 </script>
 
 <style scoped>

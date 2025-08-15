@@ -29,6 +29,7 @@ export enum FormFieldType {
   EMAIL = "EMAIL",
   PASSWORD = "PASSWORD",
   REPEATER = "REPEATER",
+  RADIOMATRIX = "RADIOMATRIX",
 }
 
 export enum DataSourceType {

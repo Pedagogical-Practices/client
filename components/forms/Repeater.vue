@@ -1,7 +1,7 @@
 <template>
   <div class="repeater-container">
     <div>
-      <p>{{ label }}</p>
+      <v-card-text>{{ label }} </v-card-text>
       <v-btn color="primary" @click="addItem" prepend-icon="mdi-plus"
         >Agregar campos</v-btn
       >

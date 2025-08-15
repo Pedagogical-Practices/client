@@ -308,7 +308,8 @@
                 v-if="
                   editableElement.type === 'RADIO_GROUP' ||
                   editableElement.type === 'CHECKBOX_GROUP' ||
-                  editableElement.type === 'REPEATER'
+                  editableElement.type === 'REPEATER' ||
+                  editableElement.type === FormFieldType.RADIOMATRIX
                 "
               >
                 <v-col cols="12">
@@ -319,18 +320,22 @@
                         ? 'Checkbox Options (JSON format)'
                         : editableElement.type === 'REPEATER'
                           ? 'Repeater Fields Schema (JSON format)'
-                          : editableElement.type === 'SELECT'
-                            ? 'Dropdown Options (one per line)'
-                            : 'Radio Options (one per line)'
+                          : editableElement.type === FormFieldType.RADIOMATRIX
+                            ? 'Radio Matrix Options (JSON format)'
+                            : editableElement.type === 'SELECT'
+                              ? 'Dropdown Options (one per line)'
+                              : 'Radio Options (one per line)'
                     "
                     :hint="
                       editableElement.type === 'CHECKBOX_GROUP'
                         ? 'JSON array of objects with value and label.'
                         : editableElement.type === 'REPEATER'
                           ? 'JSON array defining the sub-fields.'
-                          : editableElement.type === 'SELECT'
-                            ? 'Format: value|label, one per line.'
-                            : 'Format: value|label, one per line.'
+                          : editableElement.type === FormFieldType.RADIOMATRIX
+                            ? 'JSON object with \'items\' (array of strings) and \'columns\' (array of {text, value}).'
+                            : editableElement.type === 'SELECT'
+                              ? 'Format: value|label, one per line.'
+                              : 'Format: value|label, one per line.'
                     "
                     persistent-hint
                     rows="5"
@@ -575,7 +580,8 @@ watch(
       } else if (
         editableElement.value.type === FormFieldType.CHECKBOX_GROUP ||
         editableElement.value.type === FormFieldType.RADIO_GROUP ||
-        editableElement.value.type === FormFieldType.REPEATER
+        editableElement.value.type === FormFieldType.REPEATER ||
+        editableElement.value.type === FormFieldType.RADIOMATRIX
       ) {
         selectItemsText.value = JSON.stringify(
           editableElement.value.options || [],
@@ -679,7 +685,8 @@ const saveChanges = () => {
   } else if (
     editableElement.value.type === FormFieldType.CHECKBOX_GROUP ||
     editableElement.value.type === FormFieldType.RADIO_GROUP ||
-    editableElement.value.type === FormFieldType.REPEATER
+    editableElement.value.type === FormFieldType.REPEATER ||
+    editableElement.value.type === FormFieldType.RADIOMATRIX
   ) {
     try {
       editableElement.value.options = JSON.parse(selectItemsText.value);

@@ -1,6 +1,6 @@
 <template>
   <div class="radio-matrix-container pa-2 border rounded">
-    <v-label>{{ label }}</v-label>
+    <v-card-text>{{ label }} </v-card-text>
     <v-table density="compact">
       <thead>
         <tr>
