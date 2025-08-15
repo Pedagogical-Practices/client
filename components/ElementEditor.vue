@@ -54,8 +54,8 @@
               <!-- Fields for Typography Element -->
               <template
                 v-if="
-                  editableElement.type === 'TYPOGRAPHY_HEADING' ||
-                  editableElement.type === 'TYPOGRAPHY_BODY'
+                  editableElement.type === FormFieldType.TYPOGRAPHY_HEADING ||
+                  editableElement.type === FormFieldType.TYPOGRAPHY_BODY
                 "
               >
                 <v-col cols="12">
@@ -139,8 +139,8 @@
 
               <template
                 v-if="
-                  editableElement.type !== 'TYPOGRAPHY_HEADING' &&
-                  editableElement.type !== 'TYPOGRAPHY_BODY'
+                  editableElement.type !== FormFieldType.TYPOGRAPHY_HEADING &&
+                  editableElement.type !== FormFieldType.TYPOGRAPHY_BODY
                 "
               >
                 <v-col cols="12" md="6">
@@ -241,17 +241,15 @@
                     variant="filled"
                   ></v-text-field>
                 </v-col>
+                <!-- DATA SOURCE SELECTOR FOR DYNAMIC SELECT -->
                 <v-col
                   cols="12"
                   md="6"
-                  v-if="
-                    editableElement.type === FormFieldType.SELECT ||
-                    editableElement.type === FormFieldType.AUTOCOMPLETE
-                  "
+                  v-if="editableElement.type === FormFieldType.SELECT_DYNAMIC"
                 >
                   <v-select
                     v-model="editableElement.dataSource"
-                    :items="Object.values(DataSourceTypeEnum)"
+                    :items="Object.values(DataSourceType)"
                     label="Data Source"
                     hint="Source for dynamic options (e.g., institutions, teachers)."
                     persistent-hint
@@ -304,11 +302,13 @@
                   variant="filled"
                 ></v-textarea>
               </v-col>
+              <!-- MANUAL OPTIONS EDITOR -->
               <template
                 v-if="
-                  editableElement.type === 'RADIO_GROUP' ||
-                  editableElement.type === 'CHECKBOX_GROUP' ||
-                  editableElement.type === 'REPEATER' ||
+                  editableElement.type === FormFieldType.SELECT_SIMPLE ||
+                  editableElement.type === FormFieldType.RADIO_GROUP ||
+                  editableElement.type === FormFieldType.CHECKBOX_GROUP ||
+                  editableElement.type === FormFieldType.REPEATER ||
                   editableElement.type === FormFieldType.RADIOMATRIX
                 "
               >
@@ -316,26 +316,21 @@
                   <v-textarea
                     v-model="selectItemsText"
                     :label="
-                      editableElement.type === 'CHECKBOX_GROUP'
+                      editableElement.type === FormFieldType.CHECKBOX_GROUP
                         ? 'Checkbox Options (JSON format)'
-                        : editableElement.type === 'REPEATER'
+                        : editableElement.type === FormFieldType.REPEATER
                           ? 'Repeater Fields Schema (JSON format)'
                           : editableElement.type === FormFieldType.RADIOMATRIX
                             ? 'Radio Matrix Options (JSON format)'
-                            : editableElement.type === 'SELECT'
-                              ? 'Dropdown Options (one per line)'
-                              : 'Radio Options (one per line)'
+                            : 'Dropdown/Radio Options (one per line)'
                     "
                     :hint="
-                      editableElement.type === 'CHECKBOX_GROUP'
-                        ? 'JSON array of objects with value and label.'
-                        : editableElement.type === 'REPEATER'
-                          ? 'JSON array defining the sub-fields.'
-                          : editableElement.type === FormFieldType.RADIOMATRIX
-                            ? 'JSON object with \'items\' (array of strings) and \'columns\' (array of {text, value}).'
-                            : editableElement.type === 'SELECT'
-                              ? 'Format: value|label, one per line.'
-                              : 'Format: value|label, one per line.'
+                      editableElement.type === FormFieldType.CHECKBOX_GROUP ||
+                      editableElement.type === FormFieldType.RADIO_GROUP ||
+                      editableElement.type === FormFieldType.REPEATER ||
+                      editableElement.type === FormFieldType.RADIOMATRIX
+                        ? 'JSON format is required.'
+                        : 'Format: value|label, one per line.'
                     "
                     persistent-hint
                     rows="5"
@@ -695,7 +690,7 @@ const saveChanges = () => {
       // Optionally, show a snackbar error to the user
       return; // Prevent saving with invalid options
     }
-  } else if (editableElement.value.type === "SELECT") {
+  } else if (editableElement.value.type === FormFieldType.SELECT_SIMPLE) {
     if (typeof selectItemsText.value === "string") {
       editableElement.value.options = selectItemsText.value
         .split("\n")

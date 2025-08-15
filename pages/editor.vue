@@ -118,7 +118,7 @@
                       </v-col>
                       <v-col cols="10">
                         <component
-                          :is="getComponentName(element)"
+                          :is="componentMap[element.type] || VTextField"
                           :model-value="element.value"
                           :label="element.label"
                           :rules="
@@ -133,6 +133,7 @@
                           "
                           v-bind="getComponentProps(element)"
                           class="component-preview"
+                          :field="element"
                         />
                       </v-col>
                       <v-col cols="1">
@@ -160,7 +161,9 @@
                             size="x-small"
                             variant="text"
                             color="info"
-                            @click.stop="formElementStore.duplicateElement(element.name)"
+                            @click.stop="
+                              formElementStore.duplicateElement(element.name)
+                            "
                             title="Duplicate Element"
                             icon="mdi-content-copy"
                           ></v-btn>
@@ -312,6 +315,7 @@ import DynamicSelect from "~/components/forms/DynamicSelect.vue";
 import CheckboxGroup from "~/components/forms/CheckboxGroup.vue";
 import RadioGroup from "~/components/forms/RadioGroup.vue";
 import Repeater from "~/components/forms/Repeater.vue";
+import RadioMatrix from "~/components/forms/RadioMatrix.vue";
 
 import { type AvailableElementDefinition } from "~/types";
 import {
@@ -405,7 +409,8 @@ watch(
 const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXT]: VTextField,
   [FormFieldType.TEXTAREA]: VTextarea,
-  [FormFieldType.SELECT]: VSelect, // Default to VSelect
+  [FormFieldType.SELECT_SIMPLE]: VSelect,
+  [FormFieldType.SELECT_DYNAMIC]: DynamicSelect,
   [FormFieldType.DATE]: VDatePicker,
   [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
@@ -423,13 +428,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.NUMBER]: VTextField,
   [FormFieldType.EMAIL]: VTextField,
   [FormFieldType.PASSWORD]: VTextField,
-};
-
-const getComponentName = (field: FormField): any => {
-  if (field.type === FormFieldType.SELECT && field.dataSource) {
-    return DynamicSelect;
-  }
-  return componentMap[field.type] || VTextField;
+  [FormFieldType.RADIOMATRIX]: RadioMatrix,
 };
 
 const getComponentProps = (field: FormField) => {

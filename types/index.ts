@@ -11,7 +11,8 @@ export enum UserRole {
 export enum FormFieldType {
   TEXT = "TEXT",
   TEXTAREA = "TEXTAREA",
-  SELECT = "SELECT",
+  SELECT_SIMPLE = "SELECT_SIMPLE",
+  SELECT_DYNAMIC = "SELECT_DYNAMIC",
   DATE = "DATE",
   MAP = "MAP",
   FILE_UPLOAD = "FILE_UPLOAD",
@@ -93,7 +94,6 @@ export interface FormField {
   height?: string;
   multiple?: boolean;
   color?: string;
-  // Typography properties
   text?: string;
   variant?: string;
   fontWeight?: string;

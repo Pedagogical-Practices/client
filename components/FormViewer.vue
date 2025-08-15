@@ -3,7 +3,7 @@
     <v-row v-for="(field, index) in formDefinition.fields" :key="field.name">
       <v-col cols="12">
         <component
-          :is="getComponentName(field)"
+          :is="componentMap[field.type] || VTextField"
           v-model="localFormData[field.name]"
           :label="field.label"
           :rules="
@@ -65,7 +65,8 @@ const dynamicOptions = ref<Record<string, any[]>>({});
 const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXT]: VTextField,
   [FormFieldType.TEXTAREA]: VTextarea,
-  [FormFieldType.SELECT]: VSelect,
+  [FormFieldType.SELECT_SIMPLE]: VSelect,
+  [FormFieldType.SELECT_DYNAMIC]: DynamicSelect,
   [FormFieldType.DATE]: VDatePicker,
   [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
@@ -75,7 +76,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TYPOGRAPHY_HEADING]: TypographyElement,
   [FormFieldType.TYPOGRAPHY_BODY]: TypographyElement,
   [FormFieldType.REPEATER]: Repeater,
-  [FormFieldType.RADIOMATRIX]: Radiomatrix, // New mapping
+  [FormFieldType.RADIOMATRIX]: Radiomatrix,
   [FormFieldType.DATE_PICKER]: VDatePicker,
   [FormFieldType.DATE_INPUT]: VDateInput,
   [FormFieldType.TIME_PICKER]: VTextField,
@@ -84,13 +85,6 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.NUMBER]: VTextField,
   [FormFieldType.EMAIL]: VTextField,
   [FormFieldType.PASSWORD]: VTextField,
-};
-
-const getComponentName = (field: FormField): any => {
-  if (field.type === FormFieldType.SELECT && field.dataSource) {
-    return DynamicSelect;
-  }
-  return componentMap[field.type] || VTextField;
 };
 
 const getComponentProps = (field: FormField) => {
@@ -103,10 +97,10 @@ const getComponentProps = (field: FormField) => {
     readonly: field.readonly,
   };
 
-  if (field.type === FormFieldType.SELECT) {
-    if (field.dataSource) {
-      props.field = field;
-    } else if (field.options) {
+  if (field.type === FormFieldType.SELECT_DYNAMIC) {
+    props.field = field;
+  } else if (field.type === FormFieldType.SELECT_SIMPLE) {
+    if (field.options) {
       if (Array.isArray(field.options)) {
         props.items = field.options;
       } else {
