@@ -9,6 +9,12 @@
           v-model="formStore.formName"
         ></v-text-field>
       </v-col>
+      <!--v-chip v-if="formStore.currentForm?.version" color="info">
+        Versión Actual: {{ formStore.currentForm?.version }}
+        <span v-if="formStore.currentForm?.parentForm">
+          (Basado en v{{ formStore.currentForm?.parentForm.version }})
+        </span>
+      </v-chip-->
       <v-col cols="6" class="d-flex justify-end align-center">
         <v-btn
           class="ma-1"
@@ -57,21 +63,11 @@
         </v-btn>
       </v-col>
     </v-row>
-    <v-row v-if="formStore.currentForm?.version">
-      <v-col cols="12">
-        <v-chip color="info" class="mb-4">
-          Versión Actual: {{ formStore.currentForm?.version }}
-          <span v-if="formStore.currentForm?.parentForm">
-            (Basado en v{{ formStore.currentForm?.parentForm.version }})
-          </span>
-        </v-chip>
-      </v-col>
-    </v-row>
     <v-row>
-      <v-col cols="12" md="4" class="available-elements-col">
+      <v-col cols="12" md="3" class="available-elements-col">
         <AvailableElements />
       </v-col>
-      <v-col cols="12" md="8" class="form-builder-col">
+      <v-col cols="12" md="9" class="form-builder-col">
         <v-card
           class="drop-zone mb-4 pa-2"
           :class="{ 'drag-over': isDragOver }"
@@ -100,6 +96,11 @@
                 <li
                   v-for="(element, index) in formElementStore.formElements"
                   :key="element.name"
+                  :ref="
+                    (el) => {
+                      if (el) elementRefs[index] = el;
+                    }
+                  "
                   class="form-element-item pa-3"
                   :class="{
                     'selected-element':
@@ -117,7 +118,7 @@
                       </v-col>
                       <v-col cols="10">
                         <component
-                          :is="getComponentName(element.type)"
+                          :is="getComponentName(element)"
                           :model-value="element.value"
                           :label="element.label"
                           :rules="
@@ -132,7 +133,6 @@
                           "
                           v-bind="getComponentProps(element)"
                           class="component-preview"
-                          variant="outlined"
                         />
                       </v-col>
                       <v-col cols="1">
@@ -155,6 +155,14 @@
                             @click.stop="selectElementForEditing(element.name)"
                             title="Edit Element"
                             icon="mdi-pencil-outline"
+                          ></v-btn>
+                          <v-btn
+                            size="x-small"
+                            variant="text"
+                            color="info"
+                            @click.stop="formElementStore.duplicateElement(element.name)"
+                            title="Duplicate Element"
+                            icon="mdi-content-copy"
                           ></v-btn>
                           <v-btn
                             size="x-small"
@@ -290,7 +298,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useFormElementStore } from "~/stores/formElementStore";
 import { useFormStore } from "~/stores/formStore";
@@ -300,6 +308,10 @@ import { availableElements } from "~/components/formElementDefinitions";
 import ElementEditor from "~/components/ElementEditor.vue";
 import FormViewer from "~/components/FormViewer.vue";
 import BulkFormUploader from "~/components/forms/BulkFormUploader.vue";
+import DynamicSelect from "~/components/forms/DynamicSelect.vue";
+import CheckboxGroup from "~/components/forms/CheckboxGroup.vue";
+import RadioGroup from "~/components/forms/RadioGroup.vue";
+import Repeater from "~/components/forms/Repeater.vue";
 
 import { type AvailableElementDefinition } from "~/types";
 import {
@@ -307,9 +319,11 @@ import {
   VTextarea,
   VSelect,
   VDatePicker,
+  VCheckbox,
 } from "vuetify/components";
 import { VDateInput } from "vuetify/labs/VDateInput";
 import MapInput from "~/components/forms/MapInput.vue";
+import TypographyElement from "~/components/forms/TypographyElement.vue";
 import { definePageMeta } from "#imports";
 import { FormFieldType, type FormField } from "~/types";
 
@@ -324,6 +338,7 @@ const show = ref<boolean>(false);
 const isDragOver = ref<boolean>(false);
 const showPreview = ref<boolean>(false);
 const showBulkUpload = ref<boolean>(false);
+const elementRefs = ref<any[]>([]);
 const snackbar = ref<{
   show: boolean;
   text: string;
@@ -335,6 +350,25 @@ const snackbar = ref<{
   color: "success",
   timeout: 3000,
 });
+
+watch(
+  () => formElementStore.formElements,
+  (newElements, oldElements) => {
+    if (newElements.length > oldElements.length) {
+      // Element was added
+      nextTick(() => {
+        const lastElementRef = elementRefs.value[newElements.length - 1];
+        if (lastElementRef) {
+          lastElementRef.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      });
+    }
+  },
+  { deep: true }
+);
 
 watch(
   () => route.query.id,
@@ -352,7 +386,9 @@ watch(
         formStore.formName = "";
         snackbar.value = {
           show: true,
-          text: `Error al cargar el formulario: ${error.message || "Formulario no encontrado"}. Creando nuevo formulario.`,
+          text: `Error al cargar el formulario: ${
+            error.message || "Formulario no encontrado"
+          }. Creando nuevo formulario.`,
           color: "error",
           timeout: 5000,
         };
@@ -369,14 +405,18 @@ watch(
 const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.TEXT]: VTextField,
   [FormFieldType.TEXTAREA]: VTextarea,
-  [FormFieldType.SELECT]: VSelect,
+  [FormFieldType.SELECT]: VSelect, // Default to VSelect
   [FormFieldType.DATE]: VDatePicker,
   [FormFieldType.MAP]: MapInput,
   [FormFieldType.FILE_UPLOAD]: VTextField,
-  [FormFieldType.CHECKBOX]: VTextField,
+  [FormFieldType.CHECKBOX]: VCheckbox,
+  [FormFieldType.CHECKBOX_GROUP]: CheckboxGroup,
+  [FormFieldType.RADIO_GROUP]: RadioGroup,
+  [FormFieldType.TYPOGRAPHY_HEADING]: TypographyElement,
+  [FormFieldType.TYPOGRAPHY_BODY]: TypographyElement,
+  [FormFieldType.REPEATER]: Repeater,
   [FormFieldType.DATE_PICKER]: VDatePicker,
   [FormFieldType.DATE_INPUT]: VDateInput,
-  [FormFieldType.RADIO_GROUP]: VTextField,
   [FormFieldType.TIME_PICKER]: VTextField,
   [FormFieldType.BUTTON]: VTextField,
   [FormFieldType.AUTOCOMPLETE]: VTextField,
@@ -385,15 +425,21 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.PASSWORD]: VTextField,
 };
 
-const getComponentName = (type: FormFieldType): any => {
-  return componentMap[type] || VTextField;
+const getComponentName = (field: FormField): any => {
+  if (field.type === FormFieldType.SELECT && field.dataSource) {
+    return DynamicSelect;
+  }
+  return componentMap[field.type] || VTextField;
 };
 
 const getComponentProps = (field: FormField) => {
   const props: Record<string, any> = {};
 
   if (field.type === FormFieldType.SELECT) {
-    if (
+    if (field.dataSource) {
+      // Pass the whole field to DynamicSelect
+      props.field = field;
+    } else if (
       field.options &&
       typeof field.options === "object" &&
       !Array.isArray(field.options) &&
@@ -401,6 +447,25 @@ const getComponentProps = (field: FormField) => {
     ) {
       props.items = (field.options as { items: any[] }).items;
     }
+  } else if (
+    field.type === FormFieldType.CHECKBOX_GROUP ||
+    field.type === FormFieldType.RADIO_GROUP
+  ) {
+    props.options = field.options || [];
+  } else if (
+    field.type === FormFieldType.TYPOGRAPHY_HEADING ||
+    field.type === FormFieldType.TYPOGRAPHY_BODY
+  ) {
+    props.value = field.value;
+    props.variant = field.variant;
+    props.fontWeight = field.fontWeight;
+    props.textAlign = field.textAlign;
+    props.textDecoration = field.textDecoration;
+    props.textTransform = field.textTransform;
+    props.tag = field.tag;
+  } else {
+    // Apply default variant for other components that support it
+    props.variant = "outlined";
   }
 
   return props;
@@ -577,13 +642,10 @@ const saveFormToBackend = async (): Promise<void> => {
 
     let result;
     const formFields = formElementStore.formElements.map(
-      (element: FormField) => ({
-        name: element.name,
-        label: element.label,
-        type: element.type,
-        options: element.options,
-        rules: element.rules,
-      })
+      (element: FormField) => {
+        const { id, __typename, ...rest } = element; // Omit id and __typename
+        return rest;
+      }
     );
 
     if (formStore.editingFormId) {
@@ -615,7 +677,7 @@ const saveFormToBackend = async (): Promise<void> => {
       color: "success",
       timeout: 3000,
     };
-    router.push("/forms");
+    router.push("/admin/forms");
   } catch (error: any) {
     console.error("Error al guardar:", error);
     snackbar.value = {
@@ -669,17 +731,21 @@ const viewForms = () => {
   background-color: #f7f8fc;
 }
 .available-elements-col {
-  height: calc(100vh - 64px);
+  height: calc(
+    100vh - 150px
+  ); /* Adjust height considering header/other elements */
   overflow-y: auto;
   position: sticky;
-  top: 64px;
+  top: 80px; /* Adjust top position */
 }
 .form-builder-col {
+  height: calc(100vh - 150px); /* Match the height */
+  overflow-y: auto; /* Make this column scrollable */
 }
 .drop-zone {
   border: 2px dashed #bdbdbd;
   padding: 16px;
-  min-height: 250px;
+  min-height: 100%; /* Make drop zone fill the scrollable area */
   transition:
     background-color 0.3s ease,
     border-color 0.3s ease;

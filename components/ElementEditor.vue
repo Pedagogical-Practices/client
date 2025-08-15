@@ -35,9 +35,10 @@
         <v-divider></v-divider>
 
         <v-window v-model="currentTab" class="pa-4 tab-content-window">
+          <!-- General Tab -->
           <v-window-item value="general" class="tab-pane">
             <v-row dense>
-              <v-col cols="12" md="6">
+              <v-col cols="12">
                 <v-select
                   v-model="editableElement.type"
                   :items="elementTypes"
@@ -49,119 +50,217 @@
                   @update:model-value="handleTypeChange"
                 ></v-select>
               </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="editableElement.label"
-                  label="Label"
-                  hint="Visible label for the field."
-                  persistent-hint
-                  density="compact"
-                  variant="filled"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="editableElement.variableName"
-                  label="Variable Name"
-                  hint="Unique ID for data/logic (e.g., nombreVariable)."
-                  persistent-hint
-                  density="compact"
-                  variant="filled"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="editableElement.placeholder"
-                  label="Placeholder"
-                  hint="Placeholder text."
-                  persistent-hint
-                  density="compact"
-                  variant="filled"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="editableElement.hint"
-                  label="Hint / Helper Text"
-                  hint="Small text under input."
-                  persistent-hint
-                  density="compact"
-                  variant="filled"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="editableElement.value"
-                  label="Default Value"
-                  hint="Initial value."
-                  persistent-hint
-                  density="compact"
-                  variant="filled"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6" v-if="editableElement.type === 'TEXT'">
-                <v-select
-                  v-model="editableElement.specificType"
-                  :items="[
-                    'text',
-                    'number',
-                    'email',
-                    'password',
-                    'tel',
-                    'url',
-                    'date',
-                  ]"
-                  label="Input Type"
-                  hint="HTML input type (for text fields)."
-                  persistent-hint
-                  density="compact"
-                  variant="filled"
-                ></v-select>
-              </v-col>
-              <v-col
-                cols="12"
-                md="6"
-                v-if="editableElement.type === 'TEXTAREA'"
-              >
-                <v-text-field
-                  type="number"
-                  v-model.number="editableElement.height"
-                  label="Height (rows)"
-                  hint="Number of rows for textarea."
-                  persistent-hint
-                  density="compact"
-                  variant="filled"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6" v-if="editableElement.type === 'BUTTON'">
-                <v-text-field
-                  v-model="editableElement.color"
-                  label="Button Color"
-                  hint="e.g., primary, success, #FF0000"
-                  persistent-hint
-                  density="compact"
-                  variant="filled"
-                ></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
-                md="6"
+
+              <!-- Fields for Typography Element -->
+              <template
                 v-if="
-                  editableElement.type === FormFieldType.SELECT ||
-                  editableElement.type === FormFieldType.AUTOCOMPLETE
+                  editableElement.type === 'TYPOGRAPHY_HEADING' ||
+                  editableElement.type === 'TYPOGRAPHY_BODY'
                 "
               >
-                <v-select
-                  v-model="editableElement.dataSource"
-                  :items="Object.values(DataSourceTypeEnum)"
-                  label="Data Source"
-                  hint="Source for dynamic options (e.g., institutions, teachers)."
-                  persistent-hint
-                  density="compact"
-                  variant="filled"
-                  clearable
-                ></v-select>
-              </v-col>
+                <v-col cols="12">
+                  <v-textarea
+                    v-model="editableElement.value"
+                    label="Content"
+                    hint="The text to be displayed."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                    rows="3"
+                  ></v-textarea>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="editableElement.variant"
+                    :items="typographyVariants"
+                    label="Variant"
+                    hint="Heading, Subtitle, Body, etc."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="editableElement.textAlign"
+                    :items="textAlignments"
+                    label="Text Alignment"
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                    clearable
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="editableElement.fontWeight"
+                    :items="fontWeights"
+                    label="Font Weight"
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                    clearable
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="editableElement.textTransform"
+                    :items="textTransforms"
+                    label="Text Transform"
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                    clearable
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="editableElement.textDecoration"
+                    :items="textDecorations"
+                    label="Text Decoration"
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                    clearable
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="editableElement.tag"
+                    :items="semanticTags"
+                    label="Semantic Tag"
+                    hint="The HTML tag to use (e.g., h1, p)."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                  ></v-select>
+                </v-col>
+              </template>
+
+              <template
+                v-if="
+                  editableElement.type !== 'TYPOGRAPHY_HEADING' &&
+                  editableElement.type !== 'TYPOGRAPHY_BODY'
+                "
+              >
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="editableElement.label"
+                    label="Label"
+                    hint="Visible label for the field."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="editableElement.variableName"
+                    label="Variable Name"
+                    hint="Unique ID for data/logic (e.g., nombreVariable)."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="editableElement.placeholder"
+                    label="Placeholder"
+                    hint="Placeholder text."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="editableElement.hint"
+                    label="Hint / Helper Text"
+                    hint="Small text under input."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="editableElement.value"
+                    label="Default Value"
+                    hint="Initial value."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6" v-if="editableElement.type === 'TEXT'">
+                  <v-select
+                    v-model="editableElement.specificType"
+                    :items="[
+                      'text',
+                      'number',
+                      'email',
+                      'password',
+                      'tel',
+                      'url',
+                      'date',
+                    ]"
+                    label="Input Type"
+                    hint="HTML input type (for text fields)."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                  ></v-select>
+                </v-col>
+                <v-col
+                  cols="12"
+                  md="6"
+                  v-if="editableElement.type === 'TEXTAREA'"
+                >
+                  <v-text-field
+                    type="number"
+                    v-model.number="editableElement.height"
+                    label="Height (rows)"
+                    hint="Number of rows for textarea."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                  ></v-text-field>
+                </v-col>
+                <v-col
+                  cols="12"
+                  md="6"
+                  v-if="editableElement.type === 'BUTTON'"
+                >
+                  <v-text-field
+                    v-model="editableElement.color"
+                    label="Button Color"
+                    hint="e.g., primary, success, #FF0000"
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                  ></v-text-field>
+                </v-col>
+                <v-col
+                  cols="12"
+                  md="6"
+                  v-if="
+                    editableElement.type === FormFieldType.SELECT ||
+                    editableElement.type === FormFieldType.AUTOCOMPLETE
+                  "
+                >
+                  <v-select
+                    v-model="editableElement.dataSource"
+                    :items="Object.values(DataSourceTypeEnum)"
+                    label="Data Source"
+                    hint="Source for dynamic options (e.g., institutions, teachers)."
+                    persistent-hint
+                    density="compact"
+                    variant="filled"
+                    clearable
+                  ></v-select>
+                </v-col>
+              </template>
             </v-row>
           </v-window-item>
 
@@ -207,21 +306,39 @@
               </v-col>
               <template
                 v-if="
-                  editableElement.type === 'SELECT' ||
-                  editableElement.type === 'RADIO_GROUP'
+                  editableElement.type === 'RADIO_GROUP' ||
+                  editableElement.type === 'CHECKBOX_GROUP' ||
+                  editableElement.type === 'REPEATER' ||
+                  editableElement.type === FormFieldType.RADIOMATRIX
                 "
               >
                 <v-col cols="12">
                   <v-textarea
                     v-model="selectItemsText"
                     :label="
-                      editableElement.type === 'SELECT'
-                        ? 'Dropdown Options (one per line)'
-                        : 'Radio Options (one per line)'
+                      editableElement.type === 'CHECKBOX_GROUP'
+                        ? 'Checkbox Options (JSON format)'
+                        : editableElement.type === 'REPEATER'
+                          ? 'Repeater Fields Schema (JSON format)'
+                          : editableElement.type === FormFieldType.RADIOMATRIX
+                            ? 'Radio Matrix Options (JSON format)'
+                            : editableElement.type === 'SELECT'
+                              ? 'Dropdown Options (one per line)'
+                              : 'Radio Options (one per line)'
                     "
-                    hint="Format: Item Label or value|Item Label. If only value, it's used as label too."
+                    :hint="
+                      editableElement.type === 'CHECKBOX_GROUP'
+                        ? 'JSON array of objects with value and label.'
+                        : editableElement.type === 'REPEATER'
+                          ? 'JSON array defining the sub-fields.'
+                          : editableElement.type === FormFieldType.RADIOMATRIX
+                            ? 'JSON object with \'items\' (array of strings) and \'columns\' (array of {text, value}).'
+                            : editableElement.type === 'SELECT'
+                              ? 'Format: value|label, one per line.'
+                              : 'Format: value|label, one per line.'
+                    "
                     persistent-hint
-                    rows="3"
+                    rows="5"
                     density="compact"
                     variant="filled"
                   ></v-textarea>
@@ -388,6 +505,52 @@ const showPreview = ref(false);
 const selectItemsText = ref("");
 const rulesText = ref("");
 
+const typographyVariants = [
+  "text-h1",
+  "text-h2",
+  "text-h3",
+  "text-h4",
+  "text-h5",
+  "text-h6",
+  "text-subtitle-1",
+  "text-subtitle-2",
+  "text-body-1",
+  "text-body-2",
+  "text-button",
+  "text-caption",
+  "text-overline",
+];
+const textAlignments = [
+  "text-left",
+  "text-center",
+  "text-right",
+  "text-justify",
+  "text-start",
+  "text-end",
+];
+const fontWeights = [
+  "font-weight-black",
+  "font-weight-bold",
+  "font-weight-medium",
+  "font-weight-regular",
+  "font-weight-light",
+  "font-weight-thin",
+];
+const textDecorations = [
+  "text-decoration-none",
+  "text-decoration-overline",
+  "text-decoration-underline",
+  "text-decoration-line-through",
+];
+const textTransforms = [
+  "text-uppercase",
+  "text-lowercase",
+  "text-capitalize",
+  "text-none",
+];
+
+const semanticTags = ["h1", "h2", "h3", "h4", "h5", "h6", "p", "span"];
+
 const elementTypes = computed(() =>
   availableElements.map((el) => ({
     title: el.displayName,
@@ -400,7 +563,6 @@ watch(
   async (newVal) => {
     if (newVal) {
       editableElement.value = JSON.parse(JSON.stringify(newVal));
-      // Aseguramos que dataSource sea un string simple para el v-select
       if (typeof editableElement.value.dataSource !== "string") {
         editableElement.value.dataSource = String(
           editableElement.value.dataSource || ""
@@ -415,11 +577,21 @@ watch(
         selectItemsText.value = await dataSourceStore.fetchFormattedOptions(
           editableElement.value.dataSource
         );
+      } else if (
+        editableElement.value.type === FormFieldType.CHECKBOX_GROUP ||
+        editableElement.value.type === FormFieldType.RADIO_GROUP ||
+        editableElement.value.type === FormFieldType.REPEATER ||
+        editableElement.value.type === FormFieldType.RADIOMATRIX
+      ) {
+        selectItemsText.value = JSON.stringify(
+          editableElement.value.options || [],
+          null,
+          2
+        );
       } else if (Array.isArray(editableElement.value?.options)) {
-        selectItemsText.value = editableElement
-          .value!.options.map((opt) => {
+        selectItemsText.value = editableElement.value.options
+          .map((opt: any) => {
             if (typeof opt === "string") return opt;
-            // Correctly handle both {text, value} and {label, value}
             return `${opt.value}|${opt.label || opt.text}`;
           })
           .join("\n");
@@ -506,26 +678,45 @@ const closeEditor = () => {
 
 const saveChanges = () => {
   if (!editableElement.value) return;
-  if (
-    editableElement.value.type === "SELECT" ||
-    editableElement.value.type === "RADIO_GROUP"
+
+  // If a dataSource is selected, clear the manual options to avoid conflicts.
+  if (editableElement.value.dataSource) {
+    editableElement.value.options = [];
+  } else if (
+    editableElement.value.type === FormFieldType.CHECKBOX_GROUP ||
+    editableElement.value.type === FormFieldType.RADIO_GROUP ||
+    editableElement.value.type === FormFieldType.REPEATER ||
+    editableElement.value.type === FormFieldType.RADIOMATRIX
   ) {
-    editableElement.value.options = selectItemsText.value
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line)
-      .map((line) => {
-        const parts = line.split("|");
-        if (parts.length === 2)
-          return { value: parts[0].trim(), label: parts[1].trim() };
-        return { value: line, label: line };
-      });
+    try {
+      editableElement.value.options = JSON.parse(selectItemsText.value);
+    } catch (e) {
+      console.error("Invalid JSON for options", e);
+      // Optionally, show a snackbar error to the user
+      return; // Prevent saving with invalid options
+    }
+  } else if (editableElement.value.type === "SELECT") {
+    if (typeof selectItemsText.value === "string") {
+      editableElement.value.options = selectItemsText.value
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line)
+        .map((line) => {
+          const parts = line.split("|");
+          if (parts.length === 2)
+            return { value: parts[0].trim(), label: parts[1].trim() };
+          return { value: line, label: line };
+        });
+    }
   }
+
   editableElement.value.rules = rulesText.value
     .split(",")
     .map((r) => r.trim())
     .filter((r) => r);
+
   formElement.updateElement(JSON.parse(JSON.stringify(editableElement.value)));
+  closeEditor(); // Close the dialog after saving
 };
 </script>
 

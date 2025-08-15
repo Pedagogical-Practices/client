@@ -1,0 +1,2474 @@
+{
+  "name": "PP1 - Protocolo 3: Familia Guía De Entrevista",
+  "fields": [
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755186543479_suke1cp",
+      "label": "Fecha",
+      "type": "DATE_INPUT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "YYYY-MM-DD",
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755186562947_1k3wr7t",
+      "label": "Institución educativa",
+      "type": "SELECT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "institutions",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": false,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755186589396_ec9fyod",
+      "label": "Ubicación",
+      "type": "TEXT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "text",
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755186604747_ymxt7ek",
+      "label": "Nombre del barrio",
+      "type": "TEXT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "text",
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755186620985_zrpws5y",
+      "label": "Nombre del sector",
+      "type": "TEXT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "text",
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755186636397_gfhi385",
+      "label": "Tiempo de observación",
+      "type": "TEXT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": "",
+      "specificType": "text",
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755186652625_6zt1f39",
+      "label": "Nombre del entrevistador(es)",
+      "type": "SELECT",
+      "options": [],
+      "rules": [],
+      "defaultValue": null,
+      "value": "",
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "students",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": false,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755186897598_6sjic3m",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "Objetivo",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755186913730_981t23i",
+      "label": "Body Text",
+      "type": "TYPOGRAPHY_BODY",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "Identificar las características de la estructura social, familia, de la que hacen parte los estudiantes pertenecientes al sector y comunidad del entorno escolar.",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755187120397_bx23snk",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "1.\tCaracterísticas de la  vivienda",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755187218999_bap6qkv",
+      "label": "a.\tTipo de vivienda",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Casa",
+          "value": "casa",
+          "isOtherOption": false
+        },
+        {
+          "label": "Apartamento",
+          "value": "apartamento",
+          "isOtherOption": false
+        },
+        {
+          "label": "Rancho",
+          "value": "rancho",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755187306872_qg28eeu",
+      "label": "b.\tTenencia de la propiedad",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Propia",
+          "value": "propia",
+          "isOtherOption": false
+        },
+        {
+          "label": "Arrendada",
+          "value": "arrendada",
+          "isOtherOption": false
+        },
+        {
+          "label": "Comodato",
+          "value": "comodato",
+          "isOtherOption": true
+        },
+        {
+          "label": "Invasión",
+          "value": "invasion",
+          "isOtherOption": false
+        },
+        {
+          "label": "Baldío",
+          "value": "baldio",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755187471781_z3hvi7i",
+      "label": "c.\tMaterial de la vivienda",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Palma",
+          "value": "palma",
+          "isOtherOption": false
+        },
+        {
+          "label": "Bareque",
+          "value": "bareque",
+          "isOtherOption": false
+        },
+        {
+          "label": "Material",
+          "value": "material",
+          "isOtherOption": false
+        },
+        {
+          "label": "Desechos",
+          "value": "desechos",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755187528130_b461jma",
+      "label": "d.\tTipo de piso",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Baldosa",
+          "value": "baldosa",
+          "isOtherOption": false
+        },
+        {
+          "label": "Tierra",
+          "value": "tierra",
+          "isOtherOption": false
+        },
+        {
+          "label": "Plantilla",
+          "value": "plantilla",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755187587317_0l5sgyg",
+      "label": "e.\tServicios",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Acueducto",
+          "value": "acueducto",
+          "isOtherOption": false
+        },
+        {
+          "label": "Alcantarillado",
+          "value": "alcantarillado",
+          "isOtherOption": false
+        },
+        {
+          "label": "Energía",
+          "value": "energia",
+          "isOtherOption": false
+        },
+        {
+          "label": "Gas",
+          "value": "gas",
+          "isOtherOption": false
+        },
+        {
+          "label": "Línea fija",
+          "value": "linea_fija",
+          "isOtherOption": false
+        },
+        {
+          "label": "Internet",
+          "value": "internet",
+          "isOtherOption": false
+        },
+        {
+          "label": "Celular",
+          "value": "celular",
+          "isOtherOption": false
+        },
+        {
+          "label": "Televisión satelital o por cable",
+          "value": "television_sat_cable",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755187719247_dl0810t",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "2.\tConformación de la Familia",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755187766964_w54xx50",
+      "label": "a.\tNúmero de personas que habitan la casa",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "1",
+          "value": "1",
+          "isOtherOption": false
+        },
+        {
+          "label": "2",
+          "value": "2",
+          "isOtherOption": false
+        },
+        {
+          "label": "3",
+          "value": "3",
+          "isOtherOption": false
+        },
+        {
+          "label": "4",
+          "value": "4",
+          "isOtherOption": false
+        },
+        {
+          "label": "5 o más",
+          "value": "5",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755187864757_5bgp709",
+      "label": "b.\tNúmero de habitantes en la casa, según el sexo",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Masculino",
+          "value": "masculino",
+          "isOtherOption": false
+        },
+        {
+          "label": "Feminino",
+          "value": "feminino",
+          "isOtherOption": false
+        },
+        {
+          "label": "Otro",
+          "value": "otro",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755187980963_5a5nqj2",
+      "label": "c.\tNúmero de habitantes de la casa, según sus edades",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "1 a 10 años",
+          "value": "1-10",
+          "isOtherOption": false
+        },
+        {
+          "label": "10 a 20 años",
+          "value": "10-20",
+          "isOtherOption": false
+        },
+        {
+          "label": "De 20 años en adelante",
+          "value": "20+",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755191835783_t1zyla6",
+      "label": "d.\tNivel de escolaridad de los habitantes de la casa, que asisten como estudiante(s) a la institución educativa",
+      "type": "REPEATER",
+      "options": [
+        {
+          "name": "edad",
+          "label": "Edad",
+          "type": "TEXT",
+          "specificType": "number"
+        },
+        {
+          "name": "grado",
+          "label": "Grado",
+          "type": "TEXT"
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": [],
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755192763284_nz3mt59",
+      "label": "e.\tFigura de crianza en el hogar",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Materna",
+          "value": "materna",
+          "isOtherOption": false
+        },
+        {
+          "label": "Paterna",
+          "value": "paterna",
+          "isOtherOption": false
+        },
+        {
+          "label": "Acudiente, Vínculo del acudiente",
+          "value": "acudiente",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755192927443_g9j76wb",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "3.\tDATOS FAMILIARES",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755193760338_706iq05",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "a. Padre",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755192956019_bmg560c",
+      "label": "Profesión",
+      "type": "TEXT",
+      "options": [
+        {
+          "name": "profesion",
+          "label": "Profesión",
+          "type": "TEXT"
+        },
+        {
+          "name": "ocupacion",
+          "label": "Ocupación",
+          "type": "TEXT"
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": [],
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755193820892_rmchte0",
+      "label": "Ocupación",
+      "type": "TEXT",
+      "options": [
+        {
+          "name": "profesion",
+          "label": "Profesión",
+          "type": "TEXT"
+        },
+        {
+          "name": "ocupacion",
+          "label": "Ocupación",
+          "type": "TEXT"
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": [],
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755193060370_jaxbiuy",
+      "label": "Nivel educativo",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Primaria (1°-5°)",
+          "value": "primaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Secundaria (6°-9°)",
+          "value": "secundaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Media (10°-11°)",
+          "value": "media",
+          "isOtherOption": false
+        },
+        {
+          "label": "Universitaria",
+          "value": "universitaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Ninguno",
+          "value": "ninguno",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755193841868_y8yvo4x",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "b. Madre",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755193886784_juits8n",
+      "label": "Profesión",
+      "type": "TEXT",
+      "options": [
+        {
+          "name": "profesion",
+          "label": "Profesión",
+          "type": "TEXT"
+        },
+        {
+          "name": "ocupacion",
+          "label": "Ocupación",
+          "type": "TEXT"
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": [],
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755193893201_n3yy33v",
+      "label": "Ocupación",
+      "type": "TEXT",
+      "options": [
+        {
+          "name": "profesion",
+          "label": "Profesión",
+          "type": "TEXT"
+        },
+        {
+          "name": "ocupacion",
+          "label": "Ocupación",
+          "type": "TEXT"
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": [],
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755193590983_dgqpv3k",
+      "label": "Nivel educativo",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Primaria (1°-5°)",
+          "value": "primaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Secundaria (6°-9°)",
+          "value": "secundaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Media (10°-11°)",
+          "value": "media",
+          "isOtherOption": false
+        },
+        {
+          "label": "Universitaria",
+          "value": "universitaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Ninguno",
+          "value": "ninguno",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755193915802_4hh8a3j",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "c. Acudiente",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755193929340_lb3941j",
+      "label": "Profesión",
+      "type": "TEXT",
+      "options": [
+        {
+          "name": "profesion",
+          "label": "Profesión",
+          "type": "TEXT"
+        },
+        {
+          "name": "ocupacion",
+          "label": "Ocupación",
+          "type": "TEXT"
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": [],
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755193939503_w2oiwxz",
+      "label": "Ocupación",
+      "type": "TEXT",
+      "options": [
+        {
+          "name": "profesion",
+          "label": "Profesión",
+          "type": "TEXT"
+        },
+        {
+          "name": "ocupacion",
+          "label": "Ocupación",
+          "type": "TEXT"
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": [],
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755193626965_7g4bawx",
+      "label": "Nivel educativo",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Primaria (1°-5°)",
+          "value": "primaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Secundaria (6°-9°)",
+          "value": "secundaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Media (10°-11°)",
+          "value": "media",
+          "isOtherOption": false
+        },
+        {
+          "label": "Universitaria",
+          "value": "universitaria",
+          "isOtherOption": false
+        },
+        {
+          "label": "Ninguno",
+          "value": "ninguno",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755207737706_l5wbgdj",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "4.\tHábitos, normas de conducta en familia y habilidades sociales ",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755206258111_6wimw2u",
+      "label": "a.\tLas personas que ejercen influencia sobre la educación de su hijo(s) son",
+      "type": "RADIOMATRIX",
+      "options": {
+        "items": ["Padre", "Madre", "Hermanos mayores", "Abuelos"],
+        "columns": [
+          {
+            "text": "Si",
+            "value": "si"
+          },
+          {
+            "text": "No",
+            "value": "no"
+          }
+        ]
+      },
+      "rules": [],
+      "defaultValue": null,
+      "value": null,
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755207540655_qqcwtig",
+      "label": "",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Otros, especificar familiares",
+          "value": "otros_familiares",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755207815047_c6vw144",
+      "label": "b.\tEn cuanto a la educación de su hijo (a), están de acuerdo como familia, con lo que hay que hacer",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Siempre",
+          "value": "siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi siempre",
+          "value": "casi_siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Algunas veces",
+          "value": "algunas_veces",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi nunca",
+          "value": "casi_nunca",
+          "isOtherOption": false
+        },
+        {
+          "label": "Nunca",
+          "value": "nunca",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755208011469_2eqkcn9",
+      "label": "c.\tSuele elogiar cualquier comportamiento adecuado que hace su hijo",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Siempre",
+          "value": "siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi siempre",
+          "value": "casi_siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Algunas veces",
+          "value": "algunas_veces",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi nunca",
+          "value": "casi_nunca",
+          "isOtherOption": false
+        },
+        {
+          "label": "Nunca",
+          "value": "nunca",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755208060644_h0el0p8",
+      "label": "d.\tSuele reaccionar gritar o enfadándose ante las normas que no son acatadas por su hijo",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Siempre",
+          "value": "siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi siempre",
+          "value": "casi_siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Algunas veces",
+          "value": "algunas_veces",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi nunca",
+          "value": "casi_nunca",
+          "isOtherOption": false
+        },
+        {
+          "label": "Nunca",
+          "value": "nunca",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755208088908_nodnwck",
+      "label": "e.\tEspera que su hijo/a lo obedezca, aunque si no me hace caso termina por ignorarlo",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Siempre",
+          "value": "siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi siempre",
+          "value": "casi_siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Algunas veces",
+          "value": "algunas_veces",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi nunca",
+          "value": "casi_nunca",
+          "isOtherOption": false
+        },
+        {
+          "label": "Nunca",
+          "value": "nunca",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755208125709_0r84d30",
+      "label": "f.\tSu hijo/a se sale con la suya y por no enfadarse termina haciendo lo que él quiere:",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Siempre",
+          "value": "siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi siempre",
+          "value": "casi_siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Algunas veces",
+          "value": "algunas_veces",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi nunca",
+          "value": "casi_nunca",
+          "isOtherOption": false
+        },
+        {
+          "label": "Nunca",
+          "value": "nunca",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755208268328_no191pr",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "5.\tConvivencia en la familia",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755208334988_2luibup",
+      "label": "a.\tExisten normas claras sobre el funcionamiento de la convivencia en casa (horarios, reglas, comportamientos, etc.)",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Siempre",
+          "value": "siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi siempre",
+          "value": "casi_siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Algunas veces",
+          "value": "algunas_veces",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi nunca",
+          "value": "casi_nunca",
+          "isOtherOption": false
+        },
+        {
+          "label": "Nunca",
+          "value": "nunca",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755213859851_h7cud8g",
+      "label": "b. Semanalmente se reúnen en familia, al menos una hora, para estar juntos y hacer cosas en común",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Siempre",
+          "value": "siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi siempre",
+          "value": "casi_siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Algunas veces",
+          "value": "algunas_veces",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi nunca",
+          "value": "casi_nunca",
+          "isOtherOption": false
+        },
+        {
+          "label": "Nunca",
+          "value": "nunca",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755213908164_509ep5a",
+      "label": "c.\tEn casa, hay reparto de responsabilidades que cada uno debe cumplir para que todo vaya bien",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Siempre",
+          "value": "siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi siempre",
+          "value": "casi_siempre",
+          "isOtherOption": false
+        },
+        {
+          "label": "Algunas veces",
+          "value": "algunas_veces",
+          "isOtherOption": false
+        },
+        {
+          "label": "Casi nunca",
+          "value": "casi_nunca",
+          "isOtherOption": false
+        },
+        {
+          "label": "Nunca",
+          "value": "nunca",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755213967628_fxos0al",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "6.\tRELACIÓN INSTITUCIÓN EDUCATIVA – FAMILIA",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755214022545_h5ffch5",
+      "label": "g.\tDe las siguientes opciones de participación, seleccione aquella en la cual tenga más participación como padre de familia en la institución educativa. Marque más de una si es el caso.",
+      "type": "RADIOMATRIX",
+      "options": {
+        "items": [
+          "Participa en los órganos colegiados de la I.E",
+          "Participa en la elaboración del Plan de Convivencia",
+          "Participa en la Asociación de Padres de familia",
+          "Posee la información necesaria para participar",
+          "Siente que forma parte de un proyecto común",
+          "La I.E. programa los tiempos de manera que favorezcan la participación",
+          "Cuando le avisan o lo citan para una reunión",
+          "Cuando necesita o quiere transmitir información sobre sus hijos",
+          "Cuando hay un problema relacionado con sus hijos/as",
+          "Siempre que sea posible y se le permita participar"
+        ],
+        "columns": [
+          {
+            "text": "Sí",
+            "value": "si"
+          },
+          {
+            "text": "No",
+            "value": "no"
+          }
+        ]
+      },
+      "rules": [],
+      "defaultValue": null,
+      "value": null,
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755215251872_w1jhah1",
+      "label": "i.\tCon qué frecuencia la institución educativa ofrece actividades para la participar los padres de familia.",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Nada",
+          "value": "nada",
+          "isOtherOption": false
+        },
+        {
+          "label": "Poco",
+          "value": "poco",
+          "isOtherOption": false
+        },
+        {
+          "label": "Frecuente",
+          "value": "frecuente",
+          "isOtherOption": false
+        },
+        {
+          "label": "Muy frecuente",
+          "value": "muy_frecuente",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755215500033_g0djj9w",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "j.\tTeniendo en cuenta su experiencia y participación, valore su habitual comunicación con los distintos estamentos De la Institución Educativa, así",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755215463250_pd97w4y",
+      "label": "Con el grupo de profesores",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Nada",
+          "value": "nada",
+          "isOtherOption": false
+        },
+        {
+          "label": "Poco",
+          "value": "poco",
+          "isOtherOption": false
+        },
+        {
+          "label": "Frecuente",
+          "value": "frecuente",
+          "isOtherOption": false
+        },
+        {
+          "label": "Muy frecuente",
+          "value": "muy_frecuente",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755215574083_eztasqc",
+      "label": "Con la dirección de la institución",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Nada",
+          "value": "nada",
+          "isOtherOption": false
+        },
+        {
+          "label": "Poco",
+          "value": "poco",
+          "isOtherOption": false
+        },
+        {
+          "label": "Frecuente",
+          "value": "frecuente",
+          "isOtherOption": false
+        },
+        {
+          "label": "Muy frecuente",
+          "value": "muy_frecuente",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755215732093_hhad4mp",
+      "label": "Desde su experiencia, ¿Cuáles de las siguientes situaciones considera que impiden la participación de las familias en la institución educativa? (marque más de una opción si es necesario).",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Falta de interés por parte de las familias",
+          "value": "falta_interes_familias",
+          "isOtherOption": false
+        },
+        {
+          "label": "Falta de formación de las familias",
+          "value": "falta_formacion_familias",
+          "isOtherOption": false
+        },
+        {
+          "label": "La incompatibilidad de horarios y falta de tiempo de las familias",
+          "value": "incompatibilidad_horarios_familias",
+          "isOtherOption": false
+        },
+        {
+          "label": "Falta de interés por parte del profesorado",
+          "value": "falta_interes_profesorado",
+          "isOtherOption": false
+        },
+        {
+          "label": "La desconfianza entre el profesorado y las familias",
+          "value": "desconfianza_profesorado_familias",
+          "isOtherOption": false
+        },
+        {
+          "label": "Falta de canales de comunicación adecuados",
+          "value": "falta_canales_comunicacion",
+          "isOtherOption": false
+        },
+        {
+          "label": "Otra, ¿Cuál?",
+          "value": "otra_opcion",
+          "isOtherOption": true
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755215827461_48usfu0",
+      "label": "Heading",
+      "type": "TYPOGRAPHY_HEADING",
+      "options": null,
+      "rules": [],
+      "defaultValue": null,
+      "value": "7.\tComunicación Institución Educativa - Familia",
+      "variableName": null,
+      "hint": null,
+      "required": null,
+      "chapter": null,
+      "question": null,
+      "questionNumber": null,
+      "consistencyCondition": null,
+      "inconsistencyMessage": null,
+      "errorType": null,
+      "description": null,
+      "disabled": null,
+      "readonly": null,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755215869744_7fi4vvp",
+      "label": "a.\t¿Sabe con quién debe comunicarse en la escuela de su hijo si tiene una pregunta o inquietud?",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Para nada",
+          "value": "para_nada",
+          "isOtherOption": false
+        },
+        {
+          "label": "Mínimamente",
+          "value": "minimamente",
+          "isOtherOption": false
+        },
+        {
+          "label": "Bastante",
+          "value": "bastante",
+          "isOtherOption": false
+        },
+        {
+          "label": "Completamente",
+          "value": "completamente",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755215872047_vth7xnp",
+      "label": "b.\t¿Con qué frecuencia la escuela de su hijo le brinda información acerca de las formas de participación en la educación de su hijo?",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Nunca",
+          "value": "nunca",
+          "isOtherOption": false
+        },
+        {
+          "label": "A veces",
+          "value": "a_veces",
+          "isOtherOption": false
+        },
+        {
+          "label": "Con frecuencia",
+          "value": "con_frecuencia",
+          "isOtherOption": false
+        },
+        {
+          "label": "Siempre",
+          "value": "siempre",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755216013124_56fm3rq",
+      "label": "c.\t¿Con qué frecuencia recibió oportunidades de visitar a los maestros de su hijo para debatir su progreso a lo largo del año escolar?",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Nunca",
+          "value": "nunca",
+          "isOtherOption": false
+        },
+        {
+          "label": "A veces",
+          "value": "a_veces",
+          "isOtherOption": false
+        },
+        {
+          "label": "Con frecuencia",
+          "value": "con_frecuencia",
+          "isOtherOption": false
+        },
+        {
+          "label": "Siempre",
+          "value": "siempre",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    },
+    {
+      "__typename": "FormField",
+      "id": null,
+      "name": "field_1755216032654_pxe2gnv",
+      "label": "d.\tEn el último año, ¿con qué frecuencia se comunicó con los maestros en la escuela de su hijo?",
+      "type": "RADIO_GROUP",
+      "options": [
+        {
+          "label": "Nunca",
+          "value": "nunca",
+          "isOtherOption": false
+        },
+        {
+          "label": "Una o dos veces",
+          "value": "una_o_dos_veces",
+          "isOtherOption": false
+        },
+        {
+          "label": "Cada tantos meses",
+          "value": "cada_tantos_meses",
+          "isOtherOption": false
+        },
+        {
+          "label": "Una vez al mes",
+          "value": "una_vez_al_mes",
+          "isOtherOption": false
+        },
+        {
+          "label": "Una vez por semana o más",
+          "value": "una_vez_por_semana_o_mas",
+          "isOtherOption": false
+        }
+      ],
+      "rules": [],
+      "defaultValue": null,
+      "value": {},
+      "variableName": "",
+      "hint": "",
+      "required": false,
+      "chapter": "",
+      "question": "",
+      "questionNumber": "",
+      "consistencyCondition": "",
+      "inconsistencyMessage": "",
+      "errorType": "Soft",
+      "description": "",
+      "disabled": false,
+      "readonly": false,
+      "dataSource": "",
+      "placeholder": null,
+      "specificType": null,
+      "height": null,
+      "multiple": null,
+      "color": null
+    }
+  ]
+}

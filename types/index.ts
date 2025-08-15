@@ -8,16 +8,6 @@ export enum UserRole {
   VISITOR = "VISITOR",
 }
 
-export interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  roles: UserRole[];
-  createdAt?: string;
-  updatedAt?: string;
-}
-
 export enum FormFieldType {
   TEXT = "TEXT",
   TEXTAREA = "TEXTAREA",
@@ -26,15 +16,20 @@ export enum FormFieldType {
   MAP = "MAP",
   FILE_UPLOAD = "FILE_UPLOAD",
   CHECKBOX = "CHECKBOX",
+  CHECKBOX_GROUP = "CHECKBOX_GROUP",
+  RADIO_GROUP = "RADIO_GROUP",
+  TYPOGRAPHY_HEADING = "TYPOGRAPHY_HEADING",
+  TYPOGRAPHY_BODY = "TYPOGRAPHY_BODY",
   DATE_PICKER = "DATE_PICKER",
   DATE_INPUT = "DATE_INPUT",
-  RADIO_GROUP = "RADIO_GROUP",
   TIME_PICKER = "TIME_PICKER",
   BUTTON = "BUTTON",
   AUTOCOMPLETE = "AUTOCOMPLETE",
   NUMBER = "NUMBER",
   EMAIL = "EMAIL",
   PASSWORD = "PASSWORD",
+  REPEATER = "REPEATER",
+  RADIOMATRIX = "RADIOMATRIX",
 }
 
 export enum DataSourceType {
@@ -45,6 +40,30 @@ export enum DataSourceType {
   FORMS = "forms",
   PROTOCOLS = "protocols",
   USERS = "users",
+}
+
+export enum SubmissionStatus {
+  SUBMITTED = "SUBMITTED",
+  REVIEWED = "REVIEWED",
+  APPROVED = "APPROVED",
+  NEEDS_REVISION = "NEEDS_REVISION",
+}
+
+export enum PracticeStatus {
+  PENDING = "PENDING",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  ARCHIVED = "ARCHIVED",
+}
+
+export interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  roles: UserRole[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface FormField {
@@ -74,6 +93,14 @@ export interface FormField {
   height?: string;
   multiple?: boolean;
   color?: string;
+  // Typography properties
+  text?: string;
+  variant?: string;
+  fontWeight?: string;
+  textAlign?: string;
+  textDecoration?: string;
+  textTransform?: string;
+  tag?: string;
 }
 
 export interface Form {
@@ -95,13 +122,6 @@ export interface Protocol {
   updatedAt?: string;
 }
 
-export enum PracticeStatus {
-  PENDING = "PENDING",
-  IN_PROGRESS = "IN_PROGRESS",
-  COMPLETED = "COMPLETED",
-  ARCHIVED = "ARCHIVED",
-}
-
 export interface Practice {
   id: string;
   name: string;
@@ -109,13 +129,6 @@ export interface Practice {
   protocols?: Protocol[];
   createdAt?: string;
   updatedAt?: string;
-}
-
-export enum SubmissionStatus {
-  SUBMITTED = "SUBMITTED",
-  REVIEWED = "REVIEWED",
-  APPROVED = "APPROVED",
-  NEEDS_REVISION = "NEEDS_REVISION",
 }
 
 export interface Submission {
@@ -127,7 +140,7 @@ export interface Submission {
   locationData?: Record<string, any>;
   score?: number;
   feedback?: string;
-  status?: SubmissionStatus; // Add status field
+  status?: SubmissionStatus;
   createdAt?: string;
   updatedAt?: string;
 }

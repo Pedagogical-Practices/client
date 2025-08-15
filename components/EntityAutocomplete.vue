@@ -5,7 +5,12 @@
     :loading="loading"
     :search-input.sync="search"
     :label="label"
-    :item-title="item => item.firstName && item.lastName ? `${item.firstName} ${item.lastName}` : item.name"
+    :item-title="
+      (item) =>
+        item.firstName && item.lastName
+          ? `${item.firstName} ${item.lastName}`
+          : item.name
+    "
     item-value="id"
     hide-no-data
     hide-details
@@ -50,8 +55,6 @@ const items = ref<any[]>([]);
 const loading = ref(false);
 const search = ref("");
 const selectedItem = ref<any>(props.modelValue);
-
-
 
 const fetchItems = async (query: string) => {
   loading.value = true;
