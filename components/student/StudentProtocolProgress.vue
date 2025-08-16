@@ -29,39 +29,53 @@
               <template v-slot:append>
                 <div class="d-flex align-center">
                   <v-chip
-                    :color="getSubmissionStatus(form.id).completed ? 'success' : 'default'"
+                    :color="getFormStatus(form.id).count > 0 ? 'success' : 'default'"
                     class="mr-4"
                     label
                     small
                   >
-                    {{ getSubmissionStatus(form.id).completed ? 'Completado' : 'Pendiente' }}
+                    {{ getFormStatus(form.id).count > 0 ? `${getFormStatus(form.id).count} Entrega(s)` : 'Pendiente' }}
                   </v-chip>
+
+                  <!-- No submissions yet -->
                   <v-btn 
-                    v-if="!getSubmissionStatus(form.id).completed"
+                    v-if="getFormStatus(form.id).count === 0"
                     color="primary"
-                    @click="fillForm(protocol.id, form.id)"
+                    @click="fillNewForm(protocol.id, form.id)"
+                    :disabled="isPastDeadline(protocol.id)"
                   >
                     Llenar Formulario
                   </v-btn>
+
+                  <!-- One or more submissions -->
                   <div v-else>
                      <v-btn 
                       class="mr-2"
                       variant="outlined"
-                      @click="viewSubmission(getSubmissionStatus(form.id).submissionId)"
+                      color="info"
+                      @click="viewHistory(protocol.id, form.id)"
                     >
-                      Ver Reporte
+                      Ver Historial
                     </v-btn>
                     <v-btn 
+                      class="mr-2"
                       variant="outlined"
-                      @click="editSubmission(protocol.id, form.id, getSubmissionStatus(form.id).submissionId)"
+                      @click="editSubmission(protocol.id, form.id, getFormStatus(form.id).latest.id)"
                     >
-                      Editar
+                      Editar Último
+                    </v-btn>
+                     <v-btn 
+                      color="primary"
+                      @click="fillNewForm(protocol.id, form.id)"
+                      :disabled="isPastDeadline(protocol.id)"
+                    >
+                      Llenar Nuevo
                     </v-btn>
                   </div>
                 </div>
               </template>
-              <v-list-item-subtitle v-if="getSubmissionStatus(form.id).completed">
-                Última entrega: {{ formatDate(getSubmissionStatus(form.id).submissionDate) }}
+              <v-list-item-subtitle v-if="getFormStatus(form.id).count > 0">
+                Última entrega: {{ formatDate(getFormStatus(form.id).latest.createdAt) }}
               </v-list-item-subtitle>
             </v-list-item>
           </v-list>
@@ -88,6 +102,11 @@ const props = defineProps({
     required: true,
     default: () => [],
   },
+  deadlines: { // New prop for deadlines
+    type: Array,
+    required: false,
+    default: () => [],
+  },
   groupId: {
     type: String,
     required: true,
@@ -96,20 +115,26 @@ const props = defineProps({
 
 const router = useRouter();
 
+// This computed property now groups all submissions by formId
 const submissionsByFormId = computed(() => {
   const map = new Map();
   if (!props.submissions) return map;
 
   for (const sub of props.submissions) {
-    // The backend now populates the form field on the submission
     if (sub.form && sub.form.id) {
       const formId = sub.form.id;
-      // Keep only the latest submission for each form
-      if (!map.has(formId) || new Date(sub.createdAt) > new Date(map.get(formId).createdAt)) {
-        map.set(formId, sub);
+      if (!map.has(formId)) {
+        map.set(formId, []);
       }
+      map.get(formId).push(sub);
     }
   }
+
+  // Sort submissions within each form entry by date, descending
+  for (const [formId, subs] of map.entries()) {
+    subs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+
   return map;
 });
 
@@ -126,28 +151,38 @@ const getProtocolProgress = (protocol) => {
   };
 };
 
-const getSubmissionStatus = (formId) => {
-  const submission = submissionsByFormId.value.get(formId);
-  if (submission) {
+// Renamed and enhanced function to get status for a form
+const getFormStatus = (formId) => {
+  const formSubmissions = submissionsByFormId.value.get(formId);
+  if (formSubmissions && formSubmissions.length > 0) {
     return {
-      completed: true,
-      submissionId: submission.id,
-      submissionDate: submission.createdAt,
+      count: formSubmissions.length,
+      latest: formSubmissions[0], // The latest is the first after sorting
     };
   }
-  return { completed: false };
+  return { count: 0 };
 };
 
-const fillForm = (protocolId, formId) => {
-  router.push(`/fill-form/${props.groupId}/${protocolId}/${formId}`);
+const isPastDeadline = (protocolId) => {
+  if (!props.deadlines) return false;
+  const deadline = props.deadlines.find(d => d.protocol.id === protocolId);
+  if (deadline && deadline.endDate) {
+    return new Date() > new Date(deadline.endDate);
+  }
+  return false; // If no deadline is set, allow submission
 };
 
-const viewSubmission = (submissionId) => {
-  router.push(`/submissions/${submissionId}`);
+const fillNewForm = (protocolId, formId) => {
+  router.push(`/fill-form/${props.groupId}/${formId}?protocolId=${protocolId}`);
+};
+
+const viewHistory = (protocolId, formId) => {
+  // Navigate to a new history page (to be created in Step 4)
+  router.push(`/student/groups/${props.groupId}/forms/${formId}/submissions`);
 };
 
 const editSubmission = (protocolId, formId, submissionId) => {
-  router.push(`/fill-form/${props.groupId}/${protocolId}/${formId}?submissionId=${submissionId}`);
+  router.push(`/fill-form/${props.groupId}/${formId}?protocolId=${protocolId}&submissionId=${submissionId}`);
 };
 
 const formatDate = (dateString) => {

@@ -12,6 +12,7 @@ query group($id: ID!) {
         forms {
           id
           name
+          description
         }
       }
     }
@@ -29,7 +30,12 @@ query group($id: ID!) {
       id
       name
     }
-    createdAt
-    updatedAt
+    deadlines {
+      id
+      protocol {
+        id
+      }
+      endDate
+    }
   }
 }

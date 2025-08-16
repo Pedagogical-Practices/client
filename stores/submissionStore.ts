@@ -9,22 +9,16 @@ import submissionQuery from '~/queries/submission.gql';
 import submissionsQuery from '~/queries/submissions.gql';
 import submissionsByStudentQuery from '~/queries/submissionsByStudent.gql';
 import submissionsByStudentAndGroupQuery from '~/queries/submissionsByStudentAndGroup.gql';
-// Asumiendo que estas queries existen o serán creadas
-// import evaluateSubmissionMutation from '~/queries/evaluateSubmission.gql';
-// import generateSubmissionPdfMutation from '~/queries/generateSubmissionPdf.gql';
-
-interface SubmissionState {
-  submissions: any[];
-  currentSubmission: any | null;
-  isLoading: boolean;
-  error: any | null;
-}
+import submissionsByGroupQuery from '~/queries/submissionsByGroup.gql';
+import submissionsByFormAndGroupQuery from '~/queries/submissionsByFormAndGroup.gql';
 
 export const useSubmissionStore = defineStore("submission", () => {
   const { client } = useApolloClient();
 
   // State
   const submissions = ref<any[]>([]);
+  const groupSubmissions = ref<any[]>([]);
+  const formSubmissionsHistory = ref<any[]>([]);
   const currentSubmission = ref<any | null>(null);
   const isLoading = ref(false);
   const error = ref<any | null>(null);
@@ -155,12 +149,52 @@ export const useSubmissionStore = defineStore("submission", () => {
     }
   };
 
-  // Placeholder for evaluate and generate PDF, assuming their GQL files exist
-  // const evaluateSubmission = ...
-  // const generateSubmissionPdf = ...
+  const fetchSubmissionsByGroup = async (groupId: string): Promise<any[]> => {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      const { data, errors } = await client.query({ 
+        query: submissionsByGroupQuery, 
+        variables: { groupId },
+        fetchPolicy: 'network-only' 
+      });
+      if (errors) throw errors;
+      groupSubmissions.value = data.submissionsByGroup;
+      return data.submissionsByGroup;
+    } catch (e: any) {
+      error.value = e;
+      console.error("submissionStore: Error fetching submissions by group:", e);
+      return [];
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const fetchSubmissionsByFormAndGroup = async (groupId: string, formId: string): Promise<any[]> => {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      const { data, errors } = await client.query({ 
+        query: submissionsByFormAndGroupQuery, 
+        variables: { groupId, formId },
+        fetchPolicy: 'network-only' 
+      });
+      if (errors) throw errors;
+      formSubmissionsHistory.value = data.submissionsByFormAndGroup;
+      return data.submissionsByFormAndGroup;
+    } catch (e: any) {
+      error.value = e;
+      console.error("submissionStore: Error fetching submissions by form and group:", e);
+      return [];
+    } finally {
+      isLoading.value = false;
+    }
+  };
 
   return {
     submissions,
+    groupSubmissions,
+    formSubmissionsHistory,
     currentSubmission,
     isLoading,
     error,
@@ -171,9 +205,9 @@ export const useSubmissionStore = defineStore("submission", () => {
     fetchSubmissions,
     fetchSubmissionsByStudent,
     fetchSubmissionsByStudentAndGroup,
-    // evaluateSubmission,
-    // generateSubmissionPdf,
+    fetchSubmissionsByGroup,
+    fetchSubmissionsByFormAndGroup,
   };
 }, {
-  persist: false, // Persisting submissions might not be ideal
+  persist: false,
 });
