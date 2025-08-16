@@ -1,6 +1,9 @@
 <template>
   <div>
-    <v-expansion-panels v-if="protocols && protocols.length > 0" variant="accordion">
+    <v-expansion-panels
+      v-if="protocols && protocols.length > 0"
+      variant="accordion"
+    >
       <v-expansion-panel v-for="protocol in protocols" :key="protocol.id">
         <v-expansion-panel-title>
           <v-row no-gutters class="d-flex align-center">
@@ -9,7 +12,11 @@
               {{ protocol.name }}
             </v-col>
             <v-col cols="4" class="d-flex justify-end align-center">
-              <span class="text-caption mr-2">{{ getProtocolProgress(protocol).completed }}/{{ getProtocolProgress(protocol).total }}</span>
+              <span class="text-caption mr-2"
+                >{{ getProtocolProgress(protocol).completed }}/{{
+                  getProtocolProgress(protocol).total
+                }}</span
+              >
               <v-progress-linear
                 :model-value="getProtocolProgress(protocol).percentage"
                 color="primary"
@@ -26,19 +33,30 @@
               :key="form.id"
               :title="form.name"
             >
+              <v-list-item-subtitle v-if="getFormStatus(form.id).count > 0">
+                Última entrega:
+                {{ formatDate(getFormStatus(form.id).latest.createdAt) }}
+              </v-list-item-subtitle>
+            </v-list-item>
+            <v-list-item v-for="form in protocol.forms" :key="form.id">
               <template v-slot:append>
                 <div class="d-flex align-center">
                   <v-chip
-                    :color="getFormStatus(form.id).count > 0 ? 'success' : 'default'"
+                    :color="
+                      getFormStatus(form.id).count > 0 ? 'success' : 'default'
+                    "
                     class="mr-4"
                     label
                     small
                   >
-                    {{ getFormStatus(form.id).count > 0 ? `${getFormStatus(form.id).count} Entrega(s)` : 'Pendiente' }}
+                    {{
+                      getFormStatus(form.id).count > 0
+                        ? `${getFormStatus(form.id).count} Entrega(s)`
+                        : "Pendiente"
+                    }}
                   </v-chip>
 
-                  <!-- No submissions yet -->
-                  <v-btn 
+                  <v-btn
                     v-if="getFormStatus(form.id).count === 0"
                     color="primary"
                     @click="fillNewForm(protocol.id, form.id)"
@@ -47,9 +65,8 @@
                     Llenar Formulario
                   </v-btn>
 
-                  <!-- One or more submissions -->
                   <div v-else>
-                     <v-btn 
+                    <v-btn
                       class="mr-2"
                       variant="outlined"
                       color="info"
@@ -57,14 +74,20 @@
                     >
                       Ver Historial
                     </v-btn>
-                    <v-btn 
+                    <v-btn
                       class="mr-2"
                       variant="outlined"
-                      @click="editSubmission(protocol.id, form.id, getFormStatus(form.id).latest.id)"
+                      @click="
+                        editSubmission(
+                          protocol.id,
+                          form.id,
+                          getFormStatus(form.id).latest.id
+                        )
+                      "
                     >
                       Editar Último
                     </v-btn>
-                     <v-btn 
+                    <v-btn
                       color="primary"
                       @click="fillNewForm(protocol.id, form.id)"
                       :disabled="isPastDeadline(protocol.id)"
@@ -74,9 +97,6 @@
                   </div>
                 </div>
               </template>
-              <v-list-item-subtitle v-if="getFormStatus(form.id).count > 0">
-                Última entrega: {{ formatDate(getFormStatus(form.id).latest.createdAt) }}
-              </v-list-item-subtitle>
             </v-list-item>
           </v-list>
         </v-expansion-panel-text>
@@ -89,8 +109,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed } from "vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps({
   protocols: {
@@ -102,7 +122,8 @@ const props = defineProps({
     required: true,
     default: () => [],
   },
-  deadlines: { // New prop for deadlines
+  deadlines: {
+    // New prop for deadlines
     type: Array,
     required: false,
     default: () => [],
@@ -143,7 +164,9 @@ const getProtocolProgress = (protocol) => {
     return { completed: 0, total: 0, percentage: 0 };
   }
   const total = protocol.forms.length;
-  const completed = protocol.forms.filter(form => submissionsByFormId.value.has(form.id)).length;
+  const completed = protocol.forms.filter((form) =>
+    submissionsByFormId.value.has(form.id)
+  ).length;
   return {
     completed,
     total,
@@ -165,7 +188,7 @@ const getFormStatus = (formId) => {
 
 const isPastDeadline = (protocolId) => {
   if (!props.deadlines) return false;
-  const deadline = props.deadlines.find(d => d.protocol.id === protocolId);
+  const deadline = props.deadlines.find((d) => d.protocol.id === protocolId);
   if (deadline && deadline.endDate) {
     return new Date() > new Date(deadline.endDate);
   }
@@ -182,13 +205,14 @@ const viewHistory = (protocolId, formId) => {
 };
 
 const editSubmission = (protocolId, formId, submissionId) => {
-  router.push(`/fill-form/${props.groupId}/${formId}?protocolId=${protocolId}&submissionId=${submissionId}`);
+  router.push(
+    `/fill-form/${props.groupId}/${formId}?protocolId=${protocolId}&submissionId=${submissionId}`
+  );
 };
 
 const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  if (!dateString) return "";
+  const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
-
 </script>
