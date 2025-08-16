@@ -138,6 +138,13 @@ const allItems = [
     roles: [UserRole.ADMIN],
   },
   {
+    title: "Gestión Académica",
+    value: "academic-management",
+    to: "/academic",
+    icon: "mdi-school-outline",
+    roles: [UserRole.TUTOR, UserRole.ASSESSOR, UserRole.COORDINATOR, UserRole.TEACHER_DIRECTIVE],
+  },
+  {
     title: "Mi Progreso",
     value: "student-progress",
     to: "/student/my-groups",
