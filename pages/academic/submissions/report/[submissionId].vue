@@ -9,10 +9,14 @@
 
     <v-card v-else-if="submission && submission.form">
       <v-card-title class="d-flex align-center">
-        <v-btn icon flat @click="router.back()" class="me-2">
+        <v-btn icon flat @click="router.back()" class="me-2 no-print">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
         <span>Reporte de: {{ submission.form.name }}</span>
+        <v-spacer></v-spacer>
+        <v-btn icon flat @click="handlePrint" class="no-print">
+          <v-icon>mdi-printer</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-subtitle>
         Entregado por: {{ studentNames }} el {{ formatDate(submission.createdAt) }}
@@ -75,11 +79,30 @@ onMounted(async () => {
 
 const formatDate = (dateString: string) => {
   if (!dateString) return '';
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-  return new Date(dateString).toLocaleDateString(undefined, options);
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('es-ES', options);
+};
+
+const handlePrint = () => {
+  window.print();
 };
 
 useHead({
   title: computed(() => `Reporte de ${submission.value?.form?.name || ''}`)
 });
 </script>
+
+<style scoped>
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .v-card {
+    box-shadow: none !important;
+    border: none !important;
+  }
+  .v-container {
+    padding: 0 !important;
+  }
+}
+</style>

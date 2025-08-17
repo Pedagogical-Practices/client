@@ -1,176 +1,80 @@
 <template>
   <v-container fluid>
-    {{ formData }}
-    <v-row v-for="(field, index) in formDefinition.fields" :key="field.name">
-      <v-col cols="12">
-        <div class="report-field">
-          <div class="field-label">{{ field.label }}</div>
-          <div class="field-value">
-            <template
-              v-if="
-                field.type === FormFieldType.TEXT ||
-                field.type === FormFieldType.TEXTAREA ||
-                field.type === FormFieldType.NUMBER ||
-                field.type === FormFieldType.EMAIL ||
-                field.type === FormFieldType.PASSWORD
-              "
-            >
-              {{ getFieldValue(field.name) || "N/A" }}
-            </template>
-            <template
-              v-else-if="
-                field.type === FormFieldType.DATE ||
-                field.type === FormFieldType.DATE_PICKER
-              "
-            >
-              {{ formatDate(getFieldValue(field.name)) || "N/A" }}
-            </template>
-            <template v-else-if="field.type === FormFieldType.SELECT_SIMPLE">
-              {{ getSelectSimpleValue(field) || "N/A" }}
-            </template>
-            <template v-else-if="field.type === FormFieldType.SELECT_DYNAMIC">
-              {{ getSelectDynamicValue(field) || "N/A" }}
-            </template>
-            <template v-else-if="field.type === FormFieldType.CHECKBOX">
-              {{ getFieldValue(field.name) ? "Sí" : "No" }}
-            </template>
-            <template
-              v-else-if="
-                field.type === FormFieldType.CHECKBOX_GROUP ||
-                field.type === FormFieldType.RADIO_GROUP
-              "
-            >
-              <div v-if="getFieldValue(field.name)">
-                <v-chip
-                  v-for="(value, key) in getFieldValue(field.name)"
-                  :key="key"
-                  size="small"
-                  class="ma-1"
-                >
-                  {{ key }}: {{ value ? "Sí" : "No" }}
-                </v-chip>
-              </div>
-              <span v-else>N/A</span>
-            </template>
-            <template v-else-if="field.type === FormFieldType.MAP">
-              {{ getFieldValue(field.name) || "N/A" }}
-              <v-btn
-                v-if="getFieldValue(field.name)"
-                icon="mdi-map-marker-radius"
-                size="small"
-                variant="text"
-                :href="`https://www.google.com/maps/search/?api=1&query=${getFieldValue(field.name)}`"
-                target="_blank"
-              >
-              </v-btn>
-            </template>
-            <template
-              v-else-if="
-                field.type === FormFieldType.TYPOGRAPHY_HEADING ||
-                field.type === FormFieldType.TYPOGRAPHY_BODY
-              "
-            >
-              <component
-                :is="field.tag || 'p'"
-                :style="getTypographyStyle(field)"
-                >{{ field.text }}</component
-              >
-            </template>
-            <template v-else>
-              {{ getFieldValue(field.name) || "N/A" }}
-            </template>
-          </div>
+    <div v-if="!formDefinition || !formData">
+      <p>Esperando datos del formulario...</p>
+    </div>
+    <div v-else>
+      <div
+        v-for="(field, index) in processedFields"
+        :key="index"
+        class="report-field"
+      >
+        <div class="field-label">{{ field.label }}</div>
+        <div class="field-value">
+          <!-- Si el valor es un objeto (ej. CheckboxGroup), lo mostramos como JSON formateado -->
+          <pre v-if="typeof field.value === 'object' && field.value !== null">{{
+            JSON.stringify(field.value, null, 2)
+          }}</pre>
+          <!-- De lo contrario, validamos si es formato fecha para convertirlo, de lo contrario mostramos el valor simple -->
+          <span v-else>{{ field.value || "Sin respuesta" }}</span>
         </div>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import { FormFieldType, type FormField, DataSourceType } from "~/types";
-import { useDataSourceStore } from "~/stores/dataSourceStore";
+import { computed } from 'vue';
+import type { Form } from '~/types';
 
-export interface Form {
-  id?: string;
-  name: string;
-  description?: string;
-  fields: FormField[];
-}
-
+// 1. Definir las props que el componente espera recibir de la página contenedora.
 const props = defineProps<{
-  formDefinition: Form;
-  formData: Record<string, any>;
+  formDefinition: Form | null;
+  formData: Record<string, any> | null;
 }>();
 
-const dataSourceStore = useDataSourceStore();
-const dynamicSelectValues = ref<Record<string, string>>({});
-
-// Function to get the value for a given field name from formData
-const getFieldValue = (fieldName: string) => {
-  return props.formData ? props.formData[fieldName] : null;
-};
-
-// Function to format date values
-const formatDate = (dateString: string) => {
-  if (!dateString) return "";
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  } catch (e) {
-    return dateString; // Return original if invalid date
+// 2. Crear una propiedad computada para fusionar la plantilla y los datos.
+const processedFields = computed(() => {
+  if (!props.formDefinition?.fields || !props.formData) {
+    return [];
   }
-};
 
-// Function to get the display value for SELECT_SIMPLE
-const getSelectSimpleValue = (field: FormField) => {
-  const value = getFieldValue(field.name);
-  if (!value) return null;
-  // Assuming field.options is an array of { label, value } or just strings
-  if (Array.isArray(field.options)) {
-    const selectedOption = field.options.find((option: any) => {
-      if (typeof option === "object" && option !== null && "value" in option) {
-        return option.value === value;
+  // 3. Iterar sobre los campos de la plantilla (el "esqueleto").
+  return props.formDefinition.fields.map(field => {
+    let value = props.formData![field.name] ?? null;
+    
+    // --- Lógica para refinar la visualización de valores ---
+    if (value && typeof value === 'object' && !Array.isArray(value) && value.hasOwnProperty('text')) {
+      // Si el valor es un objeto de v-select, mostrar solo el texto.
+      value = value.text;
+    } else {
+      // Lista de todos los posibles tipos de campo de fecha
+      const dateTypes = ['DATE', 'DATE_PICKER', 'DATE_INPUT'];
+      if (dateTypes.includes(field.type) && typeof value === 'string' && value) {
+        // Si el campo es de tipo fecha y tiene un valor de texto, formatearlo.
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) { // Asegurarse de que la fecha sea válida
+          const options: Intl.DateTimeFormatOptions = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: 'UTC', // Usar UTC para evitar errores de un día por zona horaria
+          };
+          value = date.toLocaleDateString('es-ES', options);
+        }
       }
-      return option === value;
-    });
-    return selectedOption ? selectedOption.label || selectedOption : value;
-  } else if (field.options && field.options.items) {
-    // For options with items array
-    const selectedOption = field.options.items.find((option: any) => {
-      if (typeof option === "object" && option !== null && "value" in option) {
-        return option.value === value;
-      }
-      return option === value;
-    });
-    return selectedOption ? selectedOption.label || selectedOption : value;
-  }
-  return value;
-};
-
-// Function to get the display value for SELECT_DYNAMIC
-const getSelectDynamicValue = (field: FormField) => {
-  const id = getFieldValue(field.name);
-  if (!id) return null;
-  return dynamicSelectValues.value[id] || "Cargando...";
-};
-
-// Function to get typography styles
-const getTypographyStyle = (field: FormField) => {
-  const style: Record<string, string> = {};
-  if (field.fontWeight) style.fontWeight = field.fontWeight;
-  if (field.textAlign) style.textAlign = field.textAlign;
-  if (field.textDecoration) style.textDecoration = field.textDecoration;
-  if (field.textTransform) style.textTransform = field.textTransform;
-  if (field.color) style.color = field.color;
-  return style;
-};
-
-// Watch formData to fetch dynamic select values
+    }
+    
+    return {
+      label: field.label,
+      value: value,
+      type: field.type,
+    };
+  }).filter(field => {
+    // 4. Filtrar los campos que son puramente visuales y no contienen una respuesta.
+    return field.type !== 'TYPOGRAPHY_HEADING' && field.type !== 'TYPOGRAPHY_BODY';
+  });
+});
 </script>
 
 <style scoped>
@@ -186,14 +90,23 @@ const getTypographyStyle = (field: FormField) => {
   font-weight: bold;
   color: #333;
   margin-bottom: 4px;
+  font-size: 0.9em;
+  text-transform: uppercase;
 }
 
 .field-value {
   color: #555;
-  font-size: 0.95em;
+  font-size: 1em;
+  white-space: pre-wrap; /* Respeta los saltos de línea en textareas */
+  word-wrap: break-word;
 }
 
-.field-value .v-btn {
-  margin-left: 8px;
+.field-value pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+  font-size: inherit;
+  margin: 0;
+  padding: 0;
 }
 </style>

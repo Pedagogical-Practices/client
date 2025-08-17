@@ -20,6 +20,15 @@ query Submission($id: ID!) {
       description
       fields {
         id
+        name
+        label
+        type
+        required
+        placeholder
+        options
+        dataSource
+        tag
+        rules
       }
     }
     formData
