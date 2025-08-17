@@ -44,10 +44,9 @@ export enum DataSourceType {
 }
 
 export enum SubmissionStatus {
-  SUBMITTED = "SUBMITTED",
-  REVIEWED = "REVIEWED",
   APPROVED = "APPROVED",
   NEEDS_REVISION = "NEEDS_REVISION",
+  PENDING_REVIEW = "PENDING_REVIEW",
 }
 
 export enum PracticeStatus {

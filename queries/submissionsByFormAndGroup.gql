@@ -1,0 +1,12 @@
+query SubmissionsByFormAndGroup($groupId: ID!, $formId: ID!) {
+  submissionsByFormAndGroup(groupId: $groupId, formId: $formId) {
+    id
+    students {
+      id
+      firstName
+      lastName
+    }
+    createdAt
+    updatedAt
+  }
+}

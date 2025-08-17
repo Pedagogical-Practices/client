@@ -52,32 +52,33 @@ export const useFormStore = defineStore("form", () => {
   };
 
   const fetchFormById = async (id: string) => {
-    const { data, execute, error } = useAsyncQuery<{ form: Form }>(
-      GetFormQuery,
-      { id }
-    );
+    loading.value = true;
+    try {
+      const { data, errors } = await apolloClient.query<{ form: Form }>({
+        query: GetFormQuery,
+        variables: { id },
+        fetchPolicy: 'network-only',
+      });
 
-    await execute();
+      if (errors) {
+        console.error("fetchFormById: Errores de GraphQL:", errors);
+        throw new Error(errors[0]?.message || "Error al cargar el formulario.");
+      }
 
-    if (error.value) {
-      console.error(
-        "fetchFormById: Error al cargar el formulario:",
-        error.value
-      );
-      throw new Error(
-        error.value.message || "Error desconocido al cargar el formulario."
-      );
-    }
-
-    if (data.value?.form) {
-      formName.value = data.value.form.name;
-      editingFormId.value = data.value.form.id ?? null;
-      currentForm.value = data.value.form;
-      formElementStore.chargeFieldsOnForm(data.value.form.fields || []);
-    } else {
-      console.log(
-        "fetchFormById: No se encontró el formulario o los datos están vacíos."
-      );
+      if (data?.form) {
+        formName.value = data.form.name;
+        editingFormId.value = data.form.id ?? null;
+        currentForm.value = data.form;
+        formElementStore.chargeFieldsOnForm(data.form.fields || []);
+      } else {
+        console.log("fetchFormById: No se encontró el formulario o los datos están vacíos.");
+        currentForm.value = null;
+      }
+    } catch (e: any) {
+      console.error("fetchFormById: Error al cargar el formulario:", e);
+      throw new Error(e.message || "Error desconocido al cargar el formulario.");
+    } finally {
+      loading.value = false;
     }
   };
 
