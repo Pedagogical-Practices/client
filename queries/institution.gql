@@ -1,11 +1,6 @@
-query Institution($id: ID!) {
+query institution($id: ID!) {
   institution(id: $id) {
     id
     name
-    address
-    phone
-    email
-    createdAt
-    updatedAt
   }
 }

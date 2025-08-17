@@ -114,15 +114,8 @@ const allItems = [
     value: "groups",
     to: "/groups",
     icon: "mdi-school",
-    roles: [UserRole.STUDENT, UserRole.ASSESSOR, UserRole.FAMILY],
+    roles: [UserRole.STUDENT, UserRole.ASSESSOR, , UserRole.TUTOR],
   },
-  /*{
-    title: "Mis Formularios",
-    value: "forms",
-    to: "/forms",
-    icon: "mdi-form-select",
-    roles: [UserRole.STUDENT, UserRole.ASSESSOR, UserRole.TUTOR],
-  },*/
   {
     title: "Mis Protocolos",
     value: "protocols",
@@ -136,6 +129,13 @@ const allItems = [
     to: "/admin",
     icon: "mdi-security",
     roles: [UserRole.ADMIN],
+  },
+  {
+    title: "Gestión Académica",
+    value: "academic-management",
+    to: "/academic",
+    icon: "mdi-school-outline",
+    roles: [UserRole.TUTOR, UserRole.ASSESSOR, UserRole.COORDINATOR],
   },
   {
     title: "Mi Progreso",
@@ -168,6 +168,8 @@ const allItems = [
       UserRole.STUDENT,
       UserRole.ASSESSOR,
       UserRole.FAMILY,
+      UserRole.TUTOR,
+      UserRole.COORDINATOR,
     ],
   },
 ];

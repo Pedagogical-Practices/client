@@ -31,6 +31,12 @@ query Form($id: ID!) {
       height
       multiple
       color
+      variant
+      fontWeight
+      textAlign
+      textDecoration
+      textTransform
+      tag
     }
     createdAt
     updatedAt
