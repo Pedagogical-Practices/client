@@ -20,17 +20,7 @@
           </v-list>
         </v-card>
 
-        <v-card>
-          <v-card-title>Estudiantes ({{ group.students.length }})</v-card-title>
-          <v-divider></v-divider>
-          <v-list density="compact" style="max-height: 400px; overflow-y: auto;">
-            <v-list-item v-for="student in group.students" :key="student.id" :title="`${student.firstName} ${student.lastName}`">
-              <template v-slot:prepend>
-                <v-icon>mdi-account</v-icon>
-              </template>
-            </v-list-item>
-          </v-list>
-        </v-card>
+        
       </v-col>
 
       <!-- Columna de Protocolos y Progreso con Pestañas -->
@@ -63,11 +53,9 @@
                       {{ student.firstName }} {{ student.lastName }}
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
-                      <StudentProtocolProgress
+                      <TutorStudentProgress
                         :protocols="group.practice.protocols"
                         :submissions="getSubmissionsForStudent(student.id)"
-                        :deadlines="group.deadlines || []"
-                        :group-id="groupId"
                       />
                     </v-expansion-panel-text>
                   </v-expansion-panel>
@@ -87,7 +75,7 @@ import { useRoute } from 'vue-router';
 import { useGroupStore } from '~/stores/groupStore';
 import { useSubmissionStore } from '~/stores/submissionStore';
 import AcademicProtocolProgress from '~/components/academic/AcademicProtocolProgress.vue';
-import StudentProtocolProgress from '~/components/student/StudentProtocolProgress.vue';
+import TutorStudentProgress from '~/components/academic/TutorStudentProgress.vue';
 
 definePageMeta({
   middleware: 'academic'
@@ -114,7 +102,8 @@ onMounted(async () => {
     
     if (groupStore.currentGroup) {
       await submissionStore.fetchSubmissionsByGroup(groupId);
-      submissions.value = submissionStore.submissions;
+      submissions.value = submissionStore.groupSubmissions;
+      console.log('Submissions fetched in group detail page:', submissions.value);
     } else {
       throw new Error("El grupo no fue encontrado o no se pudo cargar.");
     }

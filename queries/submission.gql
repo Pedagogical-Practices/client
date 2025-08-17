@@ -14,6 +14,14 @@ query Submission($id: ID!) {
       firstName
       lastName
     }
+    form {
+      id
+      name
+      description
+      fields {
+        id
+      }
+    }
     formData
     score
     feedback
