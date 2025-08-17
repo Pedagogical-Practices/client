@@ -4,19 +4,16 @@
       <p>Esperando datos del formulario...</p>
     </div>
     <div v-else>
-      <div
-        v-for="(field, index) in processedFields"
+      <div 
+        v-for="(field, index) in processedFields" 
         :key="index"
         class="report-field"
       >
         <div class="field-label">{{ field.label }}</div>
         <div class="field-value">
-          <!-- Si el valor es un objeto (ej. CheckboxGroup), lo mostramos como JSON formateado -->
-          <pre v-if="typeof field.value === 'object' && field.value !== null">{{
-            JSON.stringify(field.value, null, 2)
-          }}</pre>
-          <!-- De lo contrario, validamos si es formato fecha para convertirlo, de lo contrario mostramos el valor simple -->
-          <span v-else>{{ field.value || "Sin respuesta" }}</span>
+          <!-- Usar <pre> para valores que son JSON formateado (fallback) -->
+          <pre v-if="field.isObject">{{ field.value }}</pre>
+          <span v-else>{{ field.value }}</span>
         </div>
       </div>
     </div>
@@ -25,55 +22,112 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { Form } from '~/types';
+import type { Form, FormField } from '~/types';
+import { FormFieldType } from '~/types';
 
-// 1. Definir las props que el componente espera recibir de la página contenedora.
 const props = defineProps<{
   formDefinition: Form | null;
   formData: Record<string, any> | null;
 }>();
 
-// 2. Crear una propiedad computada para fusionar la plantilla y los datos.
+// Función auxiliar para dar formato a los valores según el tipo de campo
+const formatDisplayValue = (field: FormField, value: any): { formattedValue: string; isObject: boolean } => {
+  if (value === null || value === undefined || value === '' || (typeof value === 'object' && Object.keys(value).length === 0)) {
+    return { formattedValue: 'Sin respuesta', isObject: false };
+  }
+
+  switch (field.type) {
+    case FormFieldType.SELECT_DYNAMIC:
+    case FormFieldType.SELECT_SIMPLE:
+      if (value && typeof value === 'object' && value.hasOwnProperty('text')) {
+        return { formattedValue: value.text, isObject: false };
+      }
+      break;
+
+    case FormFieldType.DATE:
+    case FormFieldType.DATE_PICKER:
+    case FormFieldType.DATE_INPUT:
+      if (typeof value === 'string') {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+          return { formattedValue: date.toLocaleDateString('es-ES', options), isObject: false };
+        }
+      }
+      break;
+
+    case FormFieldType.RADIO_GROUP:
+      if (typeof value === 'object' && Object.keys(value).length > 0) {
+        const selectedKey = Object.keys(value)[0];
+        const selectedOption = (field.options as any[])?.find(opt => opt.value === selectedKey);
+        if (selectedOption) {
+          if (selectedOption.isOtherOption) {
+            return { formattedValue: `${selectedOption.label}: ${value[selectedKey]}`, isObject: false };
+          }
+          return { formattedValue: selectedOption.label, isObject: false };
+        }
+      }
+      break;
+
+    case FormFieldType.CHECKBOX_GROUP:
+      if (typeof value === 'object') {
+        const selectedLabels = Object.keys(value).map(key => {
+          const option = (field.options as any[])?.find(opt => opt.value === key);
+          if (!option) return null;
+          if (option.isOtherOption) {
+            return value[key] ? `${option.label}: ${value[key]}` : null;
+          }
+          return value[key] ? option.label : null;
+        }).filter(label => label !== null);
+        if (selectedLabels.length > 0) {
+          return { formattedValue: selectedLabels.join(', '), isObject: false };
+        }
+        return { formattedValue: 'Sin respuesta', isObject: false };
+      }
+      break;
+
+    case FormFieldType.REPEATER:
+      if (Array.isArray(value) && value.length > 0) {
+        const itemLines = value.map((item, index) => {
+          const itemDetails = Object.entries(item).map(([key, val]) => `${key}: ${val}`).join(', ');
+          return `  - Registro ${index + 1}: { ${itemDetails} }`;
+        });
+        return { formattedValue: `\n${itemLines.join('\n')}`, isObject: true };
+      }
+      break;
+
+    case FormFieldType.RADIOMATRIX:
+      if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length > 0) {
+        const itemLines = Object.entries(value).map(([key, val]) => `  - ${key}: ${val}`);
+        return { formattedValue: `\n${itemLines.join('\n')}`, isObject: true };
+      }
+      break;
+  }
+
+  // Fallback para otros objetos o valores no manejados
+  if (typeof value === 'object') {
+    return { formattedValue: JSON.stringify(value, null, 2), isObject: true };
+  }
+
+  return { formattedValue: value.toString(), isObject: false };
+};
+
 const processedFields = computed(() => {
   if (!props.formDefinition?.fields || !props.formData) {
     return [];
   }
 
-  // 3. Iterar sobre los campos de la plantilla (el "esqueleto").
-  return props.formDefinition.fields.map(field => {
-    let value = props.formData![field.name] ?? null;
-    
-    // --- Lógica para refinar la visualización de valores ---
-    if (value && typeof value === 'object' && !Array.isArray(value) && value.hasOwnProperty('text')) {
-      // Si el valor es un objeto de v-select, mostrar solo el texto.
-      value = value.text;
-    } else {
-      // Lista de todos los posibles tipos de campo de fecha
-      const dateTypes = ['DATE', 'DATE_PICKER', 'DATE_INPUT'];
-      if (dateTypes.includes(field.type) && typeof value === 'string' && value) {
-        // Si el campo es de tipo fecha y tiene un valor de texto, formatearlo.
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) { // Asegurarse de que la fecha sea válida
-          const options: Intl.DateTimeFormatOptions = {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            timeZone: 'UTC', // Usar UTC para evitar errores de un día por zona horaria
-          };
-          value = date.toLocaleDateString('es-ES', options);
-        }
-      }
-    }
-    
-    return {
-      label: field.label,
-      value: value,
-      type: field.type,
-    };
-  }).filter(field => {
-    // 4. Filtrar los campos que son puramente visuales y no contienen una respuesta.
-    return field.type !== 'TYPOGRAPHY_HEADING' && field.type !== 'TYPOGRAPHY_BODY';
-  });
+  return props.formDefinition.fields
+    .filter(field => field.type !== FormFieldType.TYPOGRAPHY_HEADING && field.type !== FormFieldType.TYPOGRAPHY_BODY)
+    .map(field => {
+      const rawValue = props.formData![field.name] ?? null;
+      const { formattedValue, isObject } = formatDisplayValue(field, rawValue);
+      return {
+        label: field.label,
+        value: formattedValue,
+        isObject: isObject,
+      };
+    });
 });
 </script>
 
