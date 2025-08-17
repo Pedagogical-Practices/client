@@ -34,35 +34,38 @@
               :title="form.name"
             >
               <v-list-item-subtitle v-if="getFormStatus(form.id).count > 0">
-                Última entrega:
-                {{ formatDate(getFormStatus(form.id).latest.createdAt) }}
+                Última entrega: {{ formatDate(getFormStatus(form.id).latest.createdAt) }}
               </v-list-item-subtitle>
             </v-list-item>
             <v-list-item v-for="form in protocol.forms" :key="form.id">
               <template v-slot:append>
                 <div class="d-flex align-center">
-                  <v-chip
+                  <v-btn
                     :color="
-                      getFormStatus(form.id).count > 0 ? 'success' : 'default'
+                      getFormStatus(form.id).count > 0
+                        ? getStatusColor(
+                            getFormStatus(form.id).latest.evaluationStatus
+                          )
+                        : 'default'
                     "
                     class="mr-4"
-                    label
-                    small
+                    @click="openSubmissionDetails(getFormStatus(form.id).latest)"
+                    :disabled="getFormStatus(form.id).count === 0"
+                    icon
                   >
-                    {{
-                      getFormStatus(form.id).count > 0
-                        ? `${getFormStatus(form.id).count} Entrega(s)`
-                        : "Pendiente"
-                    }}
-                  </v-chip>
+                    <v-icon>{{ getStatusIcon(getFormStatus(form.id).latest.evaluationStatus) }}</v-icon>
+                    <v-tooltip activator="parent" location="bottom">{{ getStatusText(getFormStatus(form.id).latest.evaluationStatus) }}</v-tooltip>
+                  </v-btn>
 
                   <v-btn
                     v-if="getFormStatus(form.id).count === 0"
                     color="primary"
                     @click="fillNewForm(protocol.id, form.id)"
                     :disabled="isPastDeadline(protocol.id)"
+                    icon
                   >
-                    Llenar Formulario
+                    <v-icon>mdi-pencil</v-icon>
+                    <v-tooltip activator="parent" location="bottom">Llenar Formulario</v-tooltip>
                   </v-btn>
 
                   <div v-else>
@@ -71,8 +74,10 @@
                       variant="outlined"
                       color="info"
                       @click="viewHistory(protocol.id, form.id)"
+                      icon
                     >
-                      Ver Historial
+                      <v-icon>mdi-history</v-icon>
+                      <v-tooltip activator="parent" location="bottom">Ver Historial</v-tooltip>
                     </v-btn>
                     <v-btn
                       class="mr-2"
@@ -84,15 +89,19 @@
                           getFormStatus(form.id).latest.id
                         )
                       "
+                      icon
                     >
-                      Editar Último
+                      <v-icon>mdi-pencil-outline</v-icon>
+                      <v-tooltip activator="parent" location="bottom">Editar Último</v-tooltip>
                     </v-btn>
                     <v-btn
                       color="primary"
                       @click="fillNewForm(protocol.id, form.id)"
                       :disabled="isPastDeadline(protocol.id)"
+                      icon
                     >
-                      Llenar Nuevo
+                      <v-icon>mdi-plus</v-icon>
+                      <v-tooltip activator="parent" location="bottom">Llenar Nuevo</v-tooltip>
                     </v-btn>
                   </div>
                 </div>
@@ -105,12 +114,34 @@
     <v-alert v-else type="info">
       No hay protocolos asignados a esta práctica.
     </v-alert>
+
+    <!-- Dialog for Submission Details -->
+    <v-dialog v-model="dialog" max-width="600">
+      <v-card v-if="selectedSubmission">
+        <v-card-title class="headline">Detalles de la Entrega</v-card-title>
+        <v-card-text>
+          <p><strong>Estado:</strong> {{ getStatusText(selectedSubmission.evaluationStatus) }}</p>
+          <p v-if="selectedSubmission.score !== null && selectedSubmission.score !== undefined">
+            <strong>Calificación:</strong> {{ selectedSubmission.score }}
+          </p>
+          <p v-if="selectedSubmission.feedback">
+            <strong>Retroalimentación:</strong> {{ selectedSubmission.feedback }}
+          </p>
+          <p><strong>Fecha de Entrega:</strong> {{ formatDate(selectedSubmission.createdAt) }}</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="dialog = false">Cerrar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script setup>
 import { computed } from "vue";
 import { useRouter } from "vue-router";
+import { SubmissionStatus } from "~/types";
 
 const props = defineProps({
   protocols: {
@@ -135,6 +166,9 @@ const props = defineProps({
 });
 
 const router = useRouter();
+
+const dialog = ref(false);
+const selectedSubmission = ref(null);
 
 // This computed property now groups all submissions by formId
 const submissionsByFormId = computed(() => {
@@ -210,9 +244,55 @@ const editSubmission = (protocolId, formId, submissionId) => {
   );
 };
 
+const openSubmissionDetails = (submission) => {
+  selectedSubmission.value = submission;
+  dialog.value = true;
+};
+
 const formatDate = (dateString) => {
   if (!dateString) return "";
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case SubmissionStatus.APPROVED:
+      return "success";
+    case SubmissionStatus.NEEDS_REVISION:
+      return "warning";
+    case SubmissionStatus.PENDING_REVIEW:
+      return "info";
+    default:
+      return "default";
+  }
+};
+
+const getStatusText = (status) => {
+  if (!status) return "Desconocido"; // Handle undefined or null status
+  switch (status) {
+    case SubmissionStatus.APPROVED:
+      return "Aprobado";
+    case SubmissionStatus.NEEDS_REVISION:
+      return "Necesita Correcciones";
+    case SubmissionStatus.PENDING_REVIEW:
+      return "Pendiente de Revisión";
+    default:
+      return status.replace(/_/g, " ");
+  }
+};
+
+const getStatusIcon = (status) => {
+  if (!status) return "mdi-help-circle";
+  switch (status) {
+    case SubmissionStatus.APPROVED:
+      return "mdi-check-circle";
+    case SubmissionStatus.NEEDS_REVISION:
+      return "mdi-alert-circle";
+    case SubmissionStatus.PENDING_REVIEW:
+      return "mdi-clock-outline";
+    default:
+      return "mdi-help-circle";
+  }
 };
 </script>

@@ -1,0 +1,8 @@
+mutation EvaluateSubmission($id: ID!, $score: Float!, $feedback: String!, $status: String!) {
+  evaluateSubmission(id: $id, score: $score, feedback: $feedback, status: $status) {
+    id
+    score
+    feedback
+    evaluationStatus
+  }
+}

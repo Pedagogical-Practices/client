@@ -11,6 +11,7 @@ import submissionsByStudentQuery from "~/queries/submissionsByStudent.gql";
 import submissionsByStudentAndGroupQuery from "~/queries/submissionsByStudentAndGroup.gql";
 import submissionsByGroupQuery from "~/queries/submissionsByGroup.gql";
 import submissionsByFormAndGroupQuery from "~/queries/submissionsByFormAndGroup.gql";
+import evaluateSubmissionMutation from "~/queries/evaluateSubmission.gql";
 
 export const useSubmissionStore = defineStore(
   "submission",
@@ -231,6 +232,30 @@ export const useSubmissionStore = defineStore(
       }
     };
 
+    const evaluateSubmission = async (
+      id: string,
+      score: number,
+      feedback: string,
+      status: string
+    ): Promise<any | null> => {
+      isLoading.value = true;
+      error.value = null;
+      try {
+        const { data, errors } = await client.mutate({
+          mutation: evaluateSubmissionMutation,
+          variables: { id, score, feedback, status },
+        });
+        if (errors) throw errors;
+        return data?.evaluateSubmission || null;
+      } catch (e: any) {
+        error.value = e;
+        console.error("submissionStore: Error evaluating submission:", e);
+        return null;
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
     return {
       submissions,
       groupSubmissions,
@@ -247,9 +272,19 @@ export const useSubmissionStore = defineStore(
       fetchSubmissionsByStudentAndGroup,
       fetchSubmissionsByGroup,
       fetchSubmissionsByFormAndGroup,
+      evaluateSubmission,
     };
   },
   {
-    persist: false,
+    persist: {
+      paths: [
+        'submissions',
+        'groupSubmissions',
+        'formSubmissionsHistory',
+        'currentSubmission',
+        'isLoading',
+        'error',
+      ],
+    },
   }
 );
