@@ -1,27 +1,14 @@
-[
-  {
-    "label": "Nunca",
-    "value": "nunca",
-    "isOtherOption": false
-  },
-  {
-    "label": "Una o dos veces",
-    "value": "una_o_dos_veces",
-    "isOtherOption": false
-  },
-  {
-    "label": "Cada tantos meses",
-    "value": "cada_tantos_meses",
-    "isOtherOption": false
-  },
-  {
-    "label": "Una vez al mes",
-    "value": "una_vez_al_mes",
-    "isOtherOption": false
-  },
-  {
-    "label": "Una vez por semana o más",
-    "value": "una_vez_por_semana_o_mas",
-    "isOtherOption": false
+{
+  "options": {
+    "items": [
+      "Concepto",
+      "Alcance",
+      "Justificación",
+      "Términos y definiciones"
+    ],
+    "columns": [
+      { "text": "Si", "value": "si" },
+      { "text": "No", "value": "no" }
+    ]
   }
-]
+}

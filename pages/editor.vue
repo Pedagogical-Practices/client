@@ -461,6 +461,11 @@ const getComponentProps = (field: FormField) => {
     props.textDecoration = field.textDecoration;
     props.textTransform = field.textTransform;
     props.tag = field.tag;
+  } else if (field.type === FormFieldType.RADIOMATRIX) {
+    if (field.options && typeof field.options === 'object' && !Array.isArray(field.options)) {
+      props.items = field.options.items || [];
+      props.options = field.options.columns || []; // 'options' prop for RadioMatrix is 'columns' from field.options
+    }
   }
 
   return props;

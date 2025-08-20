@@ -445,7 +445,7 @@ export const availableElements: AvailableElementDefinition[] = [
         ],
       },
       rules: [],
-      value: "",
+      value: ,
       variableName: "",
       hint: "",
       required: false,
