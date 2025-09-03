@@ -301,7 +301,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useFormElementStore } from "~/stores/formElementStore";
 import { useFormStore } from "~/stores/formStore";
@@ -354,6 +354,27 @@ const snackbar = ref<{
   color: "success",
   timeout: 3000,
 });
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+    event.preventDefault(); // Prevenir el comportamiento por defecto del navegador
+    saveFormToBackend(true); // Guardar y permanecer
+    snackbar.value = {
+      show: true,
+      text: "¡Formulario guardado exitosamente! (Permaneciendo en el editor)",
+      color: "success",
+      timeout: 3000,
+    };
+  }
+};
 
 watch(
   () => formElementStore.formElements,
@@ -629,7 +650,7 @@ const updateFormFromJson = async (): Promise<void> => {
   }
 };
 
-const saveFormToBackend = async (): Promise<void> => {
+const saveFormToBackend = async (stayInEditor: boolean = false): Promise<void> => {
   try {
     if (!authStore.isAuthenticated) {
       throw new Error(
@@ -668,16 +689,19 @@ const saveFormToBackend = async (): Promise<void> => {
       formStore.editingFormId = result.id;
     }
 
-    formStore.clearEditingFormId();
-    formElementStore.initializeForm([]);
-    formStore.formName = "";
     snackbar.value = {
       show: true,
       text: "¡Formulario guardado exitosamente!",
       color: "success",
       timeout: 3000,
     };
-    router.push("/admin/forms");
+
+    if (!stayInEditor) {
+      formStore.clearEditingFormId();
+      formElementStore.initializeForm([]);
+      formStore.formName = "";
+      router.push("/admin/forms");
+    }
   } catch (error: any) {
     console.error("Error al guardar:", error);
     snackbar.value = {

@@ -1,14 +1,12 @@
 {
-  "options": {
-    "items": [
-      "Concepto",
-      "Alcance",
-      "Justificación",
-      "Términos y definiciones"
-    ],
-    "columns": [
-      { "text": "Si", "value": "si" },
-      { "text": "No", "value": "no" }
-    ]
-  }
+  "items": [
+    "Estructura y administración institucional",
+    "Organigrama",
+    "Sistema de gestión de la calidad S.G.C.",
+    "Evaluación institucional"
+  ],
+  "columns": [
+    { "text": "Si", "value": "si" },
+    { "text": "No", "value": "no" }
+  ]
 }
