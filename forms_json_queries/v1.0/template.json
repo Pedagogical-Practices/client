@@ -1,12 +1,41 @@
 {
-  "items": [
-    "Estructura y administración institucional",
-    "Organigrama",
-    "Sistema de gestión de la calidad S.G.C.",
-    "Evaluación institucional"
-  ],
+  "items": {
+    "label": "ASPECTO",
+    "values": [
+      "Puntualidad",
+      "Disposición",
+      "Comunicación",
+      "Responsabilidad",
+      "Desempeño",
+      "Uso de recursos",
+      "Trabajo en equipo",
+      "Relaciones interpersonales",
+      "Liderazgo"
+    ]
+  },
   "columns": [
-    { "text": "Si", "value": "si" },
-    { "text": "No", "value": "no" }
+    {
+      "input": "TEXTAREA",
+      "label": "Texto de captura 1",
+      "value": ""
+    },
+    {
+      "label": "Pregunta de opción múltiple",
+      "options": [
+        {
+          "text": "Si",
+          "value": "si"
+        },
+        {
+          "text": "No",
+          "value": "no"
+        }
+      ]
+    },
+    {
+      "input": "TEXTAREA",
+      "label": "Texto de captura 2",
+      "value": ""
+    }
   ]
 }

@@ -1,24 +1,21 @@
 <template>
   <div class="radio-matrix-container pa-2 border rounded">
-    <v-card-text>{{ label }} </v-card-text>
+    <v-label class="mb-2">{{ label }}</v-label>
     <v-table density="compact">
       <thead>
         <tr>
-          <th class="text-left">Item</th>
-          <th class="text-center">Opciones</th>
+          <th class="text-left font-weight-bold">{{ itemsLabel }}</th>
+          <th v-for="col in columns" :key="col.value" class="text-center font-weight-bold">
+            {{ col.text }}
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in items" :key="item">
-          <td>{{ item }}</td>
-          <td>
-            <v-radio-group v-model="localValue[item]" inline>
-              <v-radio
-                v-for="option in options"
-                :key="option.value"
-                :label="option.text"
-                :value="option.value"
-              ></v-radio>
+          <td class="text-left">{{ item }}</td>
+          <td v-for="col in columns" :key="col.value" class="radio-cell">
+            <v-radio-group v-model="matrixValue[item].value" inline>
+              <v-radio :value="col.value"></v-radio>
             </v-radio-group>
           </td>
         </tr>
@@ -28,60 +25,71 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
-import { computed } from "vue";
+import { computed } from 'vue';
 
 const props = defineProps<{
-  label?: string; // Made optional
-  modelValue: Record<string, any>;
-  items: string[];
-  options: { text: string; value: any }[];
+  label?: string;
+  modelValue: Record<string, any> | string | null;
+  options: {
+    items: { label: string; values: string[] } | string[];
+    columns: { text: string; value: any }[];
+  };
 }>();
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(['update:modelValue']);
 
-const localValue = ref<Record<string, any>>({});
-
-// Initialize localValue with keys from items if they don't exist
-onMounted(() => {
-  const initialValue = { ...(props.modelValue || {}) };
-  let updated = false;
-  (props.items || []).forEach((item) => {
-    if (!(item in initialValue)) {
-      initialValue[item] = null; // Default to null
-      updated = true;
-    }
-  });
-  localValue.value = initialValue;
-  if (updated) {
-    emit("update:modelValue", localValue.value);
+const itemsLabel = computed(() => {
+  if (props.options?.items && typeof props.options.items === 'object' && !Array.isArray(props.options.items)) {
+    return props.options.items.label;
   }
+  return ''; // No label if items is a simple array
 });
 
-watch(
-  () => props.modelValue,
-  (newValue) => {
-    if (JSON.stringify(newValue) !== JSON.stringify(localValue.value)) {
-      localValue.value = { ...(newValue || {}) };
+const items = computed(() => {
+  if (props.options?.items) {
+    if (Array.isArray(props.options.items)) {
+      return props.options.items; // Handle old format
     }
-  },
-  { deep: true }
-);
+    return props.options.items.values || []; // Handle new format
+  }
+  return [];
+});
 
-watch(
-  localValue,
-  (newValue) => {
-    emit("update:modelValue", newValue);
-  },
-  { deep: true }
-);
+const columns = computed(() => props.options?.columns || []);
 
-// Provide a default value for label if it's undefined
-const label = computed(() => props.label || "");
+// Computed property for each row's radio group
+const matrixValue = computed(() => {
+  const handler = {
+    get: (target: any, key: string) => ({
+      value: typeof props.modelValue === 'object' && props.modelValue?.[key],
+    }),
+    set: (target: any, key: string, value: any) => {
+      const currentModel = typeof props.modelValue === 'object' && props.modelValue !== null ? props.modelValue : {};
+      const newValue = {
+        ...currentModel,
+        [key]: value.value,
+      };
+      emit('update:modelValue', newValue);
+      return true;
+    },
+  };
+  return new Proxy({}, handler);
+});
+
 </script>
 
 <style scoped>
 .radio-matrix-container {
   width: 100%;
+}
+.radio-cell {
+  text-align: right;
+}
+.v-radio-group {
+  justify-content: flex-end;
+  width: 100%;
+}
+.v-radio {
+  justify-content: center;
 }
 </style>

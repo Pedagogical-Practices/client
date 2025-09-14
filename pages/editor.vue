@@ -316,6 +316,7 @@ import CheckboxGroup from "~/components/forms/CheckboxGroup.vue";
 import RadioGroup from "~/components/forms/RadioGroup.vue";
 import Repeater from "~/components/forms/Repeater.vue";
 import RadioMatrix from "~/components/forms/RadioMatrix.vue";
+import InputMatrix from "~/components/forms/InputMatrix.vue";
 
 import { type AvailableElementDefinition } from "~/types";
 import {
@@ -450,6 +451,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.EMAIL]: VTextField,
   [FormFieldType.PASSWORD]: VTextField,
   [FormFieldType.RADIOMATRIX]: RadioMatrix,
+  [FormFieldType.INPUT_MATRIX]: InputMatrix,
 };
 
 const getComponentProps = (field: FormField) => {
@@ -482,11 +484,11 @@ const getComponentProps = (field: FormField) => {
     props.textDecoration = field.textDecoration;
     props.textTransform = field.textTransform;
     props.tag = field.tag;
-  } else if (field.type === FormFieldType.RADIOMATRIX) {
-    if (field.options && typeof field.options === 'object' && !Array.isArray(field.options)) {
-      props.items = field.options.items || [];
-      props.options = field.options.columns || []; // 'options' prop for RadioMatrix is 'columns' from field.options
-    }
+  } else if (
+    field.type === FormFieldType.RADIOMATRIX ||
+    field.type === FormFieldType.INPUT_MATRIX
+  ) {
+    props.options = field.options;
   }
 
   return props;

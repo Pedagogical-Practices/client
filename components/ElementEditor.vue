@@ -319,7 +319,8 @@
                   editableElement.type === FormFieldType.RADIO_GROUP ||
                   editableElement.type === FormFieldType.CHECKBOX_GROUP ||
                   editableElement.type === FormFieldType.REPEATER ||
-                  editableElement.type === FormFieldType.RADIOMATRIX
+                  editableElement.type === FormFieldType.RADIOMATRIX ||
+                  editableElement.type === FormFieldType.INPUT_MATRIX
                 "
               >
                 <v-col cols="12">
@@ -525,10 +526,11 @@ watch(
         editableElement.value.type === FormFieldType.RADIO_GROUP ||
         editableElement.value.type === FormFieldType.CHECKBOX_GROUP ||
         editableElement.value.type === FormFieldType.REPEATER ||
-        editableElement.value.type === FormFieldType.RADIOMATRIX
+        editableElement.value.type === FormFieldType.RADIOMATRIX ||
+        editableElement.value.type === FormFieldType.INPUT_MATRIX
       ) {
         let optionsToDisplay;
-        if (editableElement.value.type === FormFieldType.RADIOMATRIX) {
+        if (editableElement.value.type === FormFieldType.RADIOMATRIX || editableElement.value.type === FormFieldType.INPUT_MATRIX) {
           optionsToDisplay = editableElement.value.options; // It's an object
         } else if (Array.isArray(editableElement.value.options)) {
           optionsToDisplay = editableElement.value.options; // It's an array
@@ -609,7 +611,8 @@ const saveChanges = () => {
     editableElement.value.type === FormFieldType.CHECKBOX_GROUP ||
     editableElement.value.type === FormFieldType.RADIO_GROUP ||
     editableElement.value.type === FormFieldType.REPEATER ||
-    editableElement.value.type === FormFieldType.RADIOMATRIX
+    editableElement.value.type === FormFieldType.RADIOMATRIX ||
+    editableElement.value.type === FormFieldType.INPUT_MATRIX
   ) {
     try {
       editableElement.value.options = JSON.parse(selectItemsText.value);
