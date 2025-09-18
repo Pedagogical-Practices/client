@@ -437,7 +437,10 @@ export const availableElements: AvailableElementDefinition[] = [
       label: "Radio Matrix",
       type: FormFieldType.RADIOMATRIX,
       options: {
-        items: ["Item 1", "Item 2", "Item 3"],
+        items: {
+          label: "Items",
+          values: ["Item 1", "Item 2", "Item 3"]
+        },
         columns: [
           { text: "Option A", value: "A" },
           { text: "Option B", value: "B" },
@@ -445,7 +448,57 @@ export const availableElements: AvailableElementDefinition[] = [
         ],
       },
       rules: [],
-      value: "",
+      value: {},
+      variableName: "",
+      hint: "",
+      required: false,
+      chapter: "",
+      question: "",
+      questionNumber: "",
+      consistencyCondition: "",
+      inconsistencyMessage: "",
+      errorType: "Soft",
+      description: "",
+      disabled: false,
+      readonly: false,
+    },
+  },
+  {
+    name: "Input Matrix",
+    type: FormFieldType.INPUT_MATRIX,
+    displayName: "Input Matrix",
+    icon: "mdi-table-edit",
+    defaultConfig: {
+      name: "input_matrix",
+      label: "Input Matrix",
+      type: FormFieldType.INPUT_MATRIX,
+      options: {
+        items: {
+          label: "Actividades",
+          values: ["Item informativo 1", "Item informativo 2", "Item informativo 3"]
+        },
+        columns: [
+          {
+            input: "TEXTAREA",
+            label: "Texto de captura 1",
+            value: ""
+          },
+          {
+            label: "Pregunta de opción múltiple",
+            options: [
+              { text: "Si", value: "si" },
+              { text: "No", value: "no" }
+            ]
+          },
+          {
+            input: "TEXTAREA",
+            label: "Texto de captura 2",
+            value: ""
+          }
+        ]
+      },
+      rules: [],
+      value: {},
       variableName: "",
       hint: "",
       required: false,

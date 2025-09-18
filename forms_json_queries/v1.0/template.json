@@ -1,27 +1,41 @@
-[
-  {
-    "label": "Nunca",
-    "value": "nunca",
-    "isOtherOption": false
+{
+  "items": {
+    "label": "ASPECTO",
+    "values": [
+      "Puntualidad",
+      "Disposición",
+      "Comunicación",
+      "Responsabilidad",
+      "Desempeño",
+      "Uso de recursos",
+      "Trabajo en equipo",
+      "Relaciones interpersonales",
+      "Liderazgo"
+    ]
   },
-  {
-    "label": "Una o dos veces",
-    "value": "una_o_dos_veces",
-    "isOtherOption": false
-  },
-  {
-    "label": "Cada tantos meses",
-    "value": "cada_tantos_meses",
-    "isOtherOption": false
-  },
-  {
-    "label": "Una vez al mes",
-    "value": "una_vez_al_mes",
-    "isOtherOption": false
-  },
-  {
-    "label": "Una vez por semana o más",
-    "value": "una_vez_por_semana_o_mas",
-    "isOtherOption": false
-  }
-]
+  "columns": [
+    {
+      "input": "TEXTAREA",
+      "label": "Texto de captura 1",
+      "value": ""
+    },
+    {
+      "label": "Pregunta de opción múltiple",
+      "options": [
+        {
+          "text": "Si",
+          "value": "si"
+        },
+        {
+          "text": "No",
+          "value": "no"
+        }
+      ]
+    },
+    {
+      "input": "TEXTAREA",
+      "label": "Texto de captura 2",
+      "value": ""
+    }
+  ]
+}
