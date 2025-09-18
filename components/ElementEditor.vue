@@ -38,7 +38,7 @@
           <!-- General Tab -->
           <v-window-item value="general" class="tab-pane">
             <v-row dense>
-              <v-col cols="12">
+              <v-col cols="12" md="6">
                 <v-select
                   v-model="editableElement.type"
                   :items="elementTypes"
@@ -49,6 +49,16 @@
                   variant="filled"
                   @update:model-value="handleTypeChange"
                 ></v-select>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-switch
+                  v-model="editableElement.multiple"
+                  :label="`${editableElement.multiple ? 'Múltiples valores' : 'Un solo valor'} Selection`"
+                  hide-details
+                  inset
+                  color="primary"
+                  density="compact"
+                ></v-switch>
               </v-col>
 
               <!-- Fields for Typography Element -->
@@ -309,7 +319,8 @@
                   editableElement.type === FormFieldType.RADIO_GROUP ||
                   editableElement.type === FormFieldType.CHECKBOX_GROUP ||
                   editableElement.type === FormFieldType.REPEATER ||
-                  editableElement.type === FormFieldType.RADIOMATRIX
+                  editableElement.type === FormFieldType.RADIOMATRIX ||
+                  editableElement.type === FormFieldType.INPUT_MATRIX
                 "
               >
                 <v-col cols="12">
@@ -515,12 +526,18 @@ watch(
         editableElement.value.type === FormFieldType.RADIO_GROUP ||
         editableElement.value.type === FormFieldType.CHECKBOX_GROUP ||
         editableElement.value.type === FormFieldType.REPEATER ||
-        editableElement.value.type === FormFieldType.RADIOMATRIX
+        editableElement.value.type === FormFieldType.RADIOMATRIX ||
+        editableElement.value.type === FormFieldType.INPUT_MATRIX
       ) {
-        const options = Array.isArray(editableElement.value.options)
-          ? editableElement.value.options
-          : [];
-        selectItemsText.value = JSON.stringify(options, null, 2);
+        let optionsToDisplay;
+        if (editableElement.value.type === FormFieldType.RADIOMATRIX || editableElement.value.type === FormFieldType.INPUT_MATRIX) {
+          optionsToDisplay = editableElement.value.options; // It's an object
+        } else if (Array.isArray(editableElement.value.options)) {
+          optionsToDisplay = editableElement.value.options; // It's an array
+        } else {
+          optionsToDisplay = []; // Default to empty array if not an object or array
+        }
+        selectItemsText.value = JSON.stringify(optionsToDisplay, null, 2);
       } else {
         selectItemsText.value = "";
       }
@@ -594,7 +611,8 @@ const saveChanges = () => {
     editableElement.value.type === FormFieldType.CHECKBOX_GROUP ||
     editableElement.value.type === FormFieldType.RADIO_GROUP ||
     editableElement.value.type === FormFieldType.REPEATER ||
-    editableElement.value.type === FormFieldType.RADIOMATRIX
+    editableElement.value.type === FormFieldType.RADIOMATRIX ||
+    editableElement.value.type === FormFieldType.INPUT_MATRIX
   ) {
     try {
       editableElement.value.options = JSON.parse(selectItemsText.value);

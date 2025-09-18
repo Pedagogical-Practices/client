@@ -301,7 +301,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useFormElementStore } from "~/stores/formElementStore";
 import { useFormStore } from "~/stores/formStore";
@@ -316,6 +316,7 @@ import CheckboxGroup from "~/components/forms/CheckboxGroup.vue";
 import RadioGroup from "~/components/forms/RadioGroup.vue";
 import Repeater from "~/components/forms/Repeater.vue";
 import RadioMatrix from "~/components/forms/RadioMatrix.vue";
+import InputMatrix from "~/components/forms/InputMatrix.vue";
 
 import { type AvailableElementDefinition } from "~/types";
 import {
@@ -354,6 +355,27 @@ const snackbar = ref<{
   color: "success",
   timeout: 3000,
 });
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+    event.preventDefault(); // Prevenir el comportamiento por defecto del navegador
+    saveFormToBackend(true); // Guardar y permanecer
+    snackbar.value = {
+      show: true,
+      text: "¡Formulario guardado exitosamente! (Permaneciendo en el editor)",
+      color: "success",
+      timeout: 3000,
+    };
+  }
+};
 
 watch(
   () => formElementStore.formElements,
@@ -429,6 +451,7 @@ const componentMap: Record<FormFieldType, any> = {
   [FormFieldType.EMAIL]: VTextField,
   [FormFieldType.PASSWORD]: VTextField,
   [FormFieldType.RADIOMATRIX]: RadioMatrix,
+  [FormFieldType.INPUT_MATRIX]: InputMatrix,
 };
 
 const getComponentProps = (field: FormField) => {
@@ -461,6 +484,11 @@ const getComponentProps = (field: FormField) => {
     props.textDecoration = field.textDecoration;
     props.textTransform = field.textTransform;
     props.tag = field.tag;
+  } else if (
+    field.type === FormFieldType.RADIOMATRIX ||
+    field.type === FormFieldType.INPUT_MATRIX
+  ) {
+    props.options = field.options;
   }
 
   return props;
@@ -624,7 +652,7 @@ const updateFormFromJson = async (): Promise<void> => {
   }
 };
 
-const saveFormToBackend = async (): Promise<void> => {
+const saveFormToBackend = async (stayInEditor: boolean = false): Promise<void> => {
   try {
     if (!authStore.isAuthenticated) {
       throw new Error(
@@ -663,16 +691,19 @@ const saveFormToBackend = async (): Promise<void> => {
       formStore.editingFormId = result.id;
     }
 
-    formStore.clearEditingFormId();
-    formElementStore.initializeForm([]);
-    formStore.formName = "";
     snackbar.value = {
       show: true,
       text: "¡Formulario guardado exitosamente!",
       color: "success",
       timeout: 3000,
     };
-    router.push("/admin/forms");
+
+    if (!stayInEditor) {
+      formStore.clearEditingFormId();
+      formElementStore.initializeForm([]);
+      formStore.formName = "";
+      router.push("/admin/forms");
+    }
   } catch (error: any) {
     console.error("Error al guardar:", error);
     snackbar.value = {
