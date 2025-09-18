@@ -4,10 +4,18 @@
     <v-table density="compact">
       <thead>
         <tr>
-          <th class="text-left font-weight-bold">{{ itemsLabel }}</th>
+          <!-- Static headers for item values -->
+          <th
+            v-for="(header, index) in itemHeaders"
+            :key="`item-header-${index}`"
+            class="text-left font-weight-bold"
+          >
+            {{ header }}
+          </th>
+          <!-- Dynamic headers for input columns -->
           <th
             v-for="(col, index) in columns"
-            :key="index"
+            :key="`col-header-${index}`"
             class="text-left font-weight-bold"
           >
             {{ col.label }}
@@ -15,12 +23,21 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="itemValue in items" :key="itemValue">
-          <td class="pr-4">{{ itemValue }}</td>
-          <td v-for="(col, index) in columns" :key="index">
+        <!-- Iterate over each item object -->
+        <tr v-for="item in items" :key="item.key">
+          <!-- Render static item values -->
+          <td
+            v-for="(value, index) in item.values"
+            :key="`item-val-${index}`"
+            class="pr-4"
+          >
+            {{ value }}
+          </td>
+          <!-- Render dynamic input columns -->
+          <td v-for="(col, index) in columns" :key="`col-input-${index}`">
             <v-textarea
               v-if="col.input === 'TEXTAREA'"
-              v-model="cellValue(itemValue, col.label).value"
+              v-model="cellValue(item.key, col.label).value"
               rows="2"
               auto-grow
               density="compact"
@@ -29,7 +46,7 @@
             ></v-textarea>
             <v-radio-group
               v-else-if="Array.isArray(col.options)"
-              v-model="cellValue(itemValue, col.label).value"
+              v-model="cellValue(item.key, col.label).value"
               inline
             >
               <v-radio
@@ -49,44 +66,31 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+// Define the new, more structured props
 const props = defineProps<{
   label?: string;
   modelValue: Record<string, any> | string | null;
   options: {
-    items: { label: string; values: string[] } | string[];
-    columns: any[];
+    itemHeaders?: string[];
+    items?: Array<{ key: string; values: string[] }>;
+    columns?: any[];
   };
 }>();
 
 const emit = defineEmits(["update:modelValue"]);
 
-const itemsLabel = computed(() => {
-  if (
-    props.options?.items &&
-    typeof props.options.items === "object" &&
-    !Array.isArray(props.options.items)
-  ) {
-    return props.options.items.label;
-  }
-  return ""; // No label if items is a simple array
-});
-
-const items = computed(() => {
-  if (props.options?.items) {
-    if (Array.isArray(props.options.items)) {
-      return props.options.items; // Handle old format
-    }
-    return props.options.items.values || []; // Handle new format
-  }
-  return [];
-});
-
+// Computed properties to safely access the new structure
+const itemHeaders = computed(() => props.options?.itemHeaders || []);
+const items = computed(() => props.options?.items || []);
 const columns = computed(() => props.options?.columns || []);
 
+// The core logic for cell value handling remains the same,
+// it's robust enough to handle the new key-based structure.
 const cellValue = (itemKey: string, colKey: string) => {
   return computed({
     get() {
       if (typeof props.modelValue === "object" && props.modelValue !== null) {
+        // Access the nested value using the row's unique key and the column's label
         return props.modelValue[itemKey]?.[colKey] || null;
       }
       return null;
@@ -94,10 +98,12 @@ const cellValue = (itemKey: string, colKey: string) => {
     set(value) {
       const currentModel =
         typeof props.modelValue === "object" && props.modelValue !== null
-          ? props.modelValue
+          ? { ...props.modelValue }
           : {};
+
       const updatedRow = { ...(currentModel[itemKey] || {}), [colKey]: value };
       const newValue = { ...currentModel, [itemKey]: updatedRow };
+
       emit("update:modelValue", newValue);
     },
   });
